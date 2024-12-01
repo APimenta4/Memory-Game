@@ -27,6 +27,8 @@ Para correr websocket:
 ----------------------------------------------------
 
 Para correr laravel:
+/laravel$ composer update
+
 /laravel$ sail up -d     (com o docker desktop aberto)
 
 Podem ter que fazer também:
@@ -34,4 +36,7 @@ Podem ter que fazer também:
 
 Para meter valores na base dados:
 /laravel$ sail artisan db:seed
+[0] en_US
+
+/laravel$ sail artisan storage:link
 
