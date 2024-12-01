@@ -17,11 +17,13 @@ Não consegui meter a funcionar com bun, e com o node a partir da versao 23.0.0 
 Se quiserem podem experimentar meter localmente com o bun
 
 Para correr vue:
+/vue$ npm install
 /vue$ npm run dev
 
 ----------------------------------------------------
 
 Para correr websocket:
+/websockets$ npm install
 /websockets$ node index.js
 
 ----------------------------------------------------
