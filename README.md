@@ -24,15 +24,15 @@ Afonso
 
 3. ./laravel$ composer update
 
-3. ./laravel$ sail up -d
+4. ./laravel$ sail up -d
 
-4. ./laravel$ sail artisan migrate:fresh
+5. ./laravel$ sail artisan migrate:fresh
 
-5. ./laravel$ sail artisan db:seed
+6. ./laravel$ sail artisan db:seed
 
-6. Choose [0] en_US
+7. Choose [0] en_US
 
-7. ./laravel$ sail artisan storage:link
+8. ./laravel$ sail artisan storage:link
 
 ## Run vue:
 
@@ -40,7 +40,7 @@ Afonso
 
 2. Copy `.env.example` and rename it to `.env`
 
-2. ./vue$ npm run dev
+3. ./vue$ npm run dev
 
 ## Run websocket:
 
