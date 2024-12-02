@@ -20,7 +20,9 @@ Afonso
 
 1. Open docker Desktop
 
-2. ./laravel$ composer update
+2. Copy `.env.example` and rename it to `.env`
+
+3. ./laravel$ composer update
 
 3. ./laravel$ sail up -d
 
@@ -35,6 +37,8 @@ Afonso
 ## Run vue:
 
 1. ./vue$ npm install
+
+2. Copy `.env.example` and rename it to `.env`
 
 2. ./vue$ npm run dev
 
