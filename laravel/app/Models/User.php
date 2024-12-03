@@ -22,6 +22,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'nickname',
+        'blocked',
+        'photo_filename',
+        'brain_coins_balance',
+        'type'
     ];
 
     /**
@@ -45,5 +50,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function multiplayerGamesPlayed()
+    {
+        return $this->hasMany(MultiplayerGamePlayed::class);
+    }
+
+    public function games()
+    {
+        return $this->hasMany(Game::class, 'created_user_id');
     }
 }
