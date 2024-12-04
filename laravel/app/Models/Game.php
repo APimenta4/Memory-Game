@@ -12,8 +12,6 @@ class Game extends Model
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-    
-    public $timestamps = true;
 
     /**
      * The attributes that are mass assignable.
