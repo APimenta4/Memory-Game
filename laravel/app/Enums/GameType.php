@@ -4,16 +4,14 @@ namespace App\Enums;
 
 enum GameType: string
 {
-    case SIMPLE = 'S';
-    case MEDIUM = 'M';
-    case HARD = 'H';
+    case SINGLEPLAYER = 'S';
+    case MULTIPLAYER = 'M';
 
     public function label(): string
     {
         return match ($this) {
-            GameType::SIMPLE => 'Simple',
-            GameType::MEDIUM => 'Medium',
-            GameType::HARD => 'Hard',
+            GameType::SINGLEPLAYER => 'Single-player',
+            GameType::MULTIPLAYER => 'Multiplayer',
         };
     }
 }
