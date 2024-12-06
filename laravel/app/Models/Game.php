@@ -13,11 +13,6 @@ class Game extends Model
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'created_user_id',
         'winner_user_id',
@@ -31,18 +26,9 @@ class Game extends Model
         'custom',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected $casts = [
         'type' => GameType::class,
         'status' => GameStatus::class,
-        'began_at' => 'datetime',
-        'ended_at' => 'datetime',
-        'total_time' => 'decimal:2',
-        'custom' => 'array',
     ];
 
     public function creator()
@@ -60,13 +46,16 @@ class Game extends Model
         return $this->belongsTo(Board::class, 'board_id');
     }
 
-    public function multiplayerGames()
-    {
-        return $this->hasMany(MultiplayerGamePlayed::class);
-    }
-
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
+
+    // "players" users association through multiplayer_games_played 
+    public function players()
+    {
+        return $this->belongsToMany(User::class, 'multiplayer_games_played', 'game_id', 'user_id')->withPivot('player_won', 'pairs_discovered');
+    }
+
+    
 }
