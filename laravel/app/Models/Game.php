@@ -29,6 +29,7 @@ class Game extends Model
     protected $casts = [
         //'type' => GameType::class,
         'status' => GameStatus::class,
+        'custom' => 'array',
     ];
 
     public function creator()
