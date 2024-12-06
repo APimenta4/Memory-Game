@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use Illuminate\Http\Request;
+use App\Http\Resources\GameResource;
 
 class GameController extends Controller
 {
@@ -28,7 +29,7 @@ class GameController extends Controller
      */
     public function show(Game $game)
     {
-        //
+        return new GameResource($game);
     }
 
     /**
@@ -45,5 +46,12 @@ class GameController extends Controller
     public function destroy(Game $game)
     {
         //
+    }
+
+    public function userHistory(Request $request)
+    {
+        $user = $request->user();
+        $games = $user->games;
+        return GameResource::collection($games);
     }
 }
