@@ -14,11 +14,6 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -27,28 +22,18 @@ class User extends Authenticatable
         'blocked',
         'photo_filename',
         'brain_coins_balance',
-        'type'
+        'type',
+        'custom'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -58,13 +43,11 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
-    public function multiplayerGamesPlayed()
-    {
-        return $this->hasMany(MultiplayerGamePlayed::class);
-    }
-
+    // "games"  association through multiplayer_games_played
     public function games()
     {
-        return $this->hasMany(Game::class, 'created_user_id');
+        return $this->belongsToMany(Game::class, 'multiplayer_games_played', 'user_id', 'game_id')
+            ->withPivot('player_won', 'pairs_discovered');
     }
+
 }
