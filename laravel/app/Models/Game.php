@@ -27,7 +27,7 @@ class Game extends Model
     ];
 
     protected $casts = [
-        //'type' => GameType::class,
+        'type' => GameType::class,
         'status' => GameStatus::class,
         'custom' => 'array',
     ];
