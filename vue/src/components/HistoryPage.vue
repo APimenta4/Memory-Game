@@ -11,8 +11,8 @@ const expandedMultiplayerGameIds = ref(new Set());
 const multiplayerPage = ref(1);
 const singleplayerPage = ref(1);
 
-const multiplayerPerPage = 5;
-const singleplayerPerPage = 5;
+const multiplayerPerPage = 10;
+const singleplayerPerPage = 10;
 
 // Handle Multiplayer Pagination
 const handleMultiplayerPageChange = (newPage) => {
@@ -113,7 +113,6 @@ onMounted(() => {
             <th class="border-b px-4 py-2">Board Size</th>
             <th class="border-b px-4 py-2">Game Status</th>
             <th class="border-b px-4 py-2">Start Time</th>
-            <th class="border-b px-4 py-2">End Time</th>
             <th class="border-b px-4 py-2">Total Time</th>
           </tr>
         </thead>
@@ -134,7 +133,6 @@ onMounted(() => {
               <td class="border-b px-4 py-2">{{ game.board_size }}</td>
               <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
               <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
-              <td class="border-b px-4 py-2">{{ game.ended_at ? formatDate(game.ended_at) : '' }}</td>
               <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
             </tr>
             <tr v-if="expandedMultiplayerGameIds.has(game.id)">
@@ -173,7 +171,6 @@ onMounted(() => {
           <th class="border-b px-4 py-2">Board Size</th>
           <th class="border-b px-4 py-2">Game Status</th>
           <th class="border-b px-4 py-2">Start Time</th>
-          <th class="border-b px-4 py-2">End Time</th>
           <th class="border-b px-4 py-2">Total Time</th>
         </tr>
       </thead>
@@ -184,7 +181,6 @@ onMounted(() => {
             <td class="border-b px-4 py-2">{{ game.board_size }}</td>
             <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
             <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
-            <td class="border-b px-4 py-2">{{ formatDate(game.ended_at) }}</td>
             <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
           </tr>
         </template>

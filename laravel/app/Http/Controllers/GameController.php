@@ -51,7 +51,7 @@ class GameController extends Controller
     public function multiplayerHistory(Request $request)
     {
         $user = $request->user();
-        $perPage = $request->query('per_page', 10); // Get items per page from query, default to 10
+        $perPage = $request->query('per_page', 10);
         $multiplayerGames = $user->multiplayerGames->sortByDesc('began_at')->forPage($request->query('page', 1), $perPage);
     
         return response()->json([
