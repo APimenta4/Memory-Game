@@ -2,20 +2,21 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
+// Data to be fetched
 const multiplayerGames = ref([]);
 const singleplayerGames = ref([]);
 const boards = ref([]);
 
+// Multiplayer table rows expanded (to show details)
 const expandedMultiplayerGameIds = ref(new Set());
 
-// State for pagination
+// Pagination
 const multiplayerPage = ref(1);
 const singleplayerPage = ref(1);
-
 const multiplayerPerPage = 10;
 const singleplayerPerPage = 10;
 
-// State for filters
+// Filters
 const multiplayerStatus = ref('');
 const singleplayerStatus = ref('');
 const multiplayerStartDate = ref('');
@@ -26,13 +27,13 @@ const multiplayerBoardId = ref('');
 const singleplayerBoardId = ref('');
 const multiplayerWon = ref(false);
 
-// State for sorting
+// Sorting
 const multiplayerSortBy = ref('began_at');
 const multiplayerSortOrder = ref('desc');
 const singleplayerSortBy = ref('began_at');
 const singleplayerSortOrder = ref('desc');
 
-// Computed properties for date validation
+// Check if given dates are invalid
 const isMultiplayerDateInvalid = computed(() => {
   return multiplayerStartDate.value && multiplayerEndDate.value && multiplayerStartDate.value > multiplayerEndDate.value;
 });
@@ -41,7 +42,7 @@ const isSingleplayerDateInvalid = computed(() => {
   return singleplayerStartDate.value && singleplayerEndDate.value && singleplayerStartDate.value > singleplayerEndDate.value;
 });
 
-// Handle Multiplayer Pagination
+// Previous/Next for multiplayer pagination
 const handleMultiplayerPageChange = (newPage) => {
   if (newPage >= 1) {
     multiplayerPage.value = newPage;
@@ -49,7 +50,7 @@ const handleMultiplayerPageChange = (newPage) => {
   }
 };
 
-// Handle Singleplayer Pagination
+// Previous/Next for singleplayer pagination
 const handleSingleplayerPageChange = (newPage) => {
   if (newPage >= 1) {
     singleplayerPage.value = newPage;
@@ -60,6 +61,7 @@ const handleSingleplayerPageChange = (newPage) => {
 // Handle sorting
 const handleMultiplayerSort = (sortBy) => {
   if (multiplayerSortBy.value === sortBy) {
+    // If the same column is clicked, inverse the sort order
     multiplayerSortOrder.value = multiplayerSortOrder.value === 'asc' ? 'desc' : 'asc';
   } else {
     multiplayerSortBy.value = sortBy;
@@ -70,6 +72,7 @@ const handleMultiplayerSort = (sortBy) => {
 
 const handleSingleplayerSort = (sortBy) => {
   if (singleplayerSortBy.value === sortBy) {
+    // If the same column is clicked, inverse the sort order
     singleplayerSortOrder.value = singleplayerSortOrder.value === 'asc' ? 'desc' : 'asc';
   } else {
     singleplayerSortBy.value = sortBy;
@@ -78,10 +81,9 @@ const handleSingleplayerSort = (sortBy) => {
   fetchSingleplayerGames();
 };
 
-// Fetch Multiplayer games with pagination, status filter, date filter, board size filter, won filter, and sorting
+// Fetch Multiplayer games
 const fetchMultiplayerGames = async () => {
   if (isMultiplayerDateInvalid.value) return;
-
   try {
     const response = await axios.get(`/users/me/history/multiplayer`, {
       params: {
@@ -102,10 +104,9 @@ const fetchMultiplayerGames = async () => {
   }
 };
 
-// Fetch Singleplayer games with pagination, status filter, date filter, board size filter, and sorting
+// Fetch Singleplayer games
 const fetchSingleplayerGames = async () => {
   if (isSingleplayerDateInvalid.value) return;
-
   try {
     const response = await axios.get(`/users/me/history/singleplayer`, {
       params: {
@@ -135,6 +136,7 @@ const fetchBoards = async () => {
   }
 };
 
+// Expand row
 const toggleGameRow = (id, expandedSet) => {
   if (expandedSet.has(id)) {
     expandedSet.delete(id);
@@ -143,6 +145,7 @@ const toggleGameRow = (id, expandedSet) => {
   }
 };
 
+// Change data format (passing undefined to LocaleString lets javascript decide the format)
 const formatDate = (dateString) => {
   const options = {
     year: 'numeric',
@@ -155,6 +158,7 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleString(undefined, options);
 };
 
+// Map statuses
 const transformGameStatus = (status) => {
   const statuses = {
     E: 'Ended',
@@ -241,10 +245,11 @@ onMounted(() => {
           <template v-for="game in multiplayerGames" :key="game.id">
             <tr class="cursor-pointer hover:bg-gray-100" @click="toggleGameRow(game.id, expandedMultiplayerGameIds)">
               <td class="border-b px-4 py-2 text-center">
-                <button class="toggle-button">
+                <button class="toggle-button" style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;">
                   <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg"
                     :class="{ rotated: expandedMultiplayerGameIds.has(game.id) }" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s ease; width: 24px; height: 24px;"
+                    :style="{ transform: expandedMultiplayerGameIds.has(game.id) ? 'rotate(90deg)' : 'rotate(0deg)' }">
                     <path d="M9 6l6 6-6 6" />
                   </svg>
                 </button>
@@ -358,29 +363,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.toggle-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.arrow-icon {
-  transition: transform 0.3s ease;
-  width: 24px;
-  height: 24px;
-}
-
-.arrow-icon.rotated {
-  transform: rotate(90deg);
-}
-
-.text-red-500 {
-  color: #f56565;
-}
-</style>

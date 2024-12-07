@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use App\Http\Resources\GameResource;
+use App\Http\Requests\HistoryRequest;
 
 class GameController extends Controller
 {
@@ -48,18 +49,18 @@ class GameController extends Controller
         //
     }
 
-    public function multiplayerHistory(Request $request)
+    public function multiplayerHistory(HistoryRequest $request)
     {
+        $validated = $request->validated();
         $user = $request->user();
-        $perPage = $request->query('per_page', 10);
-        $status = $request->query('status');
-        $sortBy = $request->query('sort_by', 'began_at');
-        $sortOrder = $request->query('sort_order', 'desc');
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
-        $boardId = $request->query('board_id');
-        $won = $request->query('won', false);
-    
+        $perPage = $validated['per_page'] ?? 10;
+        $status = $validated['status'] ?? null;
+        $sortBy = $validated['sort_by'] ?? 'began_at';
+        $sortOrder = $validated['sort_order'] ?? 'desc';
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+        $boardId = $validated['board_id'] ?? null;
+        $won = $validated['won'] ?? false;
         $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
     
         if ($status) {
@@ -84,23 +85,20 @@ class GameController extends Controller
     
         $multiplayerGames = $query->paginate($perPage);
     
-        return response()->json([
-            'data' => GameResource::collection($multiplayerGames),
-            'current_page' => $multiplayerGames->currentPage(),
-            'last_page' => $multiplayerGames->lastPage(),
-        ]);
+        return GameResource::collection($multiplayerGames);
     }
     
-    public function singleplayerHistory(Request $request)
+    public function singleplayerHistory(HistoryRequest $request)
     {
+        $validated = $request->validated();
         $user = $request->user();
-        $perPage = $request->query('per_page', 10);
-        $status = $request->query('status');
-        $sortBy = $request->query('sort_by', 'began_at');
-        $sortOrder = $request->query('sort_order', 'desc');
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
-        $boardId = $request->query('board_id');
+        $perPage = $validated['per_page'] ?? 10;
+        $status = $validated['status'] ?? null;
+        $sortBy = $validated['sort_by'] ?? 'began_at';
+        $sortOrder = $validated['sort_order'] ?? 'desc';
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+        $boardId = $validated['board_id'] ?? null;
 
         $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
     
@@ -122,11 +120,7 @@ class GameController extends Controller
     
         $singleplayerGames = $query->paginate($perPage);
     
-        return response()->json([
-            'data' => GameResource::collection($singleplayerGames),
-            'current_page' => $singleplayerGames->currentPage(),
-            'last_page' => $singleplayerGames->lastPage(),
-        ]);
+        return GameResource::collection($singleplayerGames);
     }
 
 
