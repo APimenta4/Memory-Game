@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\TransactionType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Transaction extends Model
 {
     use HasFactory;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'transaction_datetime',
@@ -22,7 +25,9 @@ class Transaction extends Model
     ];
 
     protected $casts = [
+        'transaction_datetime' => 'datetime',
         'custom' => 'array',
+        'type' => TransactionType::class
     ];
 
     public function user()
