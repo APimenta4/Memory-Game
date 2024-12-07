@@ -2,6 +2,7 @@ import HomeComponent from '@/components/HomeComponent.vue'
 import LaravelTester from '@/components/LaravelTester.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
 import HistoryPage from '@/components/HistoryPage.vue'
+import SinglePlayerPage from '@/components/singlePlayer/SinglePlayerPage.vue'
 import Scoreboard from '@/components/Scoreboard.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -15,7 +16,12 @@ const router = createRouter({
       component: HomeComponent
     },
     {
-      path: '/history',
+      path: '/singleplayer',
+      name: 'singleplayer',
+      component: SinglePlayerPage
+    },
+    {
+      path: '/history', // The URL path for the new page
       name: 'history',
       component: HistoryPage 
     },

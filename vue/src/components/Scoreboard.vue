@@ -17,7 +17,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 const invoices = [
