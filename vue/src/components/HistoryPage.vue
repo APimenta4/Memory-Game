@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 const multiplayerGames = ref([]);
@@ -13,6 +13,29 @@ const singleplayerPage = ref(1);
 
 const multiplayerPerPage = 10;
 const singleplayerPerPage = 10;
+
+// State for filters
+const multiplayerStatus = ref('');
+const singleplayerStatus = ref('');
+const multiplayerStartDate = ref('');
+const multiplayerEndDate = ref('');
+const singleplayerStartDate = ref('');
+const singleplayerEndDate = ref('');
+
+// State for sorting
+const multiplayerSortBy = ref('began_at');
+const multiplayerSortOrder = ref('desc');
+const singleplayerSortBy = ref('began_at');
+const singleplayerSortOrder = ref('desc');
+
+// Computed properties for date validation
+const isMultiplayerDateInvalid = computed(() => {
+  return multiplayerStartDate.value && multiplayerEndDate.value && multiplayerStartDate.value > multiplayerEndDate.value;
+});
+
+const isSingleplayerDateInvalid = computed(() => {
+  return singleplayerStartDate.value && singleplayerEndDate.value && singleplayerStartDate.value > singleplayerEndDate.value;
+});
 
 // Handle Multiplayer Pagination
 const handleMultiplayerPageChange = (newPage) => {
@@ -30,27 +53,70 @@ const handleSingleplayerPageChange = (newPage) => {
   }
 };
 
+// Handle sorting
+const handleMultiplayerSort = (sortBy) => {
+  if (multiplayerSortBy.value === sortBy) {
+    multiplayerSortOrder.value = multiplayerSortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    multiplayerSortBy.value = sortBy;
+    multiplayerSortOrder.value = 'asc';
+  }
+  fetchMultiplayerGames();
+};
 
+const handleSingleplayerSort = (sortBy) => {
+  if (singleplayerSortBy.value === sortBy) {
+    singleplayerSortOrder.value = singleplayerSortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    singleplayerSortBy.value = sortBy;
+    singleplayerSortOrder.value = 'asc';
+  }
+  fetchSingleplayerGames();
+};
 
-  // Fetch Multiplayer games with pagination
-  const fetchMultiplayerGames = async () => {
-    try {
-      const response = await axios.get(`/users/me/history/multiplayer?page=${multiplayerPage.value}&per_page=${multiplayerPerPage}`);
-      multiplayerGames.value = response.data.data;
-    } catch (error) {
-      console.error('Error fetching multiplayer game history:', error);
-    }
-  };
-  
-  // Fetch Singleplayer games with pagination
-  const fetchSingleplayerGames = async () => {
-    try {
-      const response = await axios.get(`/users/me/history/singleplayer?page=${singleplayerPage.value}&per_page=${singleplayerPerPage}`);
-      singleplayerGames.value = response.data.data;
-    } catch (error) {
-      console.error('Error fetching single-player game history:', error);
-    }
-  };
+// Fetch Multiplayer games with pagination, status filter, date filter, and sorting
+const fetchMultiplayerGames = async () => {
+  if (isMultiplayerDateInvalid.value) return;
+
+  try {
+    const response = await axios.get(`/users/me/history/multiplayer`, {
+      params: {
+        page: multiplayerPage.value,
+        per_page: multiplayerPerPage,
+        status: multiplayerStatus.value,
+        start_date: multiplayerStartDate.value,
+        end_date: multiplayerEndDate.value,
+        sort_by: multiplayerSortBy.value,
+        sort_order: multiplayerSortOrder.value,
+      },
+    });
+    multiplayerGames.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching multiplayer game history:', error);
+  }
+};
+
+// Fetch Singleplayer games with pagination, status filter, date filter, and sorting
+const fetchSingleplayerGames = async () => {
+  if (isSingleplayerDateInvalid.value) return;
+
+  try {
+    const response = await axios.get(`/users/me/history/singleplayer`, {
+      params: {
+        page: singleplayerPage.value,
+        per_page: singleplayerPerPage,
+        status: singleplayerStatus.value,
+        start_date: singleplayerStartDate.value,
+        end_date: singleplayerEndDate.value,
+        sort_by: singleplayerSortBy.value,
+        sort_order: singleplayerSortOrder.value,
+      },
+    });
+    singleplayerGames.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching single-player game history:', error);
+  }
+};
 
 const toggleGameRow = (id, expandedSet) => {
   if (expandedSet.has(id)) {
@@ -96,24 +162,58 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
   <div class="game-history-page">
     <h1 class="text-3xl font-bold mb-4">Game History</h1>
 
     <!-- Multiplayer Games Section -->
     <h2 class="text-2xl font-bold mt-8 mb-4">Multiplayer Games</h2>
+    <div>
+      <label for="multiplayer-status">Filter by Status:</label>
+      <select id="multiplayer-status" v-model="multiplayerStatus" @change="fetchMultiplayerGames">
+        <option value="">All</option>
+        <option value="E">Ended</option>
+        <option value="PE">Pending</option>
+        <option value="PL">In progress</option>
+        <option value="I">Interrupted</option>
+      </select>
+    </div>
+    <div>
+      <label for="multiplayer-start-date">Start Date:</label>
+      <input type="datetime-local" id="multiplayer-start-date" v-model="multiplayerStartDate" @change="fetchMultiplayerGames">
+      <label for="multiplayer-end-date">End Date:</label>
+      <input type="datetime-local" id="multiplayer-end-date" v-model="multiplayerEndDate" @change="fetchMultiplayerGames">
+      <p v-if="isMultiplayerDateInvalid" class="text-red-500">Start Date cannot be greater than End Date.</p>
+    </div>
     <div v-if="multiplayerGames.length > 0">
       <table class="min-w-full table-auto border-collapse">
         <thead>
           <tr class="bg-gray-100">
             <th class="border-b px-4 py-2"></th>
-            <th class="border-b px-4 py-2">Game ID</th>
+            <th class="border-b px-4 py-2 cursor-pointer" @click="handleMultiplayerSort('id')">
+              Game ID
+              <span v-if="multiplayerSortBy === 'id'">
+                <span v-if="multiplayerSortOrder === 'asc'">▲</span>
+                <span v-else>▼</span>
+              </span>
+            </th>
             <th class="border-b px-4 py-2">Creator</th>
             <th class="border-b px-4 py-2">Board Size</th>
             <th class="border-b px-4 py-2">Game Status</th>
-            <th class="border-b px-4 py-2">Start Time</th>
-            <th class="border-b px-4 py-2">Total Time</th>
+            <th class="border-b px-4 py-2 cursor-pointer" @click="handleMultiplayerSort('began_at')">
+              Start Time
+              <span v-if="multiplayerSortBy === 'began_at'">
+                <span v-if="multiplayerSortOrder === 'asc'">▲</span>
+                <span v-else>▼</span>
+              </span>
+            </th>
+            <th class="border-b px-4 py-2 cursor-pointer" @click="handleMultiplayerSort('total_time')">
+              Total Time
+              <span v-if="multiplayerSortBy === 'total_time'">
+                <span v-if="multiplayerSortOrder === 'asc'">▲</span>
+                <span v-else>▼</span>
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -163,15 +263,50 @@ onMounted(() => {
 
   <!-- Single-player Games Section -->
   <h2 class="text-2xl font-bold mt-8 mb-4">Singleplayer Games</h2>
+  <div>
+    <label for="singleplayer-status">Filter by Status:</label>
+    <select id="singleplayer-status" v-model="singleplayerStatus" @change="fetchSingleplayerGames">
+      <option value="">All</option>
+      <option value="E">Ended</option>
+      <option value="PE">Pending</option>
+      <option value="PL">In progress</option>
+      <option value="I">Interrupted</option>
+    </select>
+  </div>
+  <div>
+    <label for="singleplayer-start-date">Start Date:</label>
+    <input type="datetime-local" id="singleplayer-start-date" v-model="singleplayerStartDate" @change="fetchSingleplayerGames">
+    <label for="singleplayer-end-date">End Date:</label>
+    <input type="datetime-local" id="singleplayer-end-date" v-model="singleplayerEndDate" @change="fetchSingleplayerGames">
+    <p v-if="isSingleplayerDateInvalid" class="text-red-500">Start Date cannot be greater than End Date.</p>
+  </div>
   <div v-if="singleplayerGames.length > 0">
     <table class="min-w-full table-auto border-collapse">
       <thead>
         <tr class="bg-gray-100">
-          <th class="border-b px-4 py-2">Game ID</th>
+          <th class="border-b px-4 py-2 cursor-pointer" @click="handleSingleplayerSort('id')">
+            Game ID
+            <span v-if="singleplayerSortBy === 'id'">
+              <span v-if="singleplayerSortOrder === 'asc'">▲</span>
+              <span v-else>▼</span>
+            </span>
+          </th>
           <th class="border-b px-4 py-2">Board Size</th>
           <th class="border-b px-4 py-2">Game Status</th>
-          <th class="border-b px-4 py-2">Start Time</th>
-          <th class="border-b px-4 py-2">Total Time</th>
+          <th class="border-b px-4 py-2 cursor-pointer" @click="handleSingleplayerSort('began_at')">
+            Start Time
+            <span v-if="singleplayerSortBy === 'began_at'">
+              <span v-if="singleplayerSortOrder === 'asc'">▲</span>
+              <span v-else>▼</span>
+            </span>
+          </th>
+          <th class="border-b px-4 py-2 cursor-pointer" @click="handleSingleplayerSort('total_time')">
+            Total Time
+            <span v-if="singleplayerSortBy === 'total_time'">
+              <span v-if="singleplayerSortOrder === 'asc'">▲</span>
+              <span v-else>▼</span>
+            </span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -215,5 +350,9 @@ onMounted(() => {
 
 .arrow-icon.rotated {
   transform: rotate(90deg);
+}
+
+.text-red-500 {
+  color: #f56565;
 }
 </style>

@@ -52,12 +52,32 @@ class GameController extends Controller
     {
         $user = $request->user();
         $perPage = $request->query('per_page', 10);
-        $multiplayerGames = $user->multiplayerGames->sortByDesc('began_at')->forPage($request->query('page', 1), $perPage);
+        $status = $request->query('status');
+        $sortBy = $request->query('sort_by', 'began_at');
+        $sortOrder = $request->query('sort_order', 'desc');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+    
+        $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
+    
+        if ($status) {
+            $query->where('status', $status);
+        }
+    
+        if ($startDate) {
+            $query->whereDate('began_at', '>=', $startDate);
+        }
+    
+        if ($endDate) {
+            $query->whereDate('began_at', '<=', $endDate);
+        }
+    
+        $multiplayerGames = $query->paginate($perPage);
     
         return response()->json([
             'data' => GameResource::collection($multiplayerGames),
-            'current_page' => (int) $request->query('page', 1),
-            'last_page' => ceil($user->multiplayerGames->count() / $perPage),
+            'current_page' => $multiplayerGames->currentPage(),
+            'last_page' => $multiplayerGames->lastPage(),
         ]);
     }
     
@@ -65,14 +85,34 @@ class GameController extends Controller
     {
         $user = $request->user();
         $perPage = $request->query('per_page', 10);
-        $singleplayerGames = $user->singleplayerGames->sortByDesc('began_at')->forPage($request->query('page', 1), $perPage);
+        $status = $request->query('status');
+        $sortBy = $request->query('sort_by', 'began_at');
+        $sortOrder = $request->query('sort_order', 'desc');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+    
+        $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
+    
+        if ($status) {
+            $query->where('status', $status);
+        }
+    
+        if ($startDate) {
+            $query->whereDate('began_at', '>=', $startDate);
+        }
+    
+        if ($endDate) {
+            $query->whereDate('began_at', '<=', $endDate);
+        }
+    
+        $singleplayerGames = $query->paginate($perPage);
     
         return response()->json([
             'data' => GameResource::collection($singleplayerGames),
-            'current_page' => (int) $request->query('page', 1),
-            'last_page' => ceil($user->singleplayerGames->count() / $perPage),
+            'current_page' => $singleplayerGames->currentPage(),
+            'last_page' => $singleplayerGames->lastPage(),
         ]);
     }
-    
-    
+
+
 }
