@@ -60,87 +60,95 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="game-history-page">
-    <h1 class="text-3xl font-bold mb-4">Game History</h1>
-
-    <div v-if="games.length > 0">
-      <table class="min-w-full table-auto border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="border-b px-4 py-2"></th>
-            <th class="border-b px-4 py-2">Game ID</th>
-            <th class="border-b px-4 py-2">Creator</th>
-            <th class="border-b px-4 py-2">Game Type</th>
-            <th class="border-b px-4 py-2">Board Size</th>
-            <th class="border-b px-4 py-2">Game Status</th>
-            <th class="border-b px-4 py-2">Start Time</th>
-            <th class="border-b px-4 py-2">End Time</th>
-            <th class="border-b px-4 py-2">Total Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="game in games" :key="game.id">
-            <!-- Multiplayer Row with Dropdown Arrow -->
-            <tr
-              v-if="game.type === 'M'"
-              class="cursor-pointer hover:bg-gray-100"
-              @click="toggleGameRow(game.id)"
-            >
-              <td class="border-b px-4 py-2 text-center">
-                <button class="toggle-button">
-                  <svg
-                    class="arrow-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    :class="{ rotated: expandedGameIds.has(game.id) }"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M9 6l6 6-6 6" />
-                  </svg>
-                </button>
-              </td>
-              <td class="border-b px-4 py-2">{{ game.id }}</td>
-              <td class="border-b px-4 py-2">{{ game.creator.nickname }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameType(game.type) }}</td>
-              <td class="border-b px-4 py-2">{{ game.board_size }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
-              <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
-              <td class="border-b px-4 py-2">{{ formatDate(game.ended_at) }}</td>
-              <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
+    <div class="game-history-page">
+      <h1 class="text-3xl font-bold mb-4">Game History</h1>
+  
+      <div v-if="games.length > 0">
+        <table class="min-w-full table-auto border-collapse">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border-b px-4 py-2"></th>
+              <th class="border-b px-4 py-2">Game ID</th>
+              <th class="border-b px-4 py-2">Creator</th>
+              <th class="border-b px-4 py-2">Game Type</th>
+              <th class="border-b px-4 py-2">Board Size</th>
+              <th class="border-b px-4 py-2">Game Status</th>
+              <th class="border-b px-4 py-2">Start Time</th>
+              <th class="border-b px-4 py-2">End Time</th>
+              <th class="border-b px-4 py-2">Total Time</th>
             </tr>
-
-            <!-- Non-clickable Single-player Row -->
-            <tr v-else class="cursor-default hover:bg-gray-100">
-              <td class="border-b px-4 py-2"></td>
-              <td class="border-b px-4 py-2">{{ game.id }}</td>
-              <td class="border-b px-4 py-2">{{ game.creator.nickname }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameType(game.type) }}</td>
-              <td class="border-b px-4 py-2">{{ game.board_size }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
-              <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
-              <td class="border-b px-4 py-2">{{ formatDate(game.ended_at) }}</td>
-              <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
-            </tr>
-
-            <!-- Multiplayer Details Row -->
-            <tr v-if="expandedGameIds.has(game.id)">
-              <td colspan="9" class="bg-gray-50 px-4 py-2">
-                <div>
-                  <p><strong>Players:</strong> {{ game.players?.map(p => p.nickname).join(', ') || 'No players available' }}</p>
-                  <p><strong>Winner:</strong> {{ game.winner?.nickname || 'No winner' }}</p>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <template v-for="game in games" :key="game.id">
+              <!-- Multiplayer Row with Dropdown Arrow -->
+              <tr
+                v-if="game.type === 'M'"
+                class="cursor-pointer hover:bg-gray-100"
+                @click="toggleGameRow(game.id)"
+              >
+                <td class="border-b px-4 py-2 text-center">
+                  <button class="toggle-button">
+                    <svg
+                      class="arrow-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      :class="{ rotated: expandedGameIds.has(game.id) }"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M9 6l6 6-6 6" />
+                    </svg>
+                  </button>
+                </td>
+                <td class="border-b px-4 py-2">{{ game.id }}</td>
+                <td class="border-b px-4 py-2">{{ game.creator.nickname }}</td>
+                <td class="border-b px-4 py-2">{{ transformGameType(game.type) }}</td>
+                <td class="border-b px-4 py-2">{{ game.board_size }}</td>
+                <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
+                <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
+                <td class="border-b px-4 py-2">{{ formatDate(game.ended_at) }}</td>
+                <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
+              </tr>
+  
+              <!-- Non-clickable Single-player Row -->
+              <tr v-else class="cursor-default hover:bg-gray-100">
+                <td class="border-b px-4 py-2"></td>
+                <td class="border-b px-4 py-2">{{ game.id }}</td>
+                <td class="border-b px-4 py-2">{{ game.creator.nickname }}</td>
+                <td class="border-b px-4 py-2">{{ transformGameType(game.type) }}</td>
+                <td class="border-b px-4 py-2">{{ game.board_size }}</td>
+                <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
+                <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
+                <td class="border-b px-4 py-2">{{ formatDate(game.ended_at) }}</td>
+                <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
+              </tr>
+  
+              <!-- Multiplayer Details Row -->
+              <tr v-if="expandedGameIds.has(game.id)">
+                <td colspan="9" class="bg-gray-50 px-4 py-2">
+                  <div>
+                    <p><strong>Players:</strong></p>
+                    <div v-for="player in game.players" :key="player.id" class="player-name">
+                      <span v-if="player.nickname === game.winner?.nickname">
+                        👑 {{ player.nickname }}
+                      </span>
+                      <span v-else>
+                        {{ player.nickname }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
+  
 
 <style scoped>
 .toggle-button {
