@@ -48,10 +48,19 @@ class GameController extends Controller
         //
     }
 
-    public function userHistory(Request $request)
+    public function multiplayerHistory(Request $request)
     {
         $user = $request->user();
-        $games = $user->allGames()->sortByDesc('began_at');
-        return GameResource::collection($games);
+        $multiplayerGames = $user->multiplayerGames->sortByDesc('began_at');
+        return response()->json(GameResource::collection($multiplayerGames));
     }
+    
+    public function singleplayerHistory(Request $request)
+    {
+        $user = $request->user();
+        $singleplayerGames = $user->singleplayerGames->sortByDesc('began_at');
+        return response()->json(GameResource::collection($singleplayerGames));
+    }
+    
+    
 }

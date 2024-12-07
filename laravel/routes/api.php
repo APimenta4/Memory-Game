@@ -16,5 +16,8 @@ Route::post('/auth/login', [AuthController::class, "login"]);
 // AFONSO
 Route::get('/games/{game}', [GameController::class, 'show']);
 
-Route::get('/users/me/history', [GameController::class, 'userHistory'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+Route::get('/users/me/history/singleplayer', [GameController::class, 'singleplayerHistory']);
+Route::get('/users/me/history/multiplayer', [GameController::class, 'multiplayerHistory']);
 
+})->middleware('auth:sanctum');
