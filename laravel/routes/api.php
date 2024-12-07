@@ -20,5 +20,5 @@ Route::get('/boards', [BoardController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
 Route::get('/users/me/history/singleplayer', [GameController::class, 'singleplayerHistory']);
 Route::get('/users/me/history/multiplayer', [GameController::class, 'multiplayerHistory']);
-Route::get('/scoreboard/myScoreboard', [GameController::class, 'myScoreboard']);
+Route::get('/scoreboard/myScoreboard', [GameController::class, 'singleplayerScoreboard']);
 })->middleware('auth:sanctum');

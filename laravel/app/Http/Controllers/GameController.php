@@ -124,21 +124,26 @@ class GameController extends Controller
         return GameResource::collection($singleplayerGames);
     }
 
-    public function myScoreboard(ScoreboardRequest $request)
+    public function singleplayerScoreboard(ScoreboardRequest $request)
     {
         $user = $request->user();
         $validated = $request->validated();
         $scoreboardType = $validated['scoreboard_type'] === 'time' ? 'total_time' : 'total_turns_winner';
         $boardId = $validated['board_id'];
+        $isOwnScoreboard = $validated['is_own_scoreboard'] ?? false;
 
-        $games = $user->singleplayerGames()
+        $query = Game::where('type', 'S')
             ->where('board_id', $boardId)
             ->where('status', 'E')
-            ->orderBy($scoreboardType, 'asc')
-            ->limit(10)
-            ->get();
-    
-        return GameResource::collection($games);
+            ->orderBy($scoreboardType)
+            ->limit(10);
+
+        if ($isOwnScoreboard) {
+            $query = $query->where('created_user_id', $user->id);
+        }
+
+        return GameResource::collection($query->get());
     }
+
 
 }

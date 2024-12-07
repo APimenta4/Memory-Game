@@ -7,7 +7,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table'
+} from '@/components/ui/table';
 import {
     Select,
     SelectContent,
@@ -16,7 +16,7 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select';
 import {
     Card,
     CardContent,
@@ -24,36 +24,84 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+} from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ref, onMounted, watch } from 'vue';
+import axios from 'axios';
 
-const invoices = [
-    {
-        invoice: 'INV001',
-        paymentStatus: 'Paid',
-        totalAmount: '$250.00',
-        paymentMethod: 'Credit Card',
-    },
-    {
-        invoice: 'INV002',
-        paymentStatus: 'Pending',
-        totalAmount: '$150.00',
-        paymentMethod: 'PayPal',
-    },
-]
+const personalGames = ref([]);
+const boards = ref([]);
+
+// Selected options
+const scoreboardBoardId = ref('');
+const scoreboardType = ref('time');
+
+// Fetch the personal scoreboard
+const fetchPersonalScoreboardGames = async () => {
+    try {
+        const response = await axios.get(`/scoreboard/myScoreboard`, {
+            params: {
+                board_id: scoreboardBoardId.value,
+                scoreboard_type: scoreboardType.value,
+                is_own_scoreboard: 1,
+            },
+        });
+        personalGames.value = response.data.data;
+    } catch (error) {
+        console.error('Error fetching scoreboard games history:', error);
+    }
+};
+
+// Fetch available boards
+const fetchBoards = async () => {
+    try {
+        const response = await axios.get('/boards');
+        boards.value = response.data.data;
+
+        // Set the first incoming board as the default selected board
+        if (boards.value.length > 0) {
+            scoreboardBoardId.value = boards.value[0].id;
+        }
+    } catch (error) {
+        console.error('Error fetching boards:', error);
+    }
+};
+
+// Change data format (passing undefined to LocaleString lets javascript decide the format)
+const formatDate = (dateString) => {
+    const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    };
+    return new Date(dateString).toLocaleString(undefined, options);
+};
+
+onMounted(() => {
+    fetchBoards();
+});
+
+watch([scoreboardBoardId, scoreboardType], () => {
+    fetchPersonalScoreboardGames();
+});
 </script>
 
 <template>
-    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+    <h1 class="text-3xl font-bold mb-4">Personal Scoreboard</h1>
+
+    <div class="flex gap-4 items-start">
         <!-- Card Section -->
-        <div style="flex: 1; max-width: 300px;">
+        <div class="flex-1 max-w-xs">
             <Card>
                 <CardHeader>
-                    <CardTitle>Card Title</CardTitle>
-                    <CardDescription>Card Description</CardDescription>
+                    <CardTitle>Game History</CardTitle>
+                    <CardDescription>Check your scores and game history</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    Card Content
+                    Game stats are fetched and displayed dynamically.
                 </CardContent>
                 <CardFooter>
                     Card Footer
@@ -61,59 +109,64 @@ const invoices = [
             </Card>
         </div>
 
-        <!-- Table Section -->
-        <div style="flex: 2; flex-grow: 1;">
-            <!-- Select and RadioGroup Side by Side -->
-            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                <!-- Select -->           
-                <div style="flex-grow: 1; max-width: 200px;">
-                    <Select>
+        <div class="flex-2 flex-grow">
+            <div class="flex gap-4 mb-4">
+                <div class="flex-grow max-w-xs">
+                    <!-- Select -->
+                    <Select v-model="scoreboardBoardId" @change="fetchPersonalScoreboardGames()">
                         <SelectTrigger>
-                            <SelectValue placeholder="Select a board" />
+                            <SelectValue :placeholder="'Select a board size'" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>Fruits</SelectLabel>
-                                <SelectItem value="apple">Apple</SelectItem>
+                                <SelectLabel>Select Board Size</SelectLabel>
+                                <SelectItem v-for="board in boards" :key="board.id" :value="board.id">
+                                    {{ board.board_size }}
+                                </SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 <!-- RadioGroup -->
                 <div>
-                    <RadioGroup default-value="option-one"  style="display: flex">
+                    <RadioGroup v-model="scoreboardType" class="flex" @change="fetchPersonalScoreboardGames()">
                         <div class="flex items-center space-x-2">
-                            <RadioGroupItem id="option-one" value="option-one" />
-                            <Label for="option-one">Best Time</Label>
+                            <RadioGroupItem id="time" value="time" />
+                            <label for="time">Best Time</label>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <RadioGroupItem id="option-two" value="option-two" />
-                            <Label for="option-two">Minimum Turns</Label>
+                            <RadioGroupItem id="turns" value="turns" />
+                            <label for="turns">Minimum Turns</label>
                         </div>
                     </RadioGroup>
                 </div>
             </div>
 
-            <!-- Table Section -->
+            <!-- Table -->
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Invoice</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Method</TableHead>
-                        <TableHead class="text-right">Amount</TableHead>
+                        <TableHead>Game ID</TableHead>
+                        <TableHead>Board Size</TableHead>
+                        <TableHead>Start Time</TableHead>
+                        <TableHead>Total Time</TableHead>
+                        <TableHead>Total Turns</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="invoice in invoices" :key="invoice.invoice">
-                        <TableCell>{{ invoice.invoice }}</TableCell>
-                        <TableCell>{{ invoice.paymentStatus }}</TableCell>
-                        <TableCell>{{ invoice.paymentMethod }}</TableCell>
-                        <TableCell class="text-right">{{ invoice.totalAmount }}</TableCell>
+                    <TableRow v-for="game in personalGames" :key="game.id">
+                        <TableCell>{{ game.id }}</TableCell>
+                        <TableCell>{{ game.board_size }}</TableCell>
+                        <TableCell>{{ formatDate(game.began_at) }}</TableCell>
+                        <TableCell>{{ game.total_time }}</TableCell>
+                        <TableCell>{{ game.total_turns_winner }}</TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
         </div>
     </div>
+    <br>
+    <h1 class="text-3xl font-bold mb-4">Global Scoreboard</h1>
+
 </template>
