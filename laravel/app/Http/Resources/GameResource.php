@@ -23,12 +23,13 @@ class GameResource extends JsonResource
             'type' => $this->type,
             'status' => $this->status,
             'began_at' => $this->began_at,         
-            'board_size' => $this->board->board_cols . 'x' . $this->board->board_rows,         
+            'board_size' => $this->board->board_cols . 'x' . $this->board->board_rows,        
         ]; 
              
         if ($this->status == GameStatus::ENDED) {
             $response['total_time'] = $this->total_time;
             $response['ended_at'] = $this->ended_at;
+            $response['total_turns_winner'] = $this->total_turns_winner;
         }
         
         if ($this->type == GameType::MULTIPLAYER) {

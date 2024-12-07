@@ -6,6 +6,7 @@ use App\Models\Game;
 use Illuminate\Http\Request;
 use App\Http\Resources\GameResource;
 use App\Http\Requests\HistoryRequest;
+use App\Http\Requests\ScoreboardRequest;
 
 class GameController extends Controller
 {
@@ -123,5 +124,21 @@ class GameController extends Controller
         return GameResource::collection($singleplayerGames);
     }
 
+    public function myScoreboard(ScoreboardRequest $request)
+    {
+        $user = $request->user();
+        $validated = $request->validated();
+        $scoreboardType = $validated['scoreboard_type'] === 'time' ? 'total_time' : 'total_turns_winner';
+        $boardId = $validated['board_id'];
+
+        $games = $user->singleplayerGames()
+            ->where('board_id', $boardId)
+            ->where('status', 'E')
+            ->orderBy($scoreboardType, 'asc')
+            ->limit(10)
+            ->get();
+    
+        return GameResource::collection($games);
+    }
 
 }
