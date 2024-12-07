@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const multiplayerGames = ref([]);
 const singleplayerGames = ref([]);
+const boards = ref([]);
 
 const expandedMultiplayerGameIds = ref(new Set());
 
@@ -21,6 +22,9 @@ const multiplayerStartDate = ref('');
 const multiplayerEndDate = ref('');
 const singleplayerStartDate = ref('');
 const singleplayerEndDate = ref('');
+const multiplayerBoardId = ref('');
+const singleplayerBoardId = ref('');
+const multiplayerWon = ref(false);
 
 // State for sorting
 const multiplayerSortBy = ref('began_at');
@@ -74,7 +78,7 @@ const handleSingleplayerSort = (sortBy) => {
   fetchSingleplayerGames();
 };
 
-// Fetch Multiplayer games with pagination, status filter, date filter, and sorting
+// Fetch Multiplayer games with pagination, status filter, date filter, board size filter, won filter, and sorting
 const fetchMultiplayerGames = async () => {
   if (isMultiplayerDateInvalid.value) return;
 
@@ -86,6 +90,8 @@ const fetchMultiplayerGames = async () => {
         status: multiplayerStatus.value,
         start_date: multiplayerStartDate.value,
         end_date: multiplayerEndDate.value,
+        board_id: multiplayerBoardId.value,
+        won: multiplayerWon.value ? 1 : 0,
         sort_by: multiplayerSortBy.value,
         sort_order: multiplayerSortOrder.value,
       },
@@ -96,7 +102,7 @@ const fetchMultiplayerGames = async () => {
   }
 };
 
-// Fetch Singleplayer games with pagination, status filter, date filter, and sorting
+// Fetch Singleplayer games with pagination, status filter, date filter, board size filter, and sorting
 const fetchSingleplayerGames = async () => {
   if (isSingleplayerDateInvalid.value) return;
 
@@ -108,6 +114,7 @@ const fetchSingleplayerGames = async () => {
         status: singleplayerStatus.value,
         start_date: singleplayerStartDate.value,
         end_date: singleplayerEndDate.value,
+        board_id: singleplayerBoardId.value,
         sort_by: singleplayerSortBy.value,
         sort_order: singleplayerSortOrder.value,
       },
@@ -115,6 +122,16 @@ const fetchSingleplayerGames = async () => {
     singleplayerGames.value = response.data.data;
   } catch (error) {
     console.error('Error fetching single-player game history:', error);
+  }
+};
+
+// Fetch available boards
+const fetchBoards = async () => {
+  try {
+    const response = await axios.get('/boards');
+    boards.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching boards:', error);
   }
 };
 
@@ -138,14 +155,6 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleString(undefined, options);
 };
 
-const transformGameType = (type) => {
-  const types = {
-    M: 'Multiplayer',
-    S: 'Singleplayer',
-  };
-  return types[type];
-};
-
 const transformGameStatus = (status) => {
   const statuses = {
     E: 'Ended',
@@ -159,6 +168,7 @@ const transformGameStatus = (status) => {
 onMounted(() => {
   fetchMultiplayerGames();
   fetchSingleplayerGames();
+  fetchBoards();
 });
 </script>
 
@@ -177,6 +187,17 @@ onMounted(() => {
         <option value="PL">In progress</option>
         <option value="I">Interrupted</option>
       </select>
+    </div>
+    <div>
+      <label for="multiplayer-board-size">Filter by Board Size:</label>
+      <select id="multiplayer-board-size" v-model="multiplayerBoardId" @change="fetchMultiplayerGames">
+        <option value="">All</option>
+        <option v-for="board in boards" :key="board.id" :value="board.id">{{ board.board_size }}</option>
+      </select>
+    </div>
+    <div>
+      <label for="multiplayer-won">Won:</label>
+      <input type="checkbox" id="multiplayer-won" v-model="multiplayerWon" @change="fetchMultiplayerGames">
     </div>
     <div>
       <label for="multiplayer-start-date">Start Date:</label>
@@ -271,6 +292,13 @@ onMounted(() => {
       <option value="PE">Pending</option>
       <option value="PL">In progress</option>
       <option value="I">Interrupted</option>
+    </select>
+  </div>
+  <div>
+    <label for="singleplayer-board-size">Filter by Board Size:</label>
+    <select id="singleplayer-board-size" v-model="singleplayerBoardId" @change="fetchSingleplayerGames">
+      <option value="">All</option>
+      <option v-for="board in boards" :key="board.id" :value="board.id">{{ board.board_size }}</option>
     </select>
   </div>
   <div>

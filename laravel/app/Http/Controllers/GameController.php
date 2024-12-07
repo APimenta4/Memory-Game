@@ -57,6 +57,8 @@ class GameController extends Controller
         $sortOrder = $request->query('sort_order', 'desc');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
+        $boardId = $request->query('board_id');
+        $won = $request->query('won', false);
     
         $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
     
@@ -70,6 +72,14 @@ class GameController extends Controller
     
         if ($endDate) {
             $query->whereDate('began_at', '<=', $endDate);
+        }
+    
+        if ($boardId) {
+            $query->where('board_id', $boardId);
+        }
+
+        if ($won) {
+            $query->where('winner_user_id', $user->id);
         }
     
         $multiplayerGames = $query->paginate($perPage);
@@ -90,7 +100,8 @@ class GameController extends Controller
         $sortOrder = $request->query('sort_order', 'desc');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-    
+        $boardId = $request->query('board_id');
+
         $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
     
         if ($status) {
@@ -103,6 +114,10 @@ class GameController extends Controller
     
         if ($endDate) {
             $query->whereDate('began_at', '<=', $endDate);
+        }
+
+        if ($boardId) {
+            $query->where('board_id', $boardId);
         }
     
         $singleplayerGames = $query->paginate($perPage);

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\BoardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,7 +15,8 @@ Route::post('/auth/login', [AuthController::class, "login"]);
 
 
 // AFONSO
-Route::get('/games/{game}', [GameController::class, 'show']);
+// Route::get('/games/{game}', [GameController::class, 'show']); nao foi preciso ate agora
+Route::get('/boards', [BoardController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
 Route::get('/users/me/history/singleplayer', [GameController::class, 'singleplayerHistory']);
