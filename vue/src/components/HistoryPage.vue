@@ -133,10 +133,10 @@ onMounted(() => {
                     <p><strong>Players:</strong></p>
                     <div v-for="player in game.players" :key="player.id" class="player-name">
                       <span v-if="player.nickname === game.winner?.nickname">
-                        👑 {{ player.nickname }}
+                        👑 {{ player.nickname }} - {{ player.pivot?.pairs_discovered || 0 }} Pairs Discovered
                       </span>
                       <span v-else>
-                        {{ player.nickname }}
+                        {{ player.nickname }} - {{ player.pivot?.pairs_discovered || 0 }} Pairs Discovered
                       </span>
                     </div>
                   </div>
@@ -147,8 +147,7 @@ onMounted(() => {
         </table>
       </div>
     </div>
-  </template>
-  
+</template>
 
 <style scoped>
 .toggle-button {
