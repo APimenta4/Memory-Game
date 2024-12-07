@@ -7,23 +7,50 @@ const singleplayerGames = ref([]);
 
 const expandedMultiplayerGameIds = ref(new Set());
 
-const fetchMultiplayerGames = async () => {
-  try {
-    const response = await axios.get('/users/me/history/multiplayer');
-    multiplayerGames.value = response.data;
-  } catch (error) {
-    console.error('Error fetching multiplayer game history:', error);
+// State for pagination
+const multiplayerPage = ref(1);
+const singleplayerPage = ref(1);
+
+const multiplayerPerPage = 5;
+const singleplayerPerPage = 5;
+
+// Handle Multiplayer Pagination
+const handleMultiplayerPageChange = (newPage) => {
+  if (newPage >= 1) {
+    multiplayerPage.value = newPage;
+    fetchMultiplayerGames();
   }
 };
 
-const fetchSingleplayerGames = async () => {
-  try {
-    const response = await axios.get('/users/me/history/singleplayer');
-    singleplayerGames.value = response.data;
-  } catch (error) {
-    console.error('Error fetching single-player game history:', error);
+// Handle Singleplayer Pagination
+const handleSingleplayerPageChange = (newPage) => {
+  if (newPage >= 1) {
+    singleplayerPage.value = newPage;
+    fetchSingleplayerGames();
   }
 };
+
+
+
+  // Fetch Multiplayer games with pagination
+  const fetchMultiplayerGames = async () => {
+    try {
+      const response = await axios.get(`/users/me/history/multiplayer?page=${multiplayerPage.value}&per_page=${multiplayerPerPage}`);
+      multiplayerGames.value = response.data.data;
+    } catch (error) {
+      console.error('Error fetching multiplayer game history:', error);
+    }
+  };
+  
+  // Fetch Singleplayer games with pagination
+  const fetchSingleplayerGames = async () => {
+    try {
+      const response = await axios.get(`/users/me/history/singleplayer?page=${singleplayerPage.value}&per_page=${singleplayerPerPage}`);
+      singleplayerGames.value = response.data.data;
+    } catch (error) {
+      console.error('Error fetching single-player game history:', error);
+    }
+  };
 
 const toggleGameRow = (id, expandedSet) => {
   if (expandedSet.has(id)) {
@@ -83,7 +110,6 @@ onMounted(() => {
             <th class="border-b px-4 py-2"></th>
             <th class="border-b px-4 py-2">Game ID</th>
             <th class="border-b px-4 py-2">Creator</th>
-            <th class="border-b px-4 py-2">Game Type</th>
             <th class="border-b px-4 py-2">Board Size</th>
             <th class="border-b px-4 py-2">Game Status</th>
             <th class="border-b px-4 py-2">Start Time</th>
@@ -105,7 +131,6 @@ onMounted(() => {
               </td>
               <td class="border-b px-4 py-2">{{ game.id }}</td>
               <td class="border-b px-4 py-2">{{ game.creator.nickname }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameType(game.type) }}</td>
               <td class="border-b px-4 py-2">{{ game.board_size }}</td>
               <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
               <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
@@ -128,39 +153,49 @@ onMounted(() => {
           </template>
         </tbody>
       </table>
+      <div class="pagination">
+        <button @click="handleMultiplayerPageChange(multiplayerPage - 1)"
+          :disabled="multiplayerPage <= 1">Previous</button>
+        <span>Page {{ multiplayerPage }}</span>
+        <button @click="handleMultiplayerPageChange(multiplayerPage + 1)"
+          :disabled="multiplayerGames.length < multiplayerPerPage">Next</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Single-player Games Section -->
-    <h2 class="text-2xl font-bold mt-8 mb-4">Single-player Games</h2>
-    <div v-if="singleplayerGames.length > 0">
-      <table class="min-w-full table-auto border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="border-b px-4 py-2">Game ID</th>
-            <th class="border-b px-4 py-2">Creator</th>
-            <th class="border-b px-4 py-2">Game Type</th>
-            <th class="border-b px-4 py-2">Board Size</th>
-            <th class="border-b px-4 py-2">Game Status</th>
-            <th class="border-b px-4 py-2">Start Time</th>
-            <th class="border-b px-4 py-2">End Time</th>
-            <th class="border-b px-4 py-2">Total Time</th>
+  <!-- Single-player Games Section -->
+  <h2 class="text-2xl font-bold mt-8 mb-4">Singleplayer Games</h2>
+  <div v-if="singleplayerGames.length > 0">
+    <table class="min-w-full table-auto border-collapse">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="border-b px-4 py-2">Game ID</th>
+          <th class="border-b px-4 py-2">Board Size</th>
+          <th class="border-b px-4 py-2">Game Status</th>
+          <th class="border-b px-4 py-2">Start Time</th>
+          <th class="border-b px-4 py-2">End Time</th>
+          <th class="border-b px-4 py-2">Total Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-for="game in singleplayerGames" :key="game.id">
+          <tr class="cursor-default hover:bg-gray-100">
+            <td class="border-b px-4 py-2">{{ game.id }}</td>
+            <td class="border-b px-4 py-2">{{ game.board_size }}</td>
+            <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
+            <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
+            <td class="border-b px-4 py-2">{{ formatDate(game.ended_at) }}</td>
+            <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
           </tr>
-        </thead>
-        <tbody>
-          <template v-for="game in singleplayerGames" :key="game.id">
-            <tr class="cursor-default hover:bg-gray-100">
-              <td class="border-b px-4 py-2">{{ game.id }}</td>
-              <td class="border-b px-4 py-2">{{ game.creator.nickname }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameType(game.type) }}</td>
-              <td class="border-b px-4 py-2">{{ game.board_size }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
-              <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
-              <td class="border-b px-4 py-2">{{ formatDate(game.ended_at) }}</td>
-              <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
+        </template>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <button @click="handleSingleplayerPageChange(singleplayerPage - 1)"
+        :disabled="singleplayerPage <= 1">Previous</button>
+      <span>Page {{ singleplayerPage }}</span>
+      <button @click="handleSingleplayerPageChange(singleplayerPage + 1)"
+        :disabled="singleplayerGames.length < singleplayerPerPage">Next</button>
     </div>
   </div>
 </template>
