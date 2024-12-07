@@ -44,11 +44,24 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
-    // "games"  association through multiplayer_games_played
-    public function games()
+    public function singleplayerGames()
+    {
+        return $this->hasMany(Game::class, 'created_user_id');
+    }
+    
+    public function multiplayerGames()
     {
         return $this->belongsToMany(Game::class, 'multiplayer_games_played', 'user_id', 'game_id')
             ->withPivot('player_won', 'pairs_discovered');
     }
+
+    public function allGames()
+    {
+        $singlePlayerGames = $this->singlePlayerGames()->get();
+        $multiplayerGames = $this->multiplayerGames()->get();
+    
+        return $singlePlayerGames->merge($multiplayerGames);
+    }
+    
 
 }

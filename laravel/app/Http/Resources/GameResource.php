@@ -18,17 +18,16 @@ class GameResource extends JsonResource
     public function toArray(Request $request): array
     {    
         $response = [
-            'id' => $this->id,
+           'id' => $this->id,
             'creator' => $this->creator,
             'type' => $this->type,
             'status' => $this->status,
             'began_at' => $this->began_at,         
-            'total_time' => $this->total_time,
-            'board_size' => $this->board->board_cols . $this->board->board_rows,         
+            'board_size' => $this->board->board_cols . 'x' . $this->board->board_rows,         
         ]; 
-               
+             
         if ($this->status == GameStatus::ENDED) {
-            $response['total_time'] = $this->score;
+            $response['total_time'] = $this->total_time;
             $response['ended_at'] = $this->ended_at;
         }
         

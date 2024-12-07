@@ -51,7 +51,7 @@ class GameController extends Controller
     public function userHistory(Request $request)
     {
         $user = $request->user();
-        $games = $user->games;
+        $games = $user->allGames()->sortByDesc('began_at');
         return GameResource::collection($games);
     }
 }
