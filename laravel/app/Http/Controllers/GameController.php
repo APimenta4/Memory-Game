@@ -133,7 +133,7 @@ class GameController extends Controller
         $validated = $request->validated();
         $user = $request->user();
         $type = $validated['type'] ?? null;
-        $perPage = $validated['per_page'] ?? 10;
+        $perPage = $validated['per_page'] ?? null;
         $status = $validated['status'] ?? null;
         $sortBy = $validated['sort_by'] ?? 'began_at';
         $sortOrder = $validated['sort_order'] ?? 'desc';
@@ -170,7 +170,11 @@ class GameController extends Controller
             $query->where('winner_user_id', $user->id);
         }
 
-        $games = $query->paginate($perPage);
+        if ($perPage) {
+            $games = $query->paginate($perPage);
+        } else {
+            $games = $query->get();
+        }
 
         return GameResource::collection($games);
     }

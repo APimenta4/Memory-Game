@@ -20,10 +20,12 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button'
 import { Pagination, PaginationEllipsis, PaginationFirst, PaginationLast, PaginationList, PaginationListItem, PaginationNext, PaginationPrev } from '@/components/ui/pagination';
+import { useBoardStore } from '@/stores/board';
+
+const storeBoard = useBoardStore()
 
 // Data to be fetched
 const games = ref([]);
-const boards = ref([]);
 const totalGames = ref(0);
 const totalPages = ref(0);
 
@@ -109,16 +111,6 @@ const fetchGames = async () => {
   }
 };
 
-// Fetch available boards
-const fetchBoards = async () => {
-  try {
-    const response = await axios.get('/boards');
-    boards.value = response.data.data;
-  } catch (error) {
-    console.error('Error fetching boards:', error);
-  }
-};
-
 // Change data format
 const formatDate = (dateString) => {
   const options = {
@@ -150,7 +142,7 @@ const toggleGameExpansion = (gameId) => {
 
 onMounted(() => {
   fetchGames();
-  fetchBoards();
+  storeBoard.fetchBoards();
 });
 
 // Watch for changes in filters to refetch games and reset pagination

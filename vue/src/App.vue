@@ -1,7 +1,13 @@
 <script setup>
 import Toaster from './components/ui/toast/Toaster.vue';
+import { onMounted } from 'vue'
+import { useBoardStore } from '@/stores/board'
 
+const storeBoard = useBoardStore()
 
+onMounted( () => {
+  storeBoard.fetchBoards()
+})
 </script>
 
 <template>
@@ -25,11 +31,11 @@ import Toaster from './components/ui/toast/Toaster.vue';
             active-class="text-blue-600 font-semibold">
             WebSockets Tester
           </RouterLink>
-          <RouterLink to="/singleplayer"
+            <!-- <RouterLink to="/singleplayer"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Single Player
-          </RouterLink>
+            </RouterLink> -->
           <RouterLink to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
@@ -53,7 +59,6 @@ import Toaster from './components/ui/toast/Toaster.vue';
         </nav>
       </div>
     </header>
-
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <RouterView />
     </main>
