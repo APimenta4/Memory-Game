@@ -1,10 +1,29 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Data to be fetched
 const games = ref([]);
 const boards = ref([]);
+const totalGames = ref(0);
+const totalPages = ref(0); // Store total number of pages
 
 // Expanded game ID
 const expandedGameId = ref(null);
@@ -32,7 +51,7 @@ const isDateInvalid = computed(() => {
 
 // Previous/Next for pagination
 const handlePageChange = (newPage) => {
-  if (newPage >= 1) {
+  if (newPage >= 1 && newPage <= totalPages.value) {
     page.value = newPage;
     fetchGames();
   }
@@ -41,7 +60,6 @@ const handlePageChange = (newPage) => {
 // Handle sorting
 const handleSort = (sortByField) => {
   if (sortBy.value === sortByField) {
-    // If the same column is clicked, inverse the sort order
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
   } else {
     sortBy.value = sortByField;
@@ -57,16 +75,24 @@ const fetchGames = async () => {
     const params = {
       page: page.value,
       per_page: perPage,
-      status: status.value,
-      start_date: startDate.value,
-      end_date: endDate.value,
-      board_id: boardId.value,
       sort_by: sortBy.value,
       sort_order: sortOrder.value,
     };
 
-    if (gameType.value !== 'all') {
+    if (startDate.value) {
+      params.start_date = startDate.value;
+    }
+    if (endDate.value) {
+      params.end_date = endDate.value;
+    }
+    if (gameType.value && gameType.value !== 'all') {
       params.type = gameType.value;
+    }
+    if (boardId.value && boardId.value !== 'all') {
+      params.board_id = boardId.value;
+    }
+    if (status.value && status.value !== 'all') {
+      params.status = status.value;
     }
     if (gameType.value === 'multiplayer') {
       params.won = won.value ? 1 : 0;
@@ -74,6 +100,8 @@ const fetchGames = async () => {
 
     const response = await axios.get(`/users/me/history`, { params });
     games.value = response.data.data;
+    totalGames.value = response.data.meta.total;
+    totalPages.value = totalGames.value ? Math.ceil(totalGames.value / perPage) : 0;
   } catch (error) {
     console.error('Error fetching game history:', error);
   }
@@ -89,7 +117,7 @@ const fetchBoards = async () => {
   }
 };
 
-// Change data format (passing undefined to LocaleString lets javascript decide the format)
+// Change data format
 const formatDate = (dateString) => {
   const options = {
     year: 'numeric',
@@ -115,11 +143,7 @@ const transformGameStatus = (status) => {
 
 // Toggle game expansion
 const toggleGameExpansion = (gameId) => {
-  if (expandedGameId.value === gameId) {
-    expandedGameId.value = null;
-  } else {
-    expandedGameId.value = gameId;
-  }
+  expandedGameId.value = expandedGameId.value === gameId ? null : gameId;
 };
 
 onMounted(() => {
@@ -132,7 +156,6 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
   page.value = 1;
   fetchGames();
 });
-
 </script>
 
 <template>
@@ -142,28 +165,54 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
     <!-- Filters Section -->
     <div>
       <label for="game-type">Filter by Game Type:</label>
-      <select id="game-type" v-model="gameType">
-        <option value="all">All</option>
-        <option value="multiplayer">Multiplayer</option>
-        <option value="singleplayer">Singleplayer</option>
-      </select>
+      <Select v-model="gameType">
+        <SelectTrigger>
+          <SelectValue :placeholder="'Select a game type'" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Select Game Type</SelectLabel>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="multiplayer">Multiplayer</SelectItem>
+            <SelectItem value="singleplayer">Singleplayer</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
     <div>
       <label for="status">Filter by Status:</label>
-      <select id="status" v-model="status">
-        <option value="">All</option>
-        <option value="E">Ended</option>
-        <option value="PE">Pending</option>
-        <option value="PL">In progress</option>
-        <option value="I">Interrupted</option>
-      </select>
+      <Select v-model="status">
+        <SelectTrigger>
+          <SelectValue :placeholder="'Select a status'" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Select Status</SelectLabel>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="E">Ended</SelectItem>
+            <SelectItem value="PE">Pending</SelectItem>
+            <SelectItem value="PL">In progress</SelectItem>
+            <SelectItem value="I">Interrupted</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
     <div>
       <label for="board-size">Filter by Board Size:</label>
-      <select id="board-size" v-model="boardId">
-        <option value="">All</option>
-        <option v-for="board in boards" :key="board.id" :value="board.id">{{ board.board_size }}</option>
-      </select>
+      <Select v-model="boardId">
+        <SelectTrigger>
+          <SelectValue :placeholder="'Select a board size'" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Select Board Size</SelectLabel>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem v-for="board in boards" :key="board.id" :value="board.id">
+              {{ board.board_size }}
+            </SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
     <div>
       <label for="won">Won:</label>
@@ -179,40 +228,40 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
 
     <!-- Games Table Section -->
     <div v-if="games.length > 0">
-      <table class="min-w-full table-auto border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="border-b px-4 py-2"></th>
-            <th class="border-b px-4 py-2 cursor-pointer" @click="handleSort('id')">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead></TableHead>
+            <TableHead class="cursor-pointer" @click="handleSort('id')">
               Game ID
               <span v-if="sortBy === 'id'">
                 <span v-if="sortOrder === 'asc'">▲</span>
                 <span v-else>▼</span>
               </span>
-            </th>
-            <th class="border-b px-4 py-2">Creator</th>
-            <th class="border-b px-4 py-2">Board Size</th>
-            <th class="border-b px-4 py-2">Game Status</th>
-            <th class="border-b px-4 py-2 cursor-pointer" @click="handleSort('began_at')">
+            </TableHead>
+            <TableHead>Creator</TableHead>
+            <TableHead>Board Size</TableHead>
+            <TableHead>Game Status</TableHead>
+            <TableHead class="cursor-pointer" @click="handleSort('began_at')">
               Start Time
               <span v-if="sortBy === 'began_at'">
                 <span v-if="sortOrder === 'asc'">▲</span>
                 <span v-else>▼</span>
               </span>
-            </th>
-            <th class="border-b px-4 py-2 cursor-pointer" @click="handleSort('total_time')">
+            </TableHead>
+            <TableHead class="cursor-pointer" @click="handleSort('total_time')">
               Total Time
               <span v-if="sortBy === 'total_time'">
                 <span v-if="sortOrder === 'asc'">▲</span>
                 <span v-else>▼</span>
               </span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           <template v-for="game in games" :key="game.id">
-            <tr class="cursor-pointer hover:bg-gray-100" @click="game.type === 'M' && toggleGameExpansion(game.id)">
-              <td class="border-b px-4 py-2 text-center">
+            <TableRow class="cursor-pointer hover:bg-gray-100" @click="game.type === 'M' && toggleGameExpansion(game.id)">
+              <TableCell class="text-center">
                 <button v-if="game.type === 'M'" class="toggle-button"
                   style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;">
                   <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg"
@@ -223,16 +272,16 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                     <path d="M9 6l6 6-6 6" />
                   </svg>
                 </button>
-              </td>
-              <td class="border-b px-4 py-2">{{ game.id }}</td>
-              <td class="border-b px-4 py-2">{{ game.creator.nickname }}</td>
-              <td class="border-b px-4 py-2">{{ game.board_size }}</td>
-              <td class="border-b px-4 py-2">{{ transformGameStatus(game.status) }}</td>
-              <td class="border-b px-4 py-2">{{ formatDate(game.began_at) }}</td>
-              <td class="border-b px-4 py-2">{{ game.total_time ? game.total_time + 's' : '' }}</td>
-            </tr>
-            <tr v-if="expandedGameId === game.id">
-              <td colspan="9" class="bg-gray-50 px-4 py-2">
+              </TableCell>
+              <TableCell>{{ game.id }}</TableCell>
+              <TableCell>{{ game.creator.nickname }}</TableCell>
+              <TableCell>{{ game.board_size }}</TableCell>
+              <TableCell>{{ transformGameStatus(game.status) }}</TableCell>
+              <TableCell>{{ formatDate(game.began_at) }}</TableCell>
+              <TableCell>{{ game.total_time ? game.total_time + 's' : '' }}</TableCell>
+            </TableRow>
+            <TableRow v-if="expandedGameId === game.id">
+              <TableCell colspan="9" class="bg-gray-50">
                 <div>
                   <p><strong>Players:</strong></p>
                   <div v-for="player in game.players" :key="player.id" class="player-name">
@@ -242,16 +291,19 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                     </span>
                   </div>
                 </div>
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           </template>
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
       <div class="pagination">
         <button @click="handlePageChange(page - 1)" :disabled="page <= 1">Previous</button>
-        <span>Page {{ page }}</span>
-        <button @click="handlePageChange(page + 1)" :disIabled="games.length < perPage">Next</button>
+        <span>Page {{ page }} of {{ totalPages }}</span>
+        <button @click="handlePageChange(page + 1)" :disabled="page >= totalPages">Next</button>
       </div>
+    </div>
+    <div v-else>
+      <p>No games matching the chosen criteria were found :(</p>
     </div>
   </div>
 </template>
