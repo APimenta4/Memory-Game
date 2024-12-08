@@ -222,8 +222,8 @@ class GameController extends Controller
             });
 
         // if the request is made by a logged in user, calculate and append his personal position
-        if ($request->user()) {
-            $user = $request->user();
+        if ($request->user('sanctum')) {
+            $user = $request->user('sanctum');
             $userVictories = Game::where('winner_user_id', $user->id)
                 ->where('status', 'E')
                 ->where('type', 'M')
@@ -241,7 +241,7 @@ class GameController extends Controller
 
             $userPosition = $userPosition === false ? 'N/A' : $userPosition + 1;
 
-            // if the user is in the top 5, we don't need to append his position
+            // if the user is already in the top 5, we don't need to append his position
             if ($userPosition <= 5) {
                 return $topPlayers;
             }
