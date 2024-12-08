@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Resources\GameResource;
 use App\Http\Requests\HistoryRequest;
 use App\Http\Requests\ScoreboardRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller
 {
@@ -63,19 +65,19 @@ class GameController extends Controller
         $boardId = $validated['board_id'] ?? null;
         $won = $validated['won'] ?? false;
         $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
-
+    
         if ($status) {
             $query->where('status', $status);
         }
-
+    
         if ($startDate) {
             $query->whereDate('began_at', '>=', $startDate);
         }
-
+    
         if ($endDate) {
             $query->whereDate('began_at', '<=', $endDate);
         }
-
+    
         if ($boardId) {
             $query->where('board_id', $boardId);
         }
@@ -83,12 +85,12 @@ class GameController extends Controller
         if ($won) {
             $query->where('winner_user_id', $user->id);
         }
-
+    
         $multiplayerGames = $query->paginate($perPage);
-
+    
         return GameResource::collection($multiplayerGames);
     }
-
+    
     public function singleplayerHistory(HistoryRequest $request)
     {
         $validated = $request->validated();
@@ -102,15 +104,15 @@ class GameController extends Controller
         $boardId = $validated['board_id'] ?? null;
 
         $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
-
+    
         if ($status) {
             $query->where('status', $status);
         }
-
+    
         if ($startDate) {
             $query->whereDate('began_at', '>=', $startDate);
         }
-
+    
         if ($endDate) {
             $query->whereDate('began_at', '<=', $endDate);
         }
@@ -118,13 +120,13 @@ class GameController extends Controller
         if ($boardId) {
             $query->where('board_id', $boardId);
         }
-
+    
         $singleplayerGames = $query->paginate($perPage);
-
+    
         return GameResource::collection($singleplayerGames);
     }
 
-    public function singleplayerScoreboard(ScoreboardRequest $request)
+    public function bothSingleplayerScoreboard(ScoreboardRequest $request)
     {
         $user = $request->user();
         $validated = $request->validated();
@@ -141,50 +143,47 @@ class GameController extends Controller
 
         if ($isOwnScoreboard) {
             $query = $query->where('created_user_id', $user->id);
-            $ownMultiplayerStats = $user->multiplayerGames()
-                ->where('status', 'E')
-                ->get()
-                ->reduce(function ($carry, $game) use ($user) {
-                    $carry['total_victories'] += $game->winner_user_id === $user->id ? 1 : 0;
-                    $carry['total_losses'] += $game->winner_user_id !== $user->id ? 1 : 0;
-                    return $carry;
-                }, ['total_victories' => 0, 'total_losses' => 0]);
-            return [
-                'data' => GameResource::collection($query->get()),
-                'multiplayerStats' => $ownMultiplayerStats,
-            ];
         }
 
-        $globalMultiplayerStats = Game::where('type', 'M')
-            ->where('status', 'E')
-            ->get()
-            ->reduce(function ($carry, $game) {
-            if (!isset($carry[$game->winner_user_id])) {
-                $carry[$game->winner_user_id] = [
-                'user' => $game->winner,
-                'total_victories' => 0,
-                'last_win' => $game->ended_at,
-                ];
-            }
-            $carry[$game->winner_user_id]['total_victories'] += 1;
-            $carry[$game->winner_user_id]['last_win'] = $game->ended_at;
-            return $carry;
-            }, []);
+        return GameResource::collection($query->get());
+    }
 
-        usort($globalMultiplayerStats, function ($a, $b) {
-            if ($b['total_victories'] === $a['total_victories']) {
-                return $a['last_win'] <=> $b['last_win'];
-            }
-            return $b['total_victories'] <=> $a['total_victories'];
-        });
-
-        $globalMultiplayerStats = array_slice($globalMultiplayerStats, 0, 5);
-
-
+    public function personalMultiplayerScoreboard(Request $request)
+    {
+        $user = $request->user();
+        $victories = $user->multiplayerGames()
+            ->where('winner_user_id', $user->id)
+            ->count();
+        $losses = $user->multiplayerGames()
+            ->where('status','E')
+            ->where('winner_user_id', '!=', $user->id)
+            ->count();
+        
         return [
-            'data' => GameResource::collection($query->get()),
-            'multiplayerStats' => $globalMultiplayerStats,
+            'victories' => $victories,
+            'losses' => $losses,
         ];
+    }
+
+    public function globalMultiplayerScoreBoard(Request $request)
+    {
+        $topPlayers = Game::select('winner_user_id', DB::raw('count(*) as victories'))
+            ->where('status', 'E')
+            ->where('type', 'M')
+            ->groupBy('winner_user_id')
+            ->orderByDesc('victories')
+            ->orderBy(DB::raw('max(ended_at)'), 'asc')
+            ->limit(5)
+            ->get()
+            ->map(function ($victory) {
+                $victory->nickname = User::find($victory->winner_user_id)->nickname;
+                return [
+                    'victories' => $victory->victories,
+                    'nickname' => $victory->nickname,
+                ];
+            });
+    
+        return $topPlayers;
     }
 
 

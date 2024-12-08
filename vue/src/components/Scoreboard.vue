@@ -32,6 +32,9 @@ const personalGames = ref([]);
 const globalGames = ref([]);
 const boards = ref([]);
 
+const userMultiplayerStats = ref([]);
+const globalMultiplayerStats = ref([]);
+
 // Selected options
 const scoreboardBoardIdPersonal = ref('');
 const scoreboardTypePersonal = ref('time');
@@ -39,10 +42,10 @@ const scoreboardTypePersonal = ref('time');
 const scoreboardBoardIdGlobal = ref('');
 const scoreboardTypeGlobal = ref('time');
 
-// Fetch the scoreboard
+// Fetch the singleplayer scoreboards
 const fetchScoreboardGames = async (isPersonal) => {
   try {
-    const response = await axios.get(`/scoreboard/myScoreboard`, {
+    const response = await axios.get(`/scoreboard/singleplayer`, {
       params: {
         board_id: isPersonal ? scoreboardBoardIdPersonal.value : scoreboardBoardIdGlobal.value,
         scoreboard_type: isPersonal ? scoreboardTypePersonal.value : scoreboardTypeGlobal.value,
@@ -56,6 +59,22 @@ const fetchScoreboardGames = async (isPersonal) => {
     }
   } catch (error) {
     console.error('Error fetching scoreboard games history:', error);
+  }
+};
+
+// Fetch the multiplayer scoreboard
+const fetchMultiplayerScoreboardGames = async () => {
+  try {
+    const response = await axios.get(`/scoreboard/personal/multiplayer/`);
+    userMultiplayerStats.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching user multiplayer games history:', error);
+  }
+  try {
+    const response = await axios.get(`/scoreboard/global/multiplayer/`);
+    globalMultiplayerStats.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching global multiplayer games history:', error);
   }
 };
 
@@ -90,6 +109,7 @@ const formatDate = (dateString) => {
 
 onMounted(() => {
   fetchBoards();
+  fetchMultiplayerScoreboardGames();
 });
 
 // Watch for changes in scoreboardBoardIdPersonal and scoreboardTypePersonal to refetch personal games
@@ -116,7 +136,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
           <CardDescription>Check your scores and game history</CardDescription>
         </CardHeader>
         <CardContent>
-          Game stats are fetched and displayed dynamically.
+          Teste2
         </CardContent>
         <CardFooter>
           Card Footer
@@ -192,7 +212,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
           <CardDescription>Check your scores and game history</CardDescription>
         </CardHeader>
         <CardContent>
-          Game stats are fetched and displayed dynamically.
+            Teste1
         </CardContent>
         <CardFooter>
           Card Footer
