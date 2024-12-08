@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Http\Requests\TransactionRequest;
+use App\Http\Resources\TransactionResource;
 
 class TransactionController extends Controller
 {
@@ -17,10 +21,16 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(TransactionRequest $request)
+    {   
+        $newTransaction = new Transaction();
+        $newTransaction->fill($request->validated());
+        $newTransaction->transaction_datetime = Carbon::now();
+        $newTransaction->user_id = $request->user()->id;
+        $newTransaction->save();
+        return new TransactionResource($newTransaction);
     }
+    
 
     /**
      * Display the specified resource.
@@ -33,9 +43,8 @@ class TransactionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(TransactionRequest $request, Transaction $transaction)
     {
-        //
     }
 
     /**

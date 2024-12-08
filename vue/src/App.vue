@@ -1,4 +1,6 @@
 <script setup>
+import { onMounted } from 'vue'
+import { useBoardStore } from '@/stores/board'
 import Toaster from './components/ui/toast/Toaster.vue';
 import { onMounted } from 'vue'
 import { useBoardStore } from '@/stores/board'
