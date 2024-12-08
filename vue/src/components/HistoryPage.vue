@@ -19,7 +19,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button'
-
 import { Pagination, PaginationEllipsis, PaginationFirst, PaginationLast, PaginationList, PaginationListItem, PaginationNext, PaginationPrev } from '@/components/ui/pagination';
 
 // Data to be fetched
@@ -166,67 +165,100 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
     <h1 class="text-3xl font-bold mb-4">Game History</h1>
 
     <!-- Filters Section -->
-    <div>
-      <label for="game-type">Filter by Game Type:</label>
-      <Select v-model="gameType">
-        <SelectTrigger>
-          <SelectValue :placeholder="'Select a game type'" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Select Game Type</SelectLabel>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="multiplayer">Multiplayer</SelectItem>
-            <SelectItem value="singleplayer">Singleplayer</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Filters</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+          <label for="game-type" class="block text-sm font-medium text-gray-700">Filter by Game Type:</label>
+          <Select v-model="gameType">
+            <SelectTrigger>
+              <SelectValue :placeholder="'Select a game type'" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Select Game Type</SelectLabel>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="multiplayer">Multiplayer</SelectItem>
+                <SelectItem value="singleplayer">Singleplayer</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <label for="status" class="block text-sm font-medium text-gray-700">Filter by Status:</label>
+          <Select v-model="status">
+            <SelectTrigger>
+              <SelectValue :placeholder="'Select a status'" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Select Status</SelectLabel>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="E">Ended</SelectItem>
+                <SelectItem value="PE">Pending</SelectItem>
+                <SelectItem value="PL">In progress</SelectItem>
+                <SelectItem value="I">Interrupted</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <label for="board-size" class="block text-sm font-medium text-gray-700">Filter by Board Size:</label>
+          <Select v-model="boardId">
+            <SelectTrigger>
+              <SelectValue :placeholder="'Select a board size'" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Select Board Size</SelectLabel>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem v-for="board in boards" :key="board.id" :value="board.id">
+                  {{ board.board_size }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="won" v-model="won" :disabled="gameType !== 'multiplayer'"
+            class="peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 checked:bg-primary checked:text-primary-foreground" />
+          <label for="won"
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Show only multiplayer games you've won
+          </label>
+        </div>
+        <div>
+          <label for="start-date" class="block text-sm font-medium text-gray-700">Start Date:</label>
+          <input type="datetime-local" id="start-date" v-model="startDate"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+        </div>
+        <div>
+          <label for="end-date" class="block text-sm font-medium text-gray-700">End Date:</label>
+          <input type="datetime-local" id="end-date" v-model="endDate"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+          <p v-if="isDateInvalid" class="text-red-500 mt-2">Start Date cannot be greater than End Date.</p>
+        </div>
+      </div>
     </div>
-    <div>
-      <label for="status">Filter by Status:</label>
-      <Select v-model="status">
-        <SelectTrigger>
-          <SelectValue :placeholder="'Select a status'" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Select Status</SelectLabel>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="E">Ended</SelectItem>
-            <SelectItem value="PE">Pending</SelectItem>
-            <SelectItem value="PL">In progress</SelectItem>
-            <SelectItem value="I">Interrupted</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </div>
-    <div>
-      <label for="board-size">Filter by Board Size:</label>
-      <Select v-model="boardId">
-        <SelectTrigger>
-          <SelectValue :placeholder="'Select a board size'" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Select Board Size</SelectLabel>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem v-for="board in boards" :key="board.id" :value="board.id">
-              {{ board.board_size }}
-            </SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </div>
-    <div>
-      <label for="won">Won:</label>
-      <input type="checkbox" id="won" v-model="won" :disabled="gameType !== 'multiplayer'">
-    </div>
-    <div>
-      <label for="start-date">Start Date:</label>
-      <input type="datetime-local" id="start-date" v-model="startDate">
-      <label for="end-date">End Date:</label>
-      <input type="datetime-local" id="end-date" v-model="endDate">
-      <p v-if="isDateInvalid" class="text-red-500">Start Date cannot be greater than End Date.</p>
+    <div class="pagination flex justify-center mb-3">
+      <Pagination :total="totalPages * perPage" :sibling-count="1" show-edges :default-page="page"
+        @update:page="handlePageChange">
+        <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+          <PaginationFirst />
+          <PaginationPrev />
+          <template v-for="(item, index) in items">
+            <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
+              <Button class="w-9 h-9 p-0" :variant="item.value === page ? 'default' : 'outline'">
+                {{ item.value }}
+              </Button>
+            </PaginationListItem>
+            <PaginationEllipsis v-else :key="item.type" :index="index" />
+          </template>
+
+          <PaginationNext />
+          <PaginationLast />
+        </PaginationList>
+      </Pagination>
     </div>
 
     <!-- Games Table Section -->
@@ -263,11 +295,20 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
         </TableHeader>
         <TableBody>
           <template v-for="game in games" :key="game.id">
-            <TableRow class="cursor-pointer hover:bg-gray-100"
+            <TableRow :class="{ 'cursor-pointer': game.type === 'M', 'hover:bg-gray-100': game.type === 'M' }"
               @click="game.type === 'M' && toggleGameExpansion(game.id)">
               <TableCell class="text-center">
-                <button v-if="game.type === 'M'" class="toggle-button"
-                  style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                <button :style="{
+                  background: 'none',
+                  border: 'none',
+                  cursor: game.type === 'M' ? 'pointer' : 'default',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  visibility: game.type === 'M' ? 'visible' : 'hidden',
+                  pointerEvents: game.type === 'M' ? 'auto' : 'none'
+                }">
                   <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg"
                     :class="{ rotated: expandedGameId === game.id }" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -300,26 +341,6 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
           </template>
         </TableBody>
       </Table>
-      <div class="pagination">
-        <Pagination :total="totalPages * perPage" :sibling-count="1" show-edges :default-page="page"
-          @update:page="handlePageChange">
-          <PaginationList v-slot="{ items }" class="flex items-center gap-1">
-            <PaginationFirst />
-            <PaginationPrev />
-            <template v-for="(item, index) in items">
-              <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
-                <Button class="w-9 h-9 p-0" :variant="item.value === page ? 'default' : 'outline'">
-                  {{ item.value }}
-                </Button>
-              </PaginationListItem>
-              <PaginationEllipsis v-else :key="item.type" :index="index" />
-            </template>
-
-            <PaginationNext />
-            <PaginationLast />
-          </PaginationList>
-        </Pagination>
-      </div>
     </div>
     <div v-else>
       <p>No games matching the chosen criteria were found :(</p>
