@@ -3,6 +3,7 @@ import LaravelTester from '@/components/LaravelTester.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
 import HistoryPage from '@/components/HistoryPage.vue'
 import Scoreboard from '@/components/Scoreboard.vue'
+import HistoryPageVertical from '@/components/HistoryPageVertical.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 
@@ -18,6 +19,11 @@ const router = createRouter({
       path: '/history',
       name: 'history',
       component: HistoryPage 
+    },
+    {
+      path: '/historyvertical',
+      name: 'historyvertical',
+      component: HistoryPageVertical,
     },
     {
       path: '/scoreboard',

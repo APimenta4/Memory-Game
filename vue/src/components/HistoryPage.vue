@@ -162,8 +162,6 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
 
 <template>
   <div class="game-history-page">
-    <h1 class="text-3xl font-bold mb-4">Game History</h1>
-
     <!-- Filters Section -->
     <div class="bg-white shadow rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Filters</h2>
@@ -224,7 +222,7 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
             class="peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 checked:bg-primary checked:text-primary-foreground" />
           <label for="won"
             class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-            Show only multiplayer games you've won
+            (Multiplayer) Show only games you've won
           </label>
         </div>
         <div>
