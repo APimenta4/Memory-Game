@@ -1,10 +1,8 @@
 <script setup>
 import { onMounted } from 'vue'
-import { useBoardStore } from '@/stores/board'
-import Toaster from './components/ui/toast/Toaster.vue';
-import { onMounted } from 'vue'
-import { useBoardStore } from '@/stores/board'
 import { useAuthStore } from '@/stores/auth'
+import { useBoardStore } from '@/stores/board'
+import Toaster from './components/ui/toast/Toaster.vue'
 
 const storeAuth = useAuthStore()
 const storeBoard = useBoardStore()
@@ -35,11 +33,11 @@ onMounted( () => {
             active-class="text-blue-600 font-semibold">
             WebSockets Tester
           </RouterLink>
-            <!-- <RouterLink to="/singleplayer"
+          <RouterLink to="/singleplayer"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Single Player
-            </RouterLink> -->
+            </RouterLink>
           <RouterLink v-show="storeAuth.user" to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
