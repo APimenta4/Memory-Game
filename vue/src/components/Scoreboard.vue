@@ -149,7 +149,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
                 </CardHeader>
                 <CardContent>
                     <div v-if="userMultiplayerStats.victories === 0 && userMultiplayerStats.losses === 0">
-                        <p>You haven't played any singleplayer games yet!</p>
+                        <p>You haven't played any multiplayers games yet!</p>
                     </div>
                     <div v-else>
                         <p>Victories: {{ userMultiplayerStats.victories }} 👑</p>
@@ -164,7 +164,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
 
         <div class="flex-2 flex-grow">
             <div class="flex gap-4 mb-4">
-                <h4 class="text-2xl font-semibold leading-none tracking-tight mt-6">Singleplayer Games</h4>
+                <h4 class="text-2xl font-semibold leading-none tracking-tight">Singleplayer Games</h4>
             </div>
             <div class="flex gap-4 mb-4">
                 <div class="flex-grow max-w-xs">
@@ -200,7 +200,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
             </div>
 
             <!-- Table -->
-            <Table>
+            <Table v-if="(personalGames.length>0)">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Game ID</TableHead>
@@ -220,6 +220,9 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
                     </TableRow>
                 </TableBody>
             </Table>
+            <div v-else class="ml-1">
+                <p>You haven't played any singleplayer games yet!</p>
+            </div>
         </div>
     </div>
     <br>
@@ -247,7 +250,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
 
         <div class="flex-2 flex-grow">
             <div class="flex gap-4 mb-4">
-                <h4 class="text-2xl font-semibold leading-none tracking-tight mt-6">Singleplayer Games</h4>
+                <h4 class="text-2xl font-semibold leading-none tracking-tight">Singleplayer Games</h4>
             </div>
             <div class="flex gap-4 mb-4">
                 <div class="flex-grow max-w-xs">
