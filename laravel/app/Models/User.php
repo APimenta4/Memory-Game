@@ -8,6 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Enums\GameType;
 
 class User extends Authenticatable
 {
@@ -46,7 +47,7 @@ class User extends Authenticatable
 
     public function singleplayerGames()
     {
-        return $this->hasMany(Game::class, 'created_user_id');
+        return $this->hasMany(Game::class, 'created_user_id')->where('type', GameType::SINGLEPLAYER);
     }
     
     public function multiplayerGames()
@@ -57,10 +58,7 @@ class User extends Authenticatable
 
     public function allGames()
     {
-        $singlePlayerGames = $this->singlePlayerGames()->get();
-        $multiplayerGames = $this->multiplayerGames()->get();
-    
-        return $singlePlayerGames->merge($multiplayerGames);
+        return $this->hasMany(Game::class, 'created_user_id');
     }
     
 

@@ -30,6 +30,7 @@ class GameResource extends JsonResource
         if ($this->status == GameStatus::ENDED) {
             $response['total_time'] = $this->total_time;
             $response['ended_at'] = $this->ended_at;
+            $response['total_turns_winner'] = $this->total_turns_winner;
         }
         
         if ($this->type == GameType::MULTIPLAYER) {

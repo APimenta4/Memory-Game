@@ -40,12 +40,22 @@ onMounted( () => {
           <RouterLink to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
-            My History
+            My History 
           </RouterLink>
-          <RouterLink to="/scoreboard"
+          <RouterLink to="/historyVertical"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
-            Scoreboard
+            My History Vertical
+          </RouterLink>
+          <RouterLink to="/scoreboard/personal"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Personal Scoreboard
+          </RouterLink>
+          <RouterLink to="/scoreboard/global"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Global Scoreboard
           </RouterLink>
         </nav>
       </div>

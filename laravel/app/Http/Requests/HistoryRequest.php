@@ -22,12 +22,23 @@ class HistoryRequest extends FormRequest
         return [
             'per_page' => 'integer|min:1',
             'status' => 'sometimes|string|in:PE,PL,E,I|nullable',
-            'sort_by' => 'sometimes|string|in:began_at,total_time,id',
-            'sort_order' => 'sometimes|string|in:asc,desc',
+            'sort_by' => 'sometimes|string|in:began_at,total_time,id|nullable',
+            'sort_order' => 'sometimes|string|in:asc,desc|nullable',
             'start_date' => 'sometimes|date|nullable',
             'end_date' => 'sometimes|date|nullable',
             'board_id' => 'sometimes|integer|nullable',
+            'type' => 'sometimes|string|in:multiplayer,singleplayer|nullable',
             'won' => 'sometimes|boolean|nullable',
         ];
+    }
+
+     /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator)
+    {
+        $validator->sometimes('type', 'in:multiplayer', function ($input) {
+            return isset($input->won) && $input->won;
+        });
     }
 }

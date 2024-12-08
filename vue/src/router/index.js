@@ -1,11 +1,14 @@
 import HomeComponent from '@/components/HomeComponent.vue'
 import LaravelTester from '@/components/LaravelTester.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
+
 import HistoryPage from '@/components/HistoryPage.vue'
 import SinglePlayerPage from '@/components/singlePlayer/SinglePlayerPage.vue'
-import Scoreboard from '@/components/Scoreboard.vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import HistoryPageVertical from '@/components/HistoryPageVertical.vue'
+import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
+import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
 
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,9 +29,24 @@ const router = createRouter({
       component: HistoryPage 
     },
     {
+      path: '/historyVertical',
+      name: 'historyVertical',
+      component: HistoryPageVertical,
+    },
+    {
       path: '/scoreboard',
-      name: 'scoreboard',
-      component: Scoreboard
+      children:[
+        {
+          path: 'global',
+          name: 'scoreboardGlobal',
+          component: GlobalScoreboard,
+        },
+        {
+          path: 'personal',
+          name: 'scoreboardPersonal',
+          component: PersonalScoreboard,
+        },
+      ]
     },
     {
       path: '/testers',
