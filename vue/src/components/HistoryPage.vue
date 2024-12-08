@@ -61,13 +61,15 @@ const fetchGames = async () => {
       start_date: startDate.value,
       end_date: endDate.value,
       board_id: boardId.value,
-      won: won.value ? 1 : 0,
       sort_by: sortBy.value,
       sort_order: sortOrder.value,
     };
 
     if (gameType.value !== 'all') {
       params.type = gameType.value;
+    }
+    if (gameType.value === 'multiplayer') {
+      params.won = won.value ? 1 : 0;
     }
 
     const response = await axios.get(`/users/me/history`, { params });
@@ -163,9 +165,9 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
         <option v-for="board in boards" :key="board.id" :value="board.id">{{ board.board_size }}</option>
       </select>
     </div>
-    <div v-if="gameType === 'multiplayer'">
+    <div>
       <label for="won">Won:</label>
-      <input type="checkbox" id="won" v-model="won">
+      <input type="checkbox" id="won" v-model="won" :disabled="gameType !== 'multiplayer'">
     </div>
     <div>
       <label for="start-date">Start Date:</label>
@@ -248,7 +250,7 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
       <div class="pagination">
         <button @click="handlePageChange(page - 1)" :disabled="page <= 1">Previous</button>
         <span>Page {{ page }}</span>
-        <button @click="handlePageChange(page + 1)" :disabled="games.length < perPage">Next</button>
+        <button @click="handlePageChange(page + 1)" :disIabled="games.length < perPage">Next</button>
       </div>
     </div>
   </div>
