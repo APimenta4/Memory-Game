@@ -26,14 +26,14 @@ import {
 } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ref, onMounted, watch } from 'vue';
+import { useBoardStore } from '@/stores/board';
 import axios from 'axios';
 
-const games = ref([]);
-const boards = ref([]);
+const storeBoard = useBoardStore();
 
+const games = ref([]);
 const multiplayerStatistics = ref([]);
 
-// Selected options
 const scoreboardBoardId = ref('');
 const scoreboardType = ref('time');
 
@@ -62,21 +62,6 @@ const fetchMultiplayerStatistics = async () => {
     }
 };
 
-// Fetch available boards
-const fetchBoards = async () => {
-    try {
-        const response = await axios.get('/boards');
-        boards.value = response.data.data;
-
-        // Set the first incoming board as the default selected board
-        if (boards.value.length > 0) {
-            scoreboardBoardId.value = String(boards.value[0].id);
-        }
-    } catch (error) {
-        console.error('Error fetching boards:', error);
-    }
-};
-
 // Change data format (passing undefined to LocaleString lets javascript decide the format)
 const formatDate = (dateString) => {
     const options = {
@@ -91,12 +76,12 @@ const formatDate = (dateString) => {
 };
 
 onMounted(() => {
-    fetchBoards();
+    console.log('storeBoard', storeBoard.boards);
+    scoreboardBoardId.value = String(storeBoard.boards[0].id);
     fetchMultiplayerStatistics();
 });
 
 // Watch for changes in scoreboardBoardId and scoreboardType to refetch games
-// The first fetch is made when default board id is set in fetchBoards() call during onMounted()
 watch([scoreboardBoardId, scoreboardType], () => {
     fetchScoreboardGames();
 });
@@ -137,7 +122,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Select Board Size</SelectLabel>
-                                <SelectItem v-for="board in boards" :key="board.id" :value="String(board.id)">
+                                <SelectItem v-for="board in storeBoard.boards" :key="board.id" :value="String(board.id)">
                                     {{ board.board_size }}
                                 </SelectItem>
                             </SelectGroup>

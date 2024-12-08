@@ -26,14 +26,16 @@ import {
 } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ref, onMounted, watch } from 'vue';
-import axios from 'axios';
+import { useBoardStore } from '@/stores/board';
 import { useAuthStore } from '@/stores/auth';
+import axios from 'axios';
 
-const authStore = useAuthStore();
-const userName = authStore.user?.nickname;
+const storeBoard = useBoardStore();
+const storeAuth = useAuthStore();
+
+const userName = storeAuth.user?.nickname;
 
 const games = ref([]);
-const boards = ref([]);
 
 const multiplayerStatistics = ref([]);
 
@@ -66,21 +68,6 @@ const fetchMultiplayerStatistics = async () => {
     }
 };
 
-// Fetch available boards
-const fetchBoards = async () => {
-    try {
-        const response = await axios.get('/boards');
-        boards.value = response.data.data;
-
-        // Set the first incoming board as the default selected board
-        if (boards.value.length > 0) {
-            scoreboardBoardId.value = String(boards.value[0].id);
-        }
-    } catch (error) {
-        console.error('Error fetching boards:', error);
-    }
-};
-
 // Change data format (passing undefined to LocaleString lets javascript decide the format)
 const formatDate = (dateString) => {
     const options = {
@@ -95,7 +82,8 @@ const formatDate = (dateString) => {
 };
 
 onMounted(() => {
-    fetchBoards();
+    console.log('storeBoard', storeBoard.boards);
+    scoreboardBoardId.value = String(storeBoard.boards[0].id);
     fetchMultiplayerStatistics();
 });
 
@@ -145,7 +133,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Select Board Size</SelectLabel>
-                                <SelectItem v-for="board in boards" :key="board.id" :value="String(board.id)">
+                                <SelectItem v-for="board in storeBoard.boards" :key="board.id" :value="String(board.id)">
                                     {{ board.board_size }}
                                 </SelectItem>
                             </SelectGroup>
