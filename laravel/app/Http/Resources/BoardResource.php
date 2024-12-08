@@ -16,7 +16,8 @@ class BoardResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'board_size' => $this->board_cols . 'x' . $this->board_rows,
+            'board_cols' => $this->board_cols,
+            'board_rows' =>$this->board_rows,
         ];
     }
 }
