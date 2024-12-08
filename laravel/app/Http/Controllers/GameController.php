@@ -139,7 +139,7 @@ class GameController extends Controller
             ->where('status', 'E')
             ->orderBy($scoreboardType)
             ->orderBy('created_at', 'asc')
-            ->limit(10);
+            ->limit(5);
 
         if ($isOwnScoreboard) {
             $query = $query->where('created_user_id', $user->id);
@@ -158,15 +158,19 @@ class GameController extends Controller
             ->where('status','E')
             ->where('winner_user_id', '!=', $user->id)
             ->count();
+        $win_percentage = $victories + $losses > 0 ? $victories / ($victories + $losses) : 0;
+        $win_percentage = number_format($win_percentage * 100, 0);
         
         return [
             'victories' => $victories,
             'losses' => $losses,
+            'win_percentage' => $win_percentage,
         ];
     }
 
     public function globalMultiplayerScoreBoard(Request $request)
     {
+        // top 5 players with the most multiplayer victories across any board
         $topPlayers = Game::select('winner_user_id', DB::raw('count(*) as victories'))
             ->where('status', 'E')
             ->where('type', 'M')
@@ -175,14 +179,44 @@ class GameController extends Controller
             ->orderBy(DB::raw('max(ended_at)'), 'asc')
             ->limit(5)
             ->get()
-            ->map(function ($victory) {
+            ->map(function ($victory, $index) {
                 $victory->nickname = User::find($victory->winner_user_id)->nickname;
                 return [
+                    'position' => $index + 1,
                     'victories' => $victory->victories,
                     'nickname' => $victory->nickname,
                 ];
             });
-    
+
+        // if the request is made by a logged in user, calculate and append his personal position
+        if ($request->user()) {
+            $user = $request->user();
+            $userVictories = Game::where('winner_user_id', $user->id)
+                ->where('status', 'E')
+                ->where('type', 'M')
+                ->count();
+            $userPosition = Game::select('winner_user_id', DB::raw('count(*) as victories'))
+                ->where('status', 'E')
+                ->where('type', 'M')
+                ->groupBy('winner_user_id')
+                ->orderByDesc('victories')
+                ->orderBy(DB::raw('max(ended_at)'), 'asc')
+                ->get()
+                ->search(function ($victory) use ($user) {
+                    return $victory->winner_user_id === $user->id;
+                });
+
+            $userPosition = $userPosition === false ? 'N/A' : $userPosition + 1;
+
+            $userScoreboard = [
+                'position' => $userPosition,
+                'victories' => $userVictories,
+                'nickname' => $user->nickname,
+            ];
+
+            $topPlayers->push($userScoreboard);
+        }
+
         return $topPlayers;
     }
 

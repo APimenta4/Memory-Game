@@ -3,13 +3,11 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\BoardController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/users/me', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
 Route::post('/auth/login', [AuthController::class, "login"]);
 
@@ -18,10 +16,11 @@ Route::post('/auth/login', [AuthController::class, "login"]);
 Route::get('/boards', [BoardController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
-Route::get('/users/me/history/singleplayer', [GameController::class, 'singleplayerHistory']);
-Route::get('/users/me/history/multiplayer', [GameController::class, 'multiplayerHistory']);
-Route::get('/scoreboard/singleplayer', [GameController::class, 'bothSingleplayerScoreboard']);
-Route::get('/scoreboard/personal/multiplayer', [GameController::class, 'personalMultiplayerScoreboard']);
+    Route::get('/users/me', [UserController::class, 'me']);
+    Route::get('/users/me/history/singleplayer', [GameController::class, 'singleplayerHistory']);
+    Route::get('/users/me/history/multiplayer', [GameController::class, 'multiplayerHistory']);
+    Route::get('/scoreboard/singleplayer', [GameController::class, 'bothSingleplayerScoreboard']);
+    Route::get('/scoreboard/personal/multiplayer', [GameController::class, 'personalMultiplayerScoreboard']);
+    Route::get('/scoreboard/global/multiplayer', [GameController::class, 'globalMultiplayerScoreboard']);
 })->middleware('auth:sanctum');
 
-Route::get('/scoreboard/global/multiplayer', [GameController::class, 'globalMultiplayerScoreboard']);

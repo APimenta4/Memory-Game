@@ -27,6 +27,10 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+const userName = authStore.user?.nickname;
 
 const personalGames = ref([]);
 const globalGames = ref([]);
@@ -132,21 +136,28 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
       <Card>
         <CardHeader>
           <CardTitle>Multiplayer Games</CardTitle>
-          <CardDescription>Your total victories and losses</CardDescription>
+          <p class="text-2xl font-bold text-muted-foreground">{{ userName }}</p>
+          <CardDescription>Your total multiplayer victories and losses</CardDescription>
+
         </CardHeader>
         <CardContent>
-          <p>Victories: {{ userMultiplayerStats.victories }} 👑</p>
-          <p>Losses: {{ userMultiplayerStats.losses }} ❌</p>
+          <div v-if="userMultiplayerStats.victories === 0 && userMultiplayerStats.losses === 0">
+            <p>You haven't played any singleplayer games yet!</p>
+          </div>
+          <div v-else>
+            <p>Victories: {{ userMultiplayerStats.victories }} 👑</p>
+            <p>Losses: {{ userMultiplayerStats.losses }} ❌</p>
+            <p>Win percentage: {{ userMultiplayerStats.win_percentage }}%</p>
+          </div>
         </CardContent>
         <CardFooter>
-          Card Footer
         </CardFooter>
       </Card>
     </div>
 
     <div class="flex-2 flex-grow">
         <div class="flex gap-4 mb-4">
-            <h4 class="text-2xl font-semibold leading-none tracking-tight">Singleplayer Games</h4>
+            <h4 class="text-2xl font-semibold leading-none tracking-tight mt-6">Singleplayer Games</h4>
         </div>
       <div class="flex gap-4 mb-4">  
         <div class="flex-grow max-w-xs">
@@ -212,24 +223,24 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
       <Card>
         <CardHeader>
           <CardTitle>Multiplayer Games</CardTitle>
-          <CardDescription>Top 5 players with the most victories</CardDescription>
+          <CardDescription>Top 5 players with the most multiplayer victories</CardDescription>
         </CardHeader>
         <CardContent>
           <ul>
             <li v-for="player in globalMultiplayerStats" :key="player.nickname">
-              {{ player.nickname }} - {{ player.victories }} victories 👑
+              {{ player.position }}. {{ player.nickname }} - {{ player.victories }} victories 👑
             </li>
           </ul>
         </CardContent>
         <CardFooter>
-          Card Footer
+
         </CardFooter>
       </Card>
     </div>
 
     <div class="flex-2 flex-grow">
         <div class="flex gap-4 mb-4">
-            <h4 class="text-2xl font-semibold leading-none tracking-tight">Singleplayer Games</h4>
+            <h4 class="text-2xl font-semibold leading-none tracking-tight mt-6">Singleplayer Games</h4>
         </div>
       <div class="flex gap-4 mb-4">       
         <div class="flex-grow max-w-xs">
