@@ -9,6 +9,7 @@ use App\Http\Requests\HistoryRequest;
 use App\Http\Requests\ScoreboardRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Enums\ScoreboardScope;
 
 class GameController extends Controller
 {
@@ -65,19 +66,19 @@ class GameController extends Controller
         $boardId = $validated['board_id'] ?? null;
         $won = $validated['won'] ?? false;
         $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
-    
+
         if ($status) {
             $query->where('status', $status);
         }
-    
+
         if ($startDate) {
             $query->whereDate('began_at', '>=', $startDate);
         }
-    
+
         if ($endDate) {
             $query->whereDate('began_at', '<=', $endDate);
         }
-    
+
         if ($boardId) {
             $query->where('board_id', $boardId);
         }
@@ -85,12 +86,12 @@ class GameController extends Controller
         if ($won) {
             $query->where('winner_user_id', $user->id);
         }
-    
+
         $multiplayerGames = $query->paginate($perPage);
-    
+
         return GameResource::collection($multiplayerGames);
     }
-    
+
     public function singleplayerHistory(HistoryRequest $request)
     {
         $validated = $request->validated();
@@ -104,15 +105,15 @@ class GameController extends Controller
         $boardId = $validated['board_id'] ?? null;
 
         $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
-    
+
         if ($status) {
             $query->where('status', $status);
         }
-    
+
         if ($startDate) {
             $query->whereDate('began_at', '>=', $startDate);
         }
-    
+
         if ($endDate) {
             $query->whereDate('began_at', '<=', $endDate);
         }
@@ -120,47 +121,79 @@ class GameController extends Controller
         if ($boardId) {
             $query->where('board_id', $boardId);
         }
-    
+
         $singleplayerGames = $query->paginate($perPage);
-    
+
         return GameResource::collection($singleplayerGames);
     }
 
-    public function bothSingleplayerScoreboard(ScoreboardRequest $request)
+
+    public function history(HistoryRequest $request)
     {
-        $user = $request->user();
         $validated = $request->validated();
-        $scoreboardType = $validated['scoreboard_type'] === 'time' ? 'total_time' : 'total_turns_winner';
-        $boardId = $validated['board_id'];
-        $isOwnScoreboard = $validated['is_own_scoreboard'] ?? false;
+        $user = $request->user();
+        $type = $validated['type'] ?? null;
+        $perPage = $validated['per_page'] ?? 10;
+        $status = $validated['status'] ?? null;
+        $sortBy = $validated['sort_by'] ?? 'began_at';
+        $sortOrder = $validated['sort_order'] ?? 'desc';
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+        $boardId = $validated['board_id'] ?? null;
+        $won = $validated['won'] ?? false;
 
-        $query = Game::where('type', 'S')
-            ->where('board_id', $boardId)
-            ->where('status', 'E')
-            ->orderBy($scoreboardType)
-            ->orderBy('created_at', 'asc')
-            ->limit(5);
-
-        if ($isOwnScoreboard) {
-            $query = $query->where('created_user_id', $user->id);
+        if ($type === 'multiplayer') {
+            $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
+        } elseif($type === 'singleplayer') {
+            $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
+        } else {
+            $query = $user->allGames()->orderBy($sortBy, $sortOrder);
         }
 
-        return GameResource::collection($query->get());
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($startDate) {
+            $query->whereDate('began_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('began_at', '<=', $endDate);
+        }
+
+        if ($boardId) {
+            $query->where('board_id', $boardId);
+        }
+
+        if ($type === 'multiplayer' && $won) {
+            $query->where('winner_user_id', $user->id);
+        }
+
+        $games = $query->paginate($perPage);
+
+        return GameResource::collection($games);
     }
 
-    public function personalMultiplayerScoreboard(Request $request)
+    // -----------------------------------------
+    // Scoreboard    
+
+    // -----------------------------------------
+    // PERSONAL and GLOBAL multiplayer statistics
+
+    public function personalMultiplayerStatistics(Request $request)
     {
         $user = $request->user();
         $victories = $user->multiplayerGames()
             ->where('winner_user_id', $user->id)
             ->count();
         $losses = $user->multiplayerGames()
-            ->where('status','E')
+            ->where('status', 'E')
             ->where('winner_user_id', '!=', $user->id)
             ->count();
         $win_percentage = $victories + $losses > 0 ? $victories / ($victories + $losses) : 0;
         $win_percentage = number_format($win_percentage * 100, 0);
-        
+
         return [
             'victories' => $victories,
             'losses' => $losses,
@@ -168,7 +201,7 @@ class GameController extends Controller
         ];
     }
 
-    public function globalMultiplayerScoreBoard(Request $request)
+    public function globalMultiplayerStatistics(Request $request)
     {
         // top 5 players with the most multiplayer victories across any board
         $topPlayers = Game::select('winner_user_id', DB::raw('count(*) as victories'))
@@ -209,7 +242,7 @@ class GameController extends Controller
             $userPosition = $userPosition === false ? 'N/A' : $userPosition + 1;
 
             // if the user is in the top 5, we don't need to append his position
-            if($userPosition <= 5) {
+            if ($userPosition <= 5) {
                 return $topPlayers;
             }
 
@@ -225,5 +258,41 @@ class GameController extends Controller
         return $topPlayers;
     }
 
+
+    // -----------------------------------------
+    // PERSONAL and GLOBAL singleplayer scoreboards
+
+    public function indexPersonalScoreboard(ScoreboardRequest $request)
+    {
+        $games = $this->singleplayerScoreboard($request, ScoreboardScope::PERSONAL);
+        return GameResource::collection($games);
+    }
+
+    public function indexGlobalScoreboard(ScoreboardRequest $request)
+    {
+        $games = $this->singleplayerScoreboard($request, ScoreboardScope::GLOBAL );
+        return GameResource::collection($games);
+    }
+
+    public function singleplayerScoreboard(ScoreboardRequest $request, ScoreboardScope $scope)
+    {
+        $user = $request->user();
+        $validated = $request->validated();
+        $scoreboardType = $validated['scoreboard_type'] === 'time' ? 'total_time' : 'total_turns_winner';
+        $boardId = $validated['board_id'];
+
+        $query = Game::where('type', 'S')
+            ->where('board_id', $boardId)
+            ->where('status', 'E')
+            ->orderBy($scoreboardType)
+            ->orderBy('created_at', 'asc')
+            ->limit(5);
+
+        if ($scope === ScoreboardScope::PERSONAL) {
+            $query = $query->where('created_user_id', $user->id);
+        }
+
+        return GameResource::collection($query->get());
+    }
 
 }

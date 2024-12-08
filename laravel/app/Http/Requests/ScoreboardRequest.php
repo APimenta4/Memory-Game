@@ -24,7 +24,6 @@ class ScoreboardRequest extends FormRequest
         return [
             'scoreboard_type' => 'required|string|in:time,turns',
             'board_id' => 'required|integer',
-            'is_own_scoreboard' => 'sometimes|boolean|nullable',
         ];
     }
 

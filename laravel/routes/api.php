@@ -17,10 +17,15 @@ Route::get('/boards', [BoardController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/me', [UserController::class, 'me']);
-    Route::get('/users/me/history/singleplayer', [GameController::class, 'singleplayerHistory']);
-    Route::get('/users/me/history/multiplayer', [GameController::class, 'multiplayerHistory']);
-    Route::get('/scoreboard/singleplayer', [GameController::class, 'bothSingleplayerScoreboard']);
-    Route::get('/scoreboard/personal/multiplayer', [GameController::class, 'personalMultiplayerScoreboard']);
-    Route::get('/scoreboard/global/multiplayer', [GameController::class, 'globalMultiplayerScoreboard']);
+
+    // ------ History 
+    Route::get('/users/me/history', [GameController::class, 'history']);  
+    // ------ Scoreboard
+    // singleplayer scoreboards
+    Route::get('/scoreboard/personal/singleplayer', [GameController::class, 'indexPersonalScoreboard']);
+    Route::get('/scoreboard/global/singleplayer', [GameController::class, 'indexGlobalScoreboard']);
+    // multiplayer statistics
+    Route::get('/scoreboard/personal/multiplayer', [GameController::class, 'personalMultiplayerStatistics']);
+    Route::get('/scoreboard/global/multiplayer', [GameController::class, 'globalMultiplayerStatistics']); // esta também deve ser publica
 })->middleware('auth:sanctum');
 
