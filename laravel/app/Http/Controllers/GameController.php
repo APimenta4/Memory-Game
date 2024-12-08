@@ -208,6 +208,11 @@ class GameController extends Controller
 
             $userPosition = $userPosition === false ? 'N/A' : $userPosition + 1;
 
+            // if the user is in the top 5, we don't need to append his position
+            if($userPosition <= 5) {
+                return $topPlayers;
+            }
+
             $userScoreboard = [
                 'position' => $userPosition,
                 'victories' => $userVictories,
