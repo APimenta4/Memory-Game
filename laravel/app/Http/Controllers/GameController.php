@@ -136,6 +136,7 @@ class GameController extends Controller
             ->where('board_id', $boardId)
             ->where('status', 'E')
             ->orderBy($scoreboardType)
+            ->orderBy('created_at', 'asc')
             ->limit(10);
 
         if ($isOwnScoreboard) {
