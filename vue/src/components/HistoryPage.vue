@@ -113,7 +113,7 @@ const fetchGames = async () => {
 const fetchBoards = async () => {
   try {
     const response = await axios.get('/boards');
-    boards.value = String(response.data.data);
+    boards.value = response.data.data;
   } catch (error) {
     console.error('Error fetching boards:', error);
   }
