@@ -18,6 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button'
+
+import { Pagination, PaginationEllipsis, PaginationFirst, PaginationLast, PaginationList, PaginationListItem, PaginationNext, PaginationPrev } from '@/components/ui/pagination';
 
 // Data to be fetched
 const games = ref([]);
@@ -260,7 +263,8 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
         </TableHeader>
         <TableBody>
           <template v-for="game in games" :key="game.id">
-            <TableRow class="cursor-pointer hover:bg-gray-100" @click="game.type === 'M' && toggleGameExpansion(game.id)">
+            <TableRow class="cursor-pointer hover:bg-gray-100"
+              @click="game.type === 'M' && toggleGameExpansion(game.id)">
               <TableCell class="text-center">
                 <button v-if="game.type === 'M'" class="toggle-button"
                   style="background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;">
@@ -297,9 +301,24 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
         </TableBody>
       </Table>
       <div class="pagination">
-        <button @click="handlePageChange(page - 1)" :disabled="page <= 1">Previous</button>
-        <span>Page {{ page }} of {{ totalPages }}</span>
-        <button @click="handlePageChange(page + 1)" :disabled="page >= totalPages">Next</button>
+        <Pagination :total="totalPages * perPage" :sibling-count="1" show-edges :default-page="page"
+          @update:page="handlePageChange">
+          <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+            <PaginationFirst />
+            <PaginationPrev />
+            <template v-for="(item, index) in items">
+              <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
+                <Button class="w-9 h-9 p-0" :variant="item.value === page ? 'default' : 'outline'">
+                  {{ item.value }}
+                </Button>
+              </PaginationListItem>
+              <PaginationEllipsis v-else :key="item.type" :index="index" />
+            </template>
+
+            <PaginationNext />
+            <PaginationLast />
+          </PaginationList>
+        </Pagination>
       </div>
     </div>
     <div v-else>
