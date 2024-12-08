@@ -66,13 +66,13 @@ const fetchScoreboardGames = async (isPersonal) => {
 const fetchMultiplayerScoreboardGames = async () => {
   try {
     const response = await axios.get(`/scoreboard/personal/multiplayer/`);
-    userMultiplayerStats.value = response.data.data;
+    userMultiplayerStats.value = response.data;
   } catch (error) {
     console.error('Error fetching user multiplayer games history:', error);
   }
   try {
     const response = await axios.get(`/scoreboard/global/multiplayer/`);
-    globalMultiplayerStats.value = response.data.data;
+    globalMultiplayerStats.value = response.data;
   } catch (error) {
     console.error('Error fetching global multiplayer games history:', error);
   }
@@ -126,17 +126,17 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
 
 <template>
   <h1 class="text-3xl font-bold mb-4">Personal Scoreboard</h1>
-
   <div class="flex gap-4 items-start">
     <!-- Card Section -->
     <div class="flex-1 max-w-xs">
       <Card>
         <CardHeader>
-          <CardTitle>Game History</CardTitle>
-          <CardDescription>Check your scores and game history</CardDescription>
+          <CardTitle>Multiplayer Games</CardTitle>
+          <CardDescription>Your total victories and losses</CardDescription>
         </CardHeader>
         <CardContent>
-          Teste2
+          <p>Victories: {{ userMultiplayerStats.victories }} 👑</p>
+          <p>Losses: {{ userMultiplayerStats.losses }} ❌</p>
         </CardContent>
         <CardFooter>
           Card Footer
@@ -145,7 +145,10 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
     </div>
 
     <div class="flex-2 flex-grow">
-      <div class="flex gap-4 mb-4">
+        <div class="flex gap-4 mb-4">
+            <h4 class="text-2xl font-semibold leading-none tracking-tight">Singleplayer Games</h4>
+        </div>
+      <div class="flex gap-4 mb-4">  
         <div class="flex-grow max-w-xs">
           <!-- Select -->
           <Select v-model="scoreboardBoardIdPersonal">
@@ -208,11 +211,15 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
     <div class="flex-1 max-w-xs">
       <Card>
         <CardHeader>
-          <CardTitle>Game History</CardTitle>
-          <CardDescription>Check your scores and game history</CardDescription>
+          <CardTitle>Multiplayer Games</CardTitle>
+          <CardDescription>Top 5 players with the most victories</CardDescription>
         </CardHeader>
         <CardContent>
-            Teste1
+          <ul>
+            <li v-for="player in globalMultiplayerStats" :key="player.nickname">
+              {{ player.nickname }} - {{ player.victories }} victories 👑
+            </li>
+          </ul>
         </CardContent>
         <CardFooter>
           Card Footer
@@ -221,7 +228,10 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
     </div>
 
     <div class="flex-2 flex-grow">
-      <div class="flex gap-4 mb-4">
+        <div class="flex gap-4 mb-4">
+            <h4 class="text-2xl font-semibold leading-none tracking-tight">Singleplayer Games</h4>
+        </div>
+      <div class="flex gap-4 mb-4">       
         <div class="flex-grow max-w-xs">
           <!-- Select -->
           <Select v-model="scoreboardBoardIdGlobal">
