@@ -23,9 +23,9 @@ import {
 const games = ref([]);
 const boards = ref([]);
 const totalGames = ref(0);
-const totalPages = ref(0); // Store total number of pages
+const totalPages = ref(0);
 
-// Expanded game ID
+// Expanded game showing details
 const expandedGameId = ref(null);
 
 // Pagination
@@ -33,14 +33,14 @@ const page = ref(1);
 const perPage = 10;
 
 // Filters
-const gameType = ref('all');
+const gameType = ref('');
 const status = ref('');
 const startDate = ref('');
 const endDate = ref('');
 const boardId = ref('');
 const won = ref(false);
 
-// Sorting
+// Default sorting
 const sortBy = ref('began_at');
 const sortOrder = ref('desc');
 
