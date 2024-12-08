@@ -32,25 +32,25 @@ import { useAuthStore } from '@/stores/auth';
 const authStore = useAuthStore();
 const userName = authStore.user?.nickname;
 
-const personalGames = ref([]);
+const games = ref([]);
 const boards = ref([]);
 
-const userMultiplayerStats = ref([]);
+const multiplayerStatistics = ref([]);
 
 // Selected options
-const scoreboardBoardIdPersonal = ref('');
-const scoreboardTypePersonal = ref('time');
+const scoreboardBoardId = ref('');
+const scoreboardType = ref('time');
 
 // Fetch the singleplayer scoreboards
 const fetchScoreboardGames = async () => {
     try {
         const response = await axios.get(`/scoreboard/personal/singleplayer`, {
             params: {
-                board_id: scoreboardBoardIdPersonal.value,
-                scoreboard_type: scoreboardTypePersonal.value,
+                board_id: scoreboardBoardId.value,
+                scoreboard_type: scoreboardType.value,
             },
         });
-        personalGames.value = response.data.data;
+        games.value = response.data.data;
     } catch (error) {
         console.error('Error fetching scoreboard games history:', error);
     }
@@ -60,7 +60,7 @@ const fetchScoreboardGames = async () => {
 const fetchMultiplayerStatistics = async () => {
     try {
         const response = await axios.get(`/scoreboard/personal/multiplayer/`);
-        userMultiplayerStats.value = response.data;
+        multiplayerStatistics.value = response.data;
     } catch (error) {
         console.error('Error fetching user multiplayer games history:', error);
     }
@@ -74,7 +74,7 @@ const fetchBoards = async () => {
 
         // Set the first incoming board as the default selected board
         if (boards.value.length > 0) {
-            scoreboardBoardIdPersonal.value = String(boards.value[0].id);
+            scoreboardBoardId.value = String(boards.value[0].id);
         }
     } catch (error) {
         console.error('Error fetching boards:', error);
@@ -99,9 +99,9 @@ onMounted(() => {
     fetchMultiplayerStatistics();
 });
 
-// Watch for changes in scoreboardBoardIdPersonal and scoreboardTypePersonal to refetch personal games
+// Watch for changes in scoreboardBoardId and scoreboardType to refetch games
 // The first fetch is made when default board id is set in fetchBoards() call during onMounted()
-watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
+watch([scoreboardBoardId, scoreboardType], () => {
     fetchScoreboardGames();
 });
 </script>
@@ -118,13 +118,13 @@ watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
                     <CardDescription>Your total multiplayer victories and losses</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="userMultiplayerStats.victories === 0 && userMultiplayerStats.losses === 0">
+                    <div v-if="multiplayerStatistics.victories === 0 && multiplayerStatistics.losses === 0">
                         <p>You haven't played any multiplayers games yet!</p>
                     </div>
                     <div v-else>
-                        <p>Victories: {{ userMultiplayerStats.victories }} 👑</p>
-                        <p>Losses: {{ userMultiplayerStats.losses }} ❌</p>
-                        <p>Win percentage: {{ userMultiplayerStats.win_percentage }}%</p>
+                        <p>Victories: {{ multiplayerStatistics.victories }} 👑</p>
+                        <p>Losses: {{ multiplayerStatistics.losses }} ❌</p>
+                        <p>Win percentage: {{ multiplayerStatistics.win_percentage }}%</p>
                     </div>
                 </CardContent>
                 <CardFooter></CardFooter>
@@ -138,7 +138,7 @@ watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
             <div class="flex gap-4 mb-4">
                 <div class="flex-grow max-w-xs">
                     <!-- Select -->
-                    <Select v-model="scoreboardBoardIdPersonal">
+                    <Select v-model="scoreboardBoardId">
                         <SelectTrigger>
                             <SelectValue :placeholder="'Select a board size'" />
                         </SelectTrigger>
@@ -155,7 +155,7 @@ watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
 
                 <!-- RadioGroup -->
                 <div>
-                    <RadioGroup v-model="scoreboardTypePersonal" class="flex">
+                    <RadioGroup v-model="scoreboardType" class="flex">
                         <div class="flex items-center space-x-2">
                             <RadioGroupItem id="time" value="time" />
                             <label for="time">Best Time</label>
@@ -169,7 +169,7 @@ watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
             </div>
 
             <!-- Table -->
-            <Table v-if="(personalGames.length>0)">
+            <Table v-if="(games.length>0)">
                 <TableHeader>
                     <TableRow>
                         <TableHead>Game ID</TableHead>
@@ -180,7 +180,7 @@ watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="game in personalGames" :key="game.id">
+                    <TableRow v-for="game in games" :key="game.id">
                         <TableCell>{{ game.id }}</TableCell>
                         <TableCell>{{ game.board_size }}</TableCell>
                         <TableCell>{{ formatDate(game.began_at) }}</TableCell>
