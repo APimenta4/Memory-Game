@@ -219,7 +219,7 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                 <SelectGroup>
                   <SelectLabel>Select Board Size</SelectLabel>
                   <SelectItem value="all">All</SelectItem>
-                  <SelectItem v-for="board in boards" :key="board.id" :value="board.id">
+                  <SelectItem v-for="board in boards" :key="board.id" :value="String(board.id)">
                     {{ board.board_size }}
                   </SelectItem>
                 </SelectGroup>

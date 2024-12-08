@@ -74,7 +74,7 @@ const fetchBoards = async () => {
 
         // Set the first incoming board as the default selected board
         if (boards.value.length > 0) {
-            scoreboardBoardIdPersonal.value = boards.value[0].id;
+            scoreboardBoardIdPersonal.value = String(boards.value[0].id);
         }
     } catch (error) {
         console.error('Error fetching boards:', error);
@@ -100,6 +100,7 @@ onMounted(() => {
 });
 
 // Watch for changes in scoreboardBoardIdPersonal and scoreboardTypePersonal to refetch personal games
+// The first fetch is made when default board id is set in fetchBoards() call during onMounted()
 watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
     fetchScoreboardGames();
 });
@@ -144,7 +145,7 @@ watch([scoreboardBoardIdPersonal, scoreboardTypePersonal], () => {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Select Board Size</SelectLabel>
-                                <SelectItem v-for="board in boards" :key="board.id" :value="board.id">
+                                <SelectItem v-for="board in boards" :key="board.id" :value="String(board.id)">
                                     {{ board.board_size }}
                                 </SelectItem>
                             </SelectGroup>

@@ -28,25 +28,25 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 
-const globalGames = ref([]);
+const games = ref([]);
 const boards = ref([]);
 
-const globalMultiplayerStats = ref([]);
+const multiplayerStatistics = ref([]);
 
 // Selected options
-const scoreboardBoardIdGlobal = ref('');
-const scoreboardTypeGlobal = ref('time');
+const scoreboardBoardId = ref('');
+const scoreboardType = ref('time');
 
 // Fetch the singleplayer scoreboards
 const fetchScoreboardGames = async () => {
     try {
         const response = await axios.get(`/scoreboard/global/singleplayer`, {
             params: {
-                board_id: scoreboardBoardIdGlobal.value,
-                scoreboard_type: scoreboardTypeGlobal.value,
+                board_id: scoreboardBoardId.value,
+                scoreboard_type: scoreboardType.value,
             },
         });
-        globalGames.value = response.data.data;
+        games.value = response.data.data;
     } catch (error) {
         console.error('Error fetching scoreboard games history:', error);
     }
@@ -56,7 +56,7 @@ const fetchScoreboardGames = async () => {
 const fetchMultiplayerStatistics = async () => {
     try {
         const response = await axios.get(`/scoreboard/global/multiplayer/`);
-        globalMultiplayerStats.value = response.data;
+        multiplayerStatistics.value = response.data;
     } catch (error) {
         console.error('Error fetching global multiplayer games history:', error);
     }
@@ -70,7 +70,7 @@ const fetchBoards = async () => {
 
         // Set the first incoming board as the default selected board
         if (boards.value.length > 0) {
-            scoreboardBoardIdGlobal.value = boards.value[0].id;
+            scoreboardBoardId.value = String(boards.value[0].id);
         }
     } catch (error) {
         console.error('Error fetching boards:', error);
@@ -95,8 +95,9 @@ onMounted(() => {
     fetchMultiplayerStatistics();
 });
 
-// Watch for changes in scoreboardBoardIdGlobal and scoreboardTypeGlobal to refetch global games
-watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
+// Watch for changes in scoreboardBoardId and scoreboardType to refetch games
+// The first fetch is made when default board id is set in fetchBoards() call during onMounted()
+watch([scoreboardBoardId, scoreboardType], () => {
     fetchScoreboardGames();
 });
 </script>
@@ -113,7 +114,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
                 </CardHeader>
                 <CardContent>
                     <ul>
-                        <li v-for="player in globalMultiplayerStats" :key="player.nickname">
+                        <li v-for="player in multiplayerStatistics" :key="player.nickname">
                             {{ player.position }}. {{ player.nickname }} - {{ player.victories }} victories 👑
                         </li>
                     </ul>
@@ -129,14 +130,14 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
             <div class="flex gap-4 mb-4">
                 <div class="flex-grow max-w-xs">
                     <!-- Select -->
-                    <Select v-model="scoreboardBoardIdGlobal">
+                    <Select v-model="scoreboardBoardId">
                         <SelectTrigger>
                             <SelectValue :placeholder="'Select a board size'" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Select Board Size</SelectLabel>
-                                <SelectItem v-for="board in boards" :key="board.id" :value="board.id">
+                                <SelectItem v-for="board in boards" :key="board.id" :value="String(board.id)">
                                     {{ board.board_size }}
                                 </SelectItem>
                             </SelectGroup>
@@ -146,7 +147,7 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
 
                 <!-- RadioGroup -->
                 <div>
-                    <RadioGroup v-model="scoreboardTypeGlobal" class="flex">
+                    <RadioGroup v-model="scoreboardType" class="flex">
                         <div class="flex items-center space-x-2">
                             <RadioGroupItem id="time" value="time" />
                             <label for="time">Best Time</label>
@@ -172,13 +173,13 @@ watch([scoreboardBoardIdGlobal, scoreboardTypeGlobal], () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="globalGame in globalGames" :key="globalGame.id">
-                        <TableCell>{{ globalGame.creator.nickname }}</TableCell>
-                        <TableCell>{{ globalGame.id }}</TableCell>
-                        <TableCell>{{ globalGame.board_size }}</TableCell>
-                        <TableCell>{{ formatDate(globalGame.began_at) }}</TableCell>
-                        <TableCell>{{ globalGame.total_time }}</TableCell>
-                        <TableCell>{{ globalGame.total_turns_winner }}</TableCell>
+                    <TableRow v-for="game in games" :key="game.id">
+                        <TableCell>{{ game.creator.nickname }}</TableCell>
+                        <TableCell>{{ game.id }}</TableCell>
+                        <TableCell>{{ game.board_size }}</TableCell>
+                        <TableCell>{{ formatDate(game.began_at) }}</TableCell>
+                        <TableCell>{{ game.total_time }}</TableCell>
+                        <TableCell>{{ game.total_turns_winner }}</TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
