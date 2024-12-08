@@ -142,7 +142,6 @@ const toggleGameExpansion = (gameId) => {
 
 onMounted(() => {
   fetchGames();
-  storeBoard.fetchBoards();
 });
 
 // Watch for changes in filters to refetch games and reset pagination
@@ -202,7 +201,7 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
               <SelectGroup>
                 <SelectLabel>Select Board Size</SelectLabel>
                 <SelectItem value="all">All</SelectItem>
-                <SelectItem v-for="board in boards" :key="board.id" :value="String(board.id)">
+                <SelectItem v-for="board in storeBoard.boards" :key="board.id" :value="String(board.id)">
                   {{ board.board_size }}
                 </SelectItem>
               </SelectGroup>

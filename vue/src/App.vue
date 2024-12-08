@@ -2,7 +2,9 @@
 import Toaster from './components/ui/toast/Toaster.vue';
 import { onMounted } from 'vue'
 import { useBoardStore } from '@/stores/board'
+import { useAuthStore } from '@/stores/auth'
 
+const storeAuth = useAuthStore()
 const storeBoard = useBoardStore()
 
 onMounted( () => {
@@ -36,17 +38,17 @@ onMounted( () => {
             active-class="text-blue-600 font-semibold">
             Single Player
             </RouterLink> -->
-          <RouterLink to="/history"
+          <RouterLink v-show="storeAuth.user" to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             My History 
           </RouterLink>
-          <RouterLink to="/historyVertical"
+          <RouterLink v-show="storeAuth.user" to="/historyVertical"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             My History Vertical
           </RouterLink>
-          <RouterLink to="/scoreboard/personal"
+          <RouterLink v-show="storeAuth.user" to="/scoreboard/personal"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Personal Scoreboard
