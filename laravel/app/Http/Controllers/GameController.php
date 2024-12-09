@@ -9,6 +9,7 @@ use App\Http\Requests\GameRequest;
 use App\Http\Resources\GameResource;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\GameResourceNew;
 
 class GameController extends Controller
 {
@@ -40,16 +41,5 @@ class GameController extends Controller
     {
         //
     }
-
-    
-
-    
-
-    // -----------------------------------------
-    // Scoreboard    
-
-    // -----------------------------------------
-    // PERSONAL and GLOBAL multiplayer statistics
-
     
 }

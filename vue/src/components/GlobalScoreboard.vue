@@ -62,14 +62,23 @@ const formatDate = (dateString) => {
 };
 
 onMounted(() => {
-    console.log('storeBoard', storeBoard.boards);
-    scoreboardBoardId.value = String(storeBoard.boards[0].id);
     fetchMultiplayerStatistics();
 });
 
 // Watch for changes in scoreboardBoardId and scoreboardType to refetch games
 watch([scoreboardBoardId, scoreboardType], () => {
     fetchScoreboardGames();
+});
+
+// ???????????????
+//watch(storeBoard.defaultBoard, () => {
+//    console.log('storeBoard.defaultBoard', storeBoard.defaultBoard);
+//    scoreboardBoardId.value = String(storeBoard.defaultBoard);
+//});
+
+// Set default board size
+watch(() => storeBoard.defaultBoard, (newDefaultBoard) => {
+    scoreboardBoardId.value = String(newDefaultBoard);
 });
 </script>
 
@@ -146,7 +155,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="game in games" :key="game.id">
-                        <TableCell>{{ game.creator.nickname }}</TableCell>
+                        <TableCell>{{ game.creator_nickname }}</TableCell>
                         <TableCell>{{ game.id }}</TableCell>
                         <TableCell>{{ game.board_size }}</TableCell>
                         <TableCell>{{ formatDate(game.began_at) }}</TableCell>

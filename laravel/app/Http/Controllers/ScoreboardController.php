@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Enums\ScoreboardScope;
 use App\Http\Resources\GameResource;
 use App\Http\Requests\ScoreboardRequest;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class ScoreboardController extends Controller
 {

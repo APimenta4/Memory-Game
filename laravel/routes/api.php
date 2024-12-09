@@ -30,8 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // History 
     Route::get('/history', [HistoryController::class, 'index']);
-    Route::get('/history/singleplayer', [HistoryController::class, 'singleplayer']);
-    Route::get('/history/multiplayer', [HistoryController::class, 'multiplayer']);
     
     // Scoreboard
     Route::get('/scoreboards/personal/singleplayer', [ScoreboardController::class, 'indexPersonalScoreboard']);

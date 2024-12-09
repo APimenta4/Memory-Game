@@ -68,15 +68,23 @@ const formatDate = (dateString) => {
 };
 
 onMounted(() => {
-    console.log('storeBoard', storeBoard.boards);
-    scoreboardBoardId.value = String(storeBoard.boards[0].id);
     fetchMultiplayerStatistics();
 });
 
 // Watch for changes in scoreboardBoardId and scoreboardType to refetch games
-// The first fetch is made when default board id is set in fetchBoards() call during onMounted()
 watch([scoreboardBoardId, scoreboardType], () => {
     fetchScoreboardGames();
+});
+
+// ???????????????
+//watch(storeBoard.defaultBoard, () => {
+//    console.log('storeBoard.defaultBoard', storeBoard.defaultBoard);
+//    scoreboardBoardId.value = String(storeBoard.defaultBoard);
+//});
+
+// Set default board size
+watch(() => storeBoard.defaultBoard, (newDefaultBoard) => {
+    scoreboardBoardId.value = String(newDefaultBoard);
 });
 </script>
 
@@ -121,7 +129,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
                                 <SelectLabel>Select Board Size</SelectLabel>
                                 <SelectItem v-for="board in storeBoard.boards" :key="board.id"
                                     :value="String(board.id)">
-                                    {{ board.board_size }}
+                                    {{ board.board_cols }}x{{ board.board_rows }}
                                 </SelectItem>
                             </SelectGroup>
                         </SelectContent>
@@ -157,7 +165,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
                 <TableBody>
                     <TableRow v-for="game in games" :key="game.id">
                         <TableCell>{{ game.id }}</TableCell>
-                        <TableCell>{{ game.board_size }}</TableCell>
+                        <TableCell>{{ game.board.board_cols }}x{{ game.board.board_rows }}</TableCell>
                         <TableCell>{{ formatDate(game.began_at) }}</TableCell>
                         <TableCell>{{ game.total_time }}</TableCell>
                         <TableCell>{{ game.total_turns_winner }}</TableCell>

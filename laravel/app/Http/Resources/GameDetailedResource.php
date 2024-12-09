@@ -7,9 +7,10 @@ use App\Models\Game;
 use App\Enums\GameType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\UserResource;
 use App\Http\Resources\BoardResource;
 
-class GameResource extends JsonResource
+class GameDetailedResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,12 +21,11 @@ class GameResource extends JsonResource
     {    
         $response = [
             'id' => $this->id,
-            'creator_id' => $this->creator->id,
-            'creator_nickname' => $this->creator->nickname,
+            'creator' => new UserResource($this->creator),
             'type' => $this->type,
             'status' => $this->status,
             'began_at' => $this->began_at,
-            'board_size' => $this->board->board_cols . 'x' . $this->board->board_rows,
+            'board' => new BoardResource($this->board),
             'custom' => $this->custom,
         ];
              
@@ -37,14 +37,12 @@ class GameResource extends JsonResource
         
         if ($this->type == GameType::MULTIPLAYER) {
             foreach ($this->players as $player) {
-                //dd($this->players);
-                $player = ['player_id' => $player->id, 'player_nickname' => $player->nickname, 'pairs_discovered' => $player->pivot->pairs_discovered];
+                $player = new UserResource($player);
                 $response['players'][] = $player;
             }
        
             if ($this->status == GameStatus::ENDED) {
-                $response['winner_id'] = $this->winner->id;
-                $response['winner_nickname'] = $this->winner->nickname;
+                $response['winner'] = $this->winner;
                 $response['total_turns_winner'] = $this->total_turns_winner; 
             }
         }     

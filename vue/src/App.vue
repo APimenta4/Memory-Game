@@ -41,12 +41,7 @@ onMounted( () => {
           <RouterLink v-show="storeAuth.user" to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
-            My History 
-          </RouterLink>
-          <RouterLink v-show="storeAuth.user" to="/historyVertical"
-            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            active-class="text-blue-600 font-semibold">
-            My History Vertical
+            My History
           </RouterLink>
           <RouterLink v-show="storeAuth.user" to="/scoreboard/personal"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
