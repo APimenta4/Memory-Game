@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoardController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\TransactionController;
 
 // ## PUBLIC ##
@@ -14,8 +16,8 @@ Route::post('/auth/login', [AuthController::class, "login"]);
 Route::get('/boards', [BoardController::class, 'index']);
 
 // Scoreboard
-Route::get('/scoreboard/global/multiplayer', [GameController::class, 'globalMultiplayerStatistics']);
-Route::get('/scoreboard/global/singleplayer', [GameController::class, 'indexGlobalScoreboard']);
+Route::get('/scoreboards/global/multiplayer', [ScoreboardController::class, 'globalMultiplayerStatistics']);
+Route::get('/scoreboards/global/singleplayer', [ScoreboardController::class, 'indexGlobalScoreboard']);
 
 
 // AUTHENTICATED
@@ -27,9 +29,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/games', [GameController::class, 'store']);
 
     // History 
-    Route::get('/users/me/history', [GameController::class, 'history']);  
+    Route::get('/history', [HistoryController::class, 'index']);
+    Route::get('/history/singleplayer', [HistoryController::class, 'singleplayer']);
+    Route::get('/history/multiplayer', [HistoryController::class, 'multiplayer']);
     
     // Scoreboard
-    Route::get('/scoreboard/personal/singleplayer', [GameController::class, 'indexPersonalScoreboard']);
-    Route::get('/scoreboard/personal/multiplayer', [GameController::class, 'personalMultiplayerStatistics']); 
+    Route::get('/scoreboards/personal/singleplayer', [ScoreboardController::class, 'indexPersonalScoreboard']);
+    Route::get('/scoreboards/personal/multiplayer', [ScoreboardController::class, 'personalMultiplayerStatistics']); 
 });

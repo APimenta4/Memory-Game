@@ -44,7 +44,7 @@ const scoreboardType = ref('time');
 // Fetch the singleplayer scoreboards
 const fetchScoreboardGames = async () => {
     try {
-        const response = await axios.get(`/scoreboard/personal/singleplayer`, {
+        const response = await axios.get(`/scoreboards/personal/singleplayer`, {
             params: {
                 board_id: scoreboardBoardId.value,
                 scoreboard_type: scoreboardType.value,
@@ -59,7 +59,7 @@ const fetchScoreboardGames = async () => {
 // Fetch the multiplayer statistics
 const fetchMultiplayerStatistics = async () => {
     try {
-        const response = await axios.get(`/scoreboard/personal/multiplayer/`);
+        const response = await axios.get(`/scoreboards/personal/multiplayer/`);
         multiplayerStatistics.value = response.data;
     } catch (error) {
         console.error('Error fetching user multiplayer games history:', error);
