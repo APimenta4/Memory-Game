@@ -1,35 +1,15 @@
 <script setup>
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table';
+import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from '@/components/ui/select';
+import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ref, onMounted, watch } from 'vue';
 import { useBoardStore } from '@/stores/board';
+import { useErrorStore } from '@/stores/error';
 import axios from 'axios';
 
 const storeBoard = useBoardStore();
+const storeError = useErrorStore();
 
 const games = ref([]);
 const multiplayerStatistics = ref([]);
@@ -39,6 +19,7 @@ const scoreboardType = ref('time');
 
 // Fetch the singleplayer scoreboards
 const fetchScoreboardGames = async () => {
+    storeError.resetMessages()
     try {
         const response = await axios.get(`/scoreboard/global/singleplayer`, {
             params: {
@@ -47,18 +28,23 @@ const fetchScoreboardGames = async () => {
             },
         });
         games.value = response.data.data;
-    } catch (error) {
-        console.error('Error fetching scoreboard games history:', error);
+        return true;
+    } catch (e) {
+        storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching games!')
+        return false;
     }
 };
 
 // Fetch the multiplayer statistics
 const fetchMultiplayerStatistics = async () => {
+    storeError.resetMessages()
     try {
         const response = await axios.get(`/scoreboard/global/multiplayer/`);
         multiplayerStatistics.value = response.data;
-    } catch (error) {
-        console.error('Error fetching global multiplayer games history:', error);
+        return true;
+    } catch (e) {
+        storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching statistics!')
+        return false;
     }
 };
 
@@ -122,7 +108,8 @@ watch([scoreboardBoardId, scoreboardType], () => {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectLabel>Select Board Size</SelectLabel>
-                                <SelectItem v-for="board in storeBoard.boards" :key="board.id" :value="String(board.id)">
+                                <SelectItem v-for="board in storeBoard.boards" :key="board.id"
+                                    :value="String(board.id)">
                                     {{ board.board_size }}
                                 </SelectItem>
                             </SelectGroup>

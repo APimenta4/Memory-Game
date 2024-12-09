@@ -1,28 +1,15 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
-import axios from 'axios';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table';
+import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button'
 import { Pagination, PaginationEllipsis, PaginationFirst, PaginationLast, PaginationList, PaginationListItem, PaginationNext, PaginationPrev } from '@/components/ui/pagination';
 import { useBoardStore } from '@/stores/board';
+import { useErrorStore } from '@/stores/error';
+import axios from 'axios';
 
 const storeBoard = useBoardStore()
+const storeError = useErrorStore()
 
 // Data to be fetched
 const games = ref([]);
@@ -75,6 +62,7 @@ const handleSort = (sortByField) => {
 // Fetch games
 const fetchGames = async () => {
   if (isDateInvalid.value) return;
+  storeError.resetMessages()
   try {
     const params = {
       page: page.value,
@@ -105,9 +93,11 @@ const fetchGames = async () => {
     const response = await axios.get(`/users/me/history`, { params });
     games.value = response.data.data;
     totalGames.value = response.data.meta.total;
-    totalPages.value = totalGames.value ? Math.ceil(totalGames.value / perPage) : 0;
-  } catch (error) {
-    console.error('Error fetching game history:', error);
+    totalPages.value = totalGames.value ? Math.ceil(totalGames.value / perPage) : 0;  // Calculate how many pages to use locally
+    return true;
+  } catch (e) {
+    storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching games!')
+    return false;
   }
 };
 

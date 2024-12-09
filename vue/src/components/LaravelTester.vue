@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth';
 import { Button } from '@/components/ui/button'
 
-
 const authStore = useAuthStore()
 
 const email = ref('p5@mail.pt')
@@ -11,7 +10,6 @@ const password = ref('123')
 const responseData = ref('')
 
 const submit = async () => {
-
     const user = await authStore.login({
         email: email.value,
         password: password.value
