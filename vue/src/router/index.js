@@ -1,12 +1,14 @@
 import HomeComponent from '@/components/HomeComponent.vue'
 import LaravelTester from '@/components/LaravelTester.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
+
 import HistoryPage from '@/components/HistoryPage.vue'
+import SinglePlayerPage from '@/components/singlePlayer/SinglePlayerPage.vue'
 import HistoryPageVertical from '@/components/HistoryPageVertical.vue'
 import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
-import { createRouter, createWebHistory } from 'vue-router'
 
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +19,12 @@ const router = createRouter({
       component: HomeComponent
     },
     {
-      path: '/history',
+      path: '/singleplayer',
+      name: 'singleplayer',
+      component: SinglePlayerPage
+    },
+    {
+      path: '/history', // The URL path for the new page
       name: 'history',
       component: HistoryPage 
     },

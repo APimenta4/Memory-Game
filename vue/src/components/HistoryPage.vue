@@ -90,7 +90,7 @@ const fetchGames = async () => {
       params.won = won.value ? 1 : 0;
     }
 
-    const response = await axios.get(`/users/me/history`, { params });
+    const response = await axios.get(`/history`, { params });
     games.value = response.data.data;
     totalGames.value = response.data.meta.total;
     totalPages.value = totalGames.value ? Math.ceil(totalGames.value / perPage) : 0;  // Calculate how many pages to use locally

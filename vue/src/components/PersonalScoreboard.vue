@@ -27,7 +27,7 @@ const scoreboardType = ref('time');
 const fetchScoreboardGames = async () => {
     storeError.resetMessages()
     try {
-        const response = await axios.get(`/scoreboard/personal/singleplayer`, {
+        const response = await axios.get(`/scoreboards/personal/singleplayer`, {
             params: {
                 board_id: scoreboardBoardId.value,
                 scoreboard_type: scoreboardType.value,
@@ -45,7 +45,7 @@ const fetchScoreboardGames = async () => {
 const fetchMultiplayerStatistics = async () => {
     storeError.resetMessages()
     try {
-        const response = await axios.get(`/scoreboard/personal/multiplayer/`);
+        const response = await axios.get(`/scoreboards/personal/multiplayer/`);
         multiplayerStatistics.value = response.data;
         return true;
     } catch (e) {
