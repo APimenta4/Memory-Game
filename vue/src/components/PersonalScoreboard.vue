@@ -76,16 +76,6 @@ watch([scoreboardBoardId, scoreboardType], () => {
     fetchScoreboardGames();
 });
 
-// ???????????????
-//watch(storeBoard.defaultBoard, () => {
-//    console.log('storeBoard.defaultBoard', storeBoard.defaultBoard);
-//    scoreboardBoardId.value = String(storeBoard.defaultBoard);
-//});
-
-// Set default board size
-watch(() => storeBoard.defaultBoard, (newDefaultBoard) => {
-    scoreboardBoardId.value = String(newDefaultBoard);
-});
 </script>
 
 <template>
@@ -129,7 +119,7 @@ watch(() => storeBoard.defaultBoard, (newDefaultBoard) => {
                                 <SelectLabel>Select Board Size</SelectLabel>
                                 <SelectItem v-for="board in storeBoard.boards" :key="board.id"
                                     :value="String(board.id)">
-                                    {{ board.board_cols }}x{{ board.board_rows }}
+                                    {{ board.board_size }}
                                 </SelectItem>
                             </SelectGroup>
                         </SelectContent>
@@ -165,7 +155,7 @@ watch(() => storeBoard.defaultBoard, (newDefaultBoard) => {
                 <TableBody>
                     <TableRow v-for="game in games" :key="game.id">
                         <TableCell>{{ game.id }}</TableCell>
-                        <TableCell>{{ game.board.board_cols }}x{{ game.board.board_rows }}</TableCell>
+                        <TableCell>{{ game.board_size }}</TableCell>
                         <TableCell>{{ formatDate(game.began_at) }}</TableCell>
                         <TableCell>{{ game.total_time }}</TableCell>
                         <TableCell>{{ game.total_turns_winner }}</TableCell>
@@ -173,7 +163,7 @@ watch(() => storeBoard.defaultBoard, (newDefaultBoard) => {
                 </TableBody>
             </Table>
             <div v-else class="ml-1">
-                <p>You haven't played any singleplayer games yet!</p>
+                <p>You haven't played any singleplayer games in this category yet!</p>
             </div>
         </div>
     </div>

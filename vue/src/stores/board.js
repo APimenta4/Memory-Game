@@ -25,11 +25,12 @@ export const useBoardStore = defineStore('board', () => {
         }
     }
 
-    const defaultBoard = computed(() => {
-        return boards.value && boards.value[0] ? boards.value[0].id : null
-    })
+    //const defaultBoard = computed(() => {
+    //    console.log(boards.value)
+    //    return boards.value && boards.value[0] ? boards.value[0].id : null
+    //})
     
     return {
-        boards, totalBoards, defaultBoard, fetchBoards,
+        boards, totalBoards, fetchBoards,
     }
 })

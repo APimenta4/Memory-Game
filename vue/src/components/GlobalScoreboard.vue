@@ -69,17 +69,6 @@ onMounted(() => {
 watch([scoreboardBoardId, scoreboardType], () => {
     fetchScoreboardGames();
 });
-
-// ???????????????
-//watch(storeBoard.defaultBoard, () => {
-//    console.log('storeBoard.defaultBoard', storeBoard.defaultBoard);
-//    scoreboardBoardId.value = String(storeBoard.defaultBoard);
-//});
-
-// Set default board size
-watch(() => storeBoard.defaultBoard, (newDefaultBoard) => {
-    scoreboardBoardId.value = String(newDefaultBoard);
-});
 </script>
 
 <template>

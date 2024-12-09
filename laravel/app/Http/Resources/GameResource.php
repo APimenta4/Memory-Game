@@ -17,7 +17,7 @@ class GameResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {    
+    {
         $response = [
             'id' => $this->id,
             'creator_id' => $this->creator->id,
@@ -28,26 +28,25 @@ class GameResource extends JsonResource
             'board_size' => $this->board->board_cols . 'x' . $this->board->board_rows,
             'custom' => $this->custom,
         ];
-             
+
         if ($this->status == GameStatus::ENDED) {
             $response['total_time'] = $this->total_time;
             $response['ended_at'] = $this->ended_at;
             $response['total_turns_winner'] = $this->total_turns_winner;
         }
-        
+
         if ($this->type == GameType::MULTIPLAYER) {
             foreach ($this->players as $player) {
-                //dd($this->players);
                 $player = ['player_id' => $player->id, 'player_nickname' => $player->nickname, 'pairs_discovered' => $player->pivot->pairs_discovered];
                 $response['players'][] = $player;
             }
-       
+
             if ($this->status == GameStatus::ENDED) {
                 $response['winner_id'] = $this->winner->id;
                 $response['winner_nickname'] = $this->winner->nickname;
-                $response['total_turns_winner'] = $this->total_turns_winner; 
+                $response['total_turns_winner'] = $this->total_turns_winner;
             }
-        }     
+        }
 
         return $response;
     }
