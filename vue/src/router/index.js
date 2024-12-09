@@ -4,6 +4,7 @@ import WebSocketTester from '@/components/WebSocketTester.vue'
 
 import HistoryPage from '@/components/HistoryPage.vue'
 import SinglePlayerPage from '@/components/singlePlayer/SinglePlayerPage.vue'
+import SinglePlayerGame from '@/components/singlePlayer/SinglePlayerGame.vue'
 import HistoryPageVertical from '@/components/HistoryPageVertical.vue'
 import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
@@ -19,10 +20,15 @@ const router = createRouter({
       component: HomeComponent
     },
     {
-      path: '/singleplayer',
-      name: 'singleplayer',
-      component: SinglePlayerPage
+        path: '/singleplayer',
+        name: 'singleplayer',
+        component: SinglePlayerPage,
     },
+    {
+        path: '/singleplayer/game', // Relative path
+        name: 'singlePlayerGame',
+        component: SinglePlayerGame,
+      },
     {
       path: '/history', // The URL path for the new page
       name: 'history',
