@@ -1,7 +1,7 @@
 <script setup>
-import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table';
-import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from '@/components/ui/select';
-import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ref, onMounted, watch } from 'vue';
 import { useBoardStore } from '@/stores/board';
@@ -19,7 +19,7 @@ const scoreboardType = ref('time');
 
 // Fetch the singleplayer scoreboards
 const fetchScoreboardGames = async () => {
-    storeError.resetMessages()
+    storeError.resetMessages();
     try {
         const response = await axios.get(`/scoreboards/global/singleplayer`, {
             params: {
@@ -30,20 +30,20 @@ const fetchScoreboardGames = async () => {
         games.value = response.data.data;
         return true;
     } catch (e) {
-        storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching games!')
+        storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching games!');
         return false;
     }
 };
 
 // Fetch the multiplayer statistics
 const fetchMultiplayerStatistics = async () => {
-    storeError.resetMessages()
+    storeError.resetMessages();
     try {
         const response = await axios.get(`/scoreboards/global/multiplayer/`);
         multiplayerStatistics.value = response.data;
         return true;
     } catch (e) {
-        storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching statistics!')
+        storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching statistics!');
         return false;
     }
 };
@@ -75,7 +75,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
     <h1 class="text-3xl font-bold mb-4">Global Scoreboard</h1>
     <div class="flex gap-4 items-start">
         <!-- Card Section -->
-        <div class="flex-1 max-w-xs">
+        <div class="w-1/4">
             <Card>
                 <CardHeader>
                     <CardTitle>Multiplayer Games</CardTitle>
@@ -92,7 +92,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
             </Card>
         </div>
 
-        <div class="flex-2 flex-grow">
+        <div class="w-3/4">
             <div class="flex gap-4 mb-4">
                 <h4 class="text-2xl font-semibold leading-none tracking-tight">Singleplayer Games</h4>
             </div>
@@ -130,29 +130,34 @@ watch([scoreboardBoardId, scoreboardType], () => {
                 </div>
             </div>
 
-            <!-- Table -->
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Player</TableHead>
-                        <TableHead>Game ID</TableHead>
-                        <TableHead>Board Size</TableHead>
-                        <TableHead>Start Time</TableHead>
-                        <TableHead>Total Time</TableHead>
-                        <TableHead>Total Turns</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <TableRow v-for="game in games" :key="game.id">
-                        <TableCell>{{ game.creator_nickname }}</TableCell>
-                        <TableCell>{{ game.id }}</TableCell>
-                        <TableCell>{{ game.board_size }}</TableCell>
-                        <TableCell>{{ formatDate(game.began_at) }}</TableCell>
-                        <TableCell>{{ game.total_time }}</TableCell>
-                        <TableCell>{{ game.total_turns_winner }}</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <!-- Table or Message -->
+            <div v-if="games.length > 0">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Player</TableHead>
+                            <TableHead>Game ID</TableHead>
+                            <TableHead>Board Size</TableHead>
+                            <TableHead>Start Time</TableHead>
+                            <TableHead>Total Time</TableHead>
+                            <TableHead>Total Turns</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow v-for="game in games" :key="game.id">
+                            <TableCell>{{ game.creator_nickname }}</TableCell>
+                            <TableCell>{{ game.id }}</TableCell>
+                            <TableCell>{{ game.board_size }}</TableCell>
+                            <TableCell>{{ formatDate(game.began_at) }}</TableCell>
+                            <TableCell>{{ game.total_time }}</TableCell>
+                            <TableCell>{{ game.total_turns_winner }}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+            <div v-else class="ml-1">
+                <p v-if="!scoreboardBoardId">Please select a category</p>
+            </div>
         </div>
     </div>
 </template>
