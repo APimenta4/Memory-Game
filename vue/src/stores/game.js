@@ -10,10 +10,11 @@ export const useGameStore = defineStore('game', () => {
     const board = ref({})
     
 
-    const insertGame = async (game) => {
+    const insertGame = async (newGame) => {
         storeError.resetMessages()
         try {
-            const response = await axios.post('games', game)
+            const response = await axios.post('games', newGame)
+            game.value = response.data.data
             return response.data.data
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error creating game!')
@@ -21,10 +22,10 @@ export const useGameStore = defineStore('game', () => {
         }
     }
 
-    const updateGame = async (game) => {
-        storeError.resetMessages()
+    const updateGame = async (updateData) => {
         try {
-            const response = await axios.put('games/' + game.id, game)
+            const response = await axios.put(`games/${game.value.id}`, updateData)
+            game.value = response.data.data
             return response.data.data
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating game!')

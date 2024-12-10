@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GameRequest extends FormRequest
+class GameUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,10 @@ class GameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|string|in:S,M',
-            'winner_user_id' => 'nullable|integer|exists:users,id|required_if:status,E',
+            'winner_user_id' => 'nullable|integer|exists:users,id',
             'status' => 'required|string|in:PE,PL,E,I',
-            'total_time' => 'nullable|integer|min:0|required_if:status,E',
-            'board_id' => 'required|integer|exists:boards,id',
-            'total_turns_winner' => 'nullable|integer|min:0|required_if:status,E',
+            'total_time' => 'decimal:2|min:0|required_if:status,E',
+            'total_turns_winner' => 'integer|min:0|required_if:status,E',
             'custom' => 'nullable|json',
         ];
     }
@@ -36,7 +34,6 @@ class GameRequest extends FormRequest
         return [
             'winner_user_id.required_if' => 'The winner must be specified if the game has ended.',
             'total_time.required_if' => 'Total time is required when the game has ended.',
-            'type.in' => 'The type must be either S (Single) or M (Multiplayer).',
             'status.in' => 'The status must be one of PE (Pending), PL (Playing), E (Ended), or I (Invalid).',
         ];
     }
