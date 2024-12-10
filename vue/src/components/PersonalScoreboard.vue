@@ -1,7 +1,7 @@
 <script setup>
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table,TableBody,TableCell,TableHead,TableHeader,TableRow } from '@/components/ui/table';
+import { Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue } from '@/components/ui/select';
+import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ref, onMounted, watch } from 'vue';
 import { useBoardStore } from '@/stores/board';
@@ -163,8 +163,7 @@ watch([scoreboardBoardId, scoreboardType], () => {
                 </TableBody>
             </Table>
             <div v-else class="ml-1">
-                <p v-if="!scoreboardBoardId">Please select a category</p>
-                <p v-else>You haven't played any singleplayer games in this category yet!</p>
+                <p>You haven't played any singleplayer games in this category yet!</p>
             </div>
         </div>
     </div>
