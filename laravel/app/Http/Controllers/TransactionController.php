@@ -25,7 +25,7 @@ class TransactionController extends Controller
     {   
         $newTransaction = new Transaction();
         $newTransaction->fill($request->validated());
-        $newTransaction->transaction_datetime = Carbon::now();
+        $newTransaction->transaction_datetime = now();
         $newTransaction->user_id = $request->user()->id;
         $newTransaction->save();
         return new TransactionResource($newTransaction);

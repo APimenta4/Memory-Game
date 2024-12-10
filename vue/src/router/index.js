@@ -2,6 +2,7 @@ import HomeComponent from '@/components/HomeComponent.vue'
 import LaravelTester from '@/components/LaravelTester.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
 import SinglePlayerPage from '@/components/singlePlayer/SinglePlayerPage.vue'
+import SinglePlayerGame from '@/components/singlePlayer/SinglePlayerGame.vue'
 import HistoryPage from '@/components/HistoryPage.vue'
 import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
@@ -17,12 +18,17 @@ const router = createRouter({
       component: HomeComponent
     },
     {
-      path: '/singleplayer',
-      name: 'singleplayer',
-      component: SinglePlayerPage
+        path: '/singleplayer',
+        name: 'singleplayer',
+        component: SinglePlayerPage,
     },
     {
-      path: '/history',
+        path: '/singleplayer/game',
+        name: 'singlePlayerGame',
+        component: SinglePlayerGame,
+    },
+    {
+      path: '/history', // The URL path for the new page
       name: 'history',
       component: HistoryPage,
     },
