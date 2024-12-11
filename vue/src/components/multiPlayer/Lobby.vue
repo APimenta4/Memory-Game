@@ -20,10 +20,10 @@ const storeLobby = useLobbyStore()
     <Card :class="{'opacity-50': !storeAuth.user, 'pointer-events-none': !storeAuth.user}" class="my-8 py-2 px-1 h-full max-h-screen overflow-hidden flex flex-col">
         <CardHeader class="pb-0">
             <CardTitle>Lobby</CardTitle>
-            <CardDescription v-if="isLoggedIn">{{ storeLobby.totalGames == 1 ? '1 game' : storeLobby.totalGames + ' games'}} waiting.</CardDescription>
+            <CardDescription v-if="storeAuth.user">{{ storeLobby.totalGames == 1 ? '1 game' : storeLobby.totalGames + ' games'}} waiting.</CardDescription>
             <CardDescription v-else>You must be logged in to play multiplayer games!</CardDescription>
         </CardHeader>
-        <CardContent v-if="isLoggedIn" class="p-4 flex-1 overflow-hidden flex flex-col">
+        <CardContent v-if="storeAuth.user" class="p-4 flex-1 overflow-hidden flex flex-col">
             <div class="py-2">
                 <Button @click="storeLobby.addGame">
                     New Game
