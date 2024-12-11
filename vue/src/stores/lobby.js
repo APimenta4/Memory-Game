@@ -59,7 +59,6 @@ export const useLobbyStore = defineStore('lobby', () => {
     storeError.resetMessages()
     socket.emit('removeGame', id, async (response) => {
       if (webSocketServerResponseHasError(response)) {
-        console.log('Error removing game')
         return
       }
       // TODO soft delete da api? não sei se é delete ou interrupted, mas fiz delete
@@ -86,8 +85,8 @@ export const useLobbyStore = defineStore('lobby', () => {
       if (webSocketServerResponseHasError(response)) {
         return
       }
+
       const APIresponse = await axios.post('games', {
-        // TODO post
         player1_id: response.player1.id,
         player2_id: response.player2.id
       })
@@ -103,7 +102,7 @@ export const useLobbyStore = defineStore('lobby', () => {
 
   // Whether the current user can remove a specific game from the lobby
   const canRemoveGame = (game) => {
-    return game.creator_id === storeAuth.userId
+    return game.player1.id === storeAuth.user.id
   }
 
   // Whether the current user can join a specific game from the lobby

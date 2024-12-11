@@ -2,7 +2,6 @@ exports.createLobby = () => {
     const games = new Map()
 
     const addGame = (user, socketId, gameDataId) => {
-        console.log("lobbyjs" + gameDataId)
         const game = {
             id: gameDataId,
             created_at: Date.now(),
