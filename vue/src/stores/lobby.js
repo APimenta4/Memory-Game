@@ -42,20 +42,17 @@ export const useLobbyStore = defineStore('lobby', () => {
     }
 
     // add a game to the lobby
-    const addGame = (chosenBoardId) => {
-        console.log('addGame', chosenBoardId)
-        storeError.resetMessages()
-        socket.emit('addGame', async (response) => {
+    const addGame = async (chosenBoardId) => {
+        storeError.resetMessages() 
+        const gameData = await storeGame.insertGame({
+            type:"M",
+            status:"PE",
+            board_id:chosenBoardId
+        })
+        socket.emit('addGame', gameData, async (response) => {
             if (webSocketServerResponseHasError(response)) {
-                console.log('Error adding game')
-                return
+            return
             }
-            // TODO enviar jogo para api
-            storeGame.insertGame({
-                type:"M",
-                status:"PE",
-                board_id:chosenBoardId
-            })
         })
     }
 
@@ -64,11 +61,12 @@ export const useLobbyStore = defineStore('lobby', () => {
         storeError.resetMessages()
         socket.emit('removeGame', id, async (response) => {
             if (webSocketServerResponseHasError(response)) {
+                console.log('Error removing game')
                 return
             }
-            // TODO soft delete da api? não sei se é soft delete ou interrupted, mas vou fazer soft delete
+            // TODO soft delete da api? não sei se é delete ou interrupted, mas fiz delete
             try {
-                await axios.delete(`games/id`)
+                await axios.delete(`games/${id}`)
                 return true
             } catch (e) {
                 storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating game!')
