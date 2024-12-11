@@ -105,7 +105,7 @@ class GameController extends Controller
         }
         $game->status = $newStatus;
         $game->save();
-        if($game->type == GameType::MULTIPLAYER){
+        if($game->type == GameType::MULTIPLAYER && $game->status == GameStatus::PLAYING){
             $game->players()->attach($request->user()->id);
         }
         return new GameResource($game);
