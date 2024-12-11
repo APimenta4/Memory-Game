@@ -139,12 +139,11 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("addGame", (gameData, callback) => {
+  socket.on("addGame", (gameDataId, callback) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return;
     }
-    console.log("indexjs:" +gameData.id);
-    const game = lobby.addGame(socket.data.user, socket.id, gameData);
+    const game = lobby.addGame(socket.data.user, socket.id, gameDataId);
     io.to("lobby").emit("lobbyChanged", lobby.getGames());
     if (callback) {
       callback(game);

@@ -1,14 +1,15 @@
 exports.createLobby = () => { 
     const games = new Map()
 
-    const addGame = (user, socketId, gameData) => {
+    const addGame = (user, socketId, gameDataId) => {
+        console.log("lobbyjs" + gameDataId)
         const game = {
-            id: gameData.id,
+            id: gameDataId,
             created_at: Date.now(),
             player1: user,
             player1SocketId: socketId,
         }
-        games.set(gameData.id, game)
+        games.set(gameDataId, game)
         return game
     }
     
