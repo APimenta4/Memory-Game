@@ -11,7 +11,7 @@ const props = defineProps({
 
 <template>
     <div  class="flex space-x-4 pb-4">
-      <Board v-for="board in boards":key="board.id"
+      <Board v-for="board in boards" :key="board.id"
         :board="board" 
         />
     </div>
