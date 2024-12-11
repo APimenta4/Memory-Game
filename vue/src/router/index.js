@@ -7,6 +7,7 @@ import HistoryPage from '@/components/HistoryPage.vue'
 import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
 import MultiPlayerGames from '@/components/multiPlayer/MultiPlayerGames.vue'
+import Game from '@/components/multiPlayer/Game.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/multiplayer',
       name: 'multiplayer',
       component: MultiPlayerGames,
+    },
+    {
+      path: '/multiplayer/game',
+      name: 'multiPlayerGame',
+      component: Game,
     },
     {
       path: '/history', // The URL path for the new page

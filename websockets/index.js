@@ -207,10 +207,13 @@ io.on("connection", (socket) => {
       // join the 2 players to the game room
       io.sockets.sockets.get(game.player1SocketId)?.join(roomName);
       io.sockets.sockets.get(game.player2SocketId)?.join(roomName);
+      console.log("SOcket 1"+game.player1SocketId);
+      console.log("socket2"+game.player2SocketId);
       // store the game data directly on the room object:
       socket.adapter.rooms.get(roomName).game = game
       // emit the "gameStarted" to all users in the room
       io.to(roomName).emit('gameStarted', game)
+      console.log("gameStarted");
       if (callback) {
           callback(game)
       }
@@ -232,7 +235,7 @@ io.on("connection", (socket) => {
       const roomName = 'game_' + playData.gameId
       // load game state from the game data stored directly on the room object:
       const game = socket.adapter.rooms.get(roomName).game
-      const playResult = gameEngine.play(game, playData.index, socket.id) // TODO a nossa lógica de jogo aqui
+      const playResult = gameEngine.play(game, playData.index1, playdata.index2, socket.id) 
       if (playResult !== true) {
           if (callback) {
               callback(playResult)

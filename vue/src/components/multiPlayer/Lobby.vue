@@ -11,7 +11,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import ListGamesLobby from './ListGamesLobby.vue'
 import { useLobbyStore } from '@/stores/lobby'
 import { useAuthStore } from '@/stores/auth';
+import { useGamesStore } from '@/stores/games';
 
+const storeGames = useGamesStore()
 const storeAuth = useAuthStore()
 const storeLobby = useLobbyStore()
 </script>

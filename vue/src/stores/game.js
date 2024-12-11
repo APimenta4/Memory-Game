@@ -35,7 +35,6 @@ export const useGameStore = defineStore('game', () => {
 
     const updateGameWithId = async (id, updateData) => {
         try {
-            console.log('id', id)
             const response = await axios.patch(`games/${id}`, updateData)
             game.value = response.data.data
             return response.data.data

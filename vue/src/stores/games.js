@@ -4,11 +4,13 @@ import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useRouter } from 'vue-router'
 
 export const useGamesStore = defineStore('games', () => {
     const storeAuth = useAuthStore()
     const storeError = useErrorStore()
     const { toast } = useToast()
+    const router = useRouter()
     const socket = inject('socket')
 
     const games = ref([])
@@ -93,12 +95,13 @@ export const useGamesStore = defineStore('games', () => {
     } 
     
     socket.on('gameStarted', async (game) => {
-        if (game.player1_id === storeAuth.userId) {
+        if (game.player1_id === storeAuth.user.id) {
             toast({
                     title: 'Game Started',
                     description: `Game #${game.id} has started!`,
                 })
         }
+        router.push("/multiplayer/game");
         fetchPlayingGames()
     })
 
