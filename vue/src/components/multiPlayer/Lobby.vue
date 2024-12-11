@@ -7,6 +7,7 @@ import {
     CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { onMounted } from 'vue'
 import ListGamesLobby from './ListGamesLobby.vue'
 import { useLobbyStore } from '@/stores/lobby'
@@ -19,23 +20,25 @@ onMounted(() => {
 </script>
 
 <template>
-    <Card class="my-8 py-2 px-1 h-full">
+    <Card class="my-8 py-2 px-1 h-full max-h-screen overflow-hidden flex flex-col">
         <CardHeader class="pb-0">
             <CardTitle>Lobby</CardTitle>
             <CardDescription>{{ storeLobby.totalGames == 1 ? '1 game' : storeLobby.totalGames + ' games'}} waiting.</CardDescription>
         </CardHeader>
-        <CardContent class="p-4">
+        <CardContent class="p-4 flex-1 overflow-hidden flex flex-col">
             <div class="py-2">
                 <Button @click="storeLobby.addGame">
                     New Game
                 </Button>
             </div>
-            <div v-if="storeLobby.totalGames > 0">
-                <ListGamesLobby></ListGamesLobby>
-            </div>
-            <div v-else>
-                <h2 class="text-xl">The lobby is empty!</h2>
-            </div>
+            <ScrollArea class="flex-1 overflow-auto">
+                <div v-if="storeLobby.totalGames > 0">
+                    <ListGamesLobby></ListGamesLobby>
+                </div>
+                <div v-else>
+                    <h2 class="text-xl">The lobby is empty!</h2>
+                </div>
+            </ScrollArea>
         </CardContent>
     </Card>
 </template>
