@@ -3,11 +3,14 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
+import { useGameStore } from '@/stores/game'
+
 
 
 export const useLobbyStore = defineStore('lobby', () => {
     const storeAuth = useAuthStore()
     const storeError = useErrorStore()
+    const storeGame = useGameStore()
     const socket = inject('socket')
 
     const games = ref([])
@@ -39,21 +42,37 @@ export const useLobbyStore = defineStore('lobby', () => {
     }
 
     // add a game to the lobby
-    const addGame = () => {
+    const addGame = (chosenBoardId) => {
+        console.log('addGame', chosenBoardId)
         storeError.resetMessages()
-        socket.emit('addGame', (response) => {
+        socket.emit('addGame', async (response) => {
             if (webSocketServerResponseHasError(response)) {
+                console.log('Error adding game')
                 return
             }
+            // TODO enviar jogo para api
+            storeGame.insertGame({
+                type:"M",
+                status:"PE",
+                board_id:chosenBoardId
+            })
         })
     }
 
     // remove a game from the lobby
     const removeGame = (id) => {
         storeError.resetMessages()
-        socket.emit('removeGame', id, (response) => {
+        socket.emit('removeGame', id, async (response) => {
             if (webSocketServerResponseHasError(response)) {
                 return
+            }
+            // TODO soft delete da api? não sei se é soft delete ou interrupted, mas vou fazer soft delete
+            try {
+                await axios.delete(`games/id`)
+                return true
+            } catch (e) {
+                storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating game!')
+                return false
             }
         })
     }
@@ -66,7 +85,7 @@ export const useLobbyStore = defineStore('lobby', () => {
             if (webSocketServerResponseHasError(response)) {
                 return
             }
-            const APIresponse = await axios.post('games', {
+            const APIresponse = await axios.post('games', {   // TODO post
                 player1_id: response.player1.id,
                 player2_id: response.player2.id,
             })
@@ -82,7 +101,7 @@ export const useLobbyStore = defineStore('lobby', () => {
 
     // Whether the current user can remove a specific game from the lobby
     const canRemoveGame = (game) => {
-        return game.player1.id === storeAuth.userId
+        return game.creator_id === storeAuth.userId
     }
     
     // Whether the current user can join a specific game from the lobby

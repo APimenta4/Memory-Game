@@ -104,7 +104,11 @@ class GameController extends Controller
     }
 
     public function destroy(Game $game)
-    {
-        // ?
+    {    
+        if ($game->created_user_id !== auth()->user()->id) {
+            return response()->json(['error' => 'You are not authorized to delete this game.'], 403);
+        }
+        $game->delete();
+        return response()->json(null, 204);
     }
 }

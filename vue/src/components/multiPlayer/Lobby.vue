@@ -25,7 +25,7 @@ const storeLobby = useLobbyStore()
         </CardHeader>
         <CardContent v-if="storeAuth.user" class="p-4 flex-1 overflow-hidden flex flex-col">
             <div class="py-2">
-                <Button @click="storeLobby.addGame">
+                <Button @click="storeLobby.addGame(1)"> <!-- TODO fazer com que o user escolha o board -->
                     New Game
                 </Button>
             </div>

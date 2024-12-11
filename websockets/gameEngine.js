@@ -1,13 +1,14 @@
 exports.createGameEngine = () => {
-    const initGame = (gameFromDB) => {
+    const initGame = (gameFromDB, columns, rows) => {
         gameFromDB.gameStatus = null
-        // null -> game has not started yet 
-        // 0 -> game has started and running
-        // 1 -> player 1 is the winner
-        // 2 -> player 2 is the winner
-        // 3 -> draw
-        gameFromDB.currentPlayer = 1
-        gameFromDB.board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        // statuses:
+        // 0 - Game is pending
+        
+        gameFromDB.currentPlayer = Math.random() < 0.5 ? 1 : 2
+        gameFromDB.board = Array(columns * rows).fill(0)
+        gameFromDB.columns = columns
+        gameFromDB.rows = rows
+        gameFromDB.flippedCards = []
         return gameFromDB
     }
 
@@ -15,37 +16,28 @@ exports.createGameEngine = () => {
     // Actions / Methods
     // ------------------------------------------------------
 
-    // Check if there is a line (either horizontal, vertical or diagonal) with the same player
-    const hasFullLine = (game, playerNumber) =>
-        ((game.board[0] === playerNumber) && (game.board[1] === playerNumber) && (game.board[2] === playerNumber)) ||
-        ((game.board[3] === playerNumber) && (game.board[4] === playerNumber) && (game.board[5] === playerNumber)) ||
-        ((game.board[6] === playerNumber) && (game.board[7] === playerNumber) && (game.board[8] === playerNumber)) ||
-        ((game.board[0] === playerNumber) && (game.board[3] === playerNumber) && (game.board[6] === playerNumber)) ||
-        ((game.board[1] === playerNumber) && (game.board[4] === playerNumber) && (game.board[7] === playerNumber)) ||
-        ((game.board[2] === playerNumber) && (game.board[5] === playerNumber) && (game.board[8] === playerNumber)) ||
-        ((game.board[0] === playerNumber) && (game.board[4] === playerNumber) && (game.board[8] === playerNumber)) ||
-        ((game.board[2] === playerNumber) && (game.board[4] === playerNumber) && (game.board[6] === playerNumber))
+    // Check if the board is complete (no further plays are possible)
+    const isBoardComplete = (game) => game.board.every(card => card !== 0)
 
+    // returns whether the game has ended or not
+    const gameEnded = (game) => game.gameStatus > 0
 
     // Check if the board is complete and change the gameStatus accordingly
     const changeGameStatus = (game) => {
-        if (hasFullLine(game, 1)) {
-            game.gameStatus = 1
-        } else if (hasFullLine(game, 2)) {
-            game.gameStatus = 2
-        } else if (isBoardComplete(game)) {
-            game.gameStatus = 3
+        if (isBoardComplete(game)) {
+            const player1Score = game.board.filter(card => card === 1).length
+            const player2Score = game.board.filter(card => card === 2).length
+            if (player1Score > player2Score) {
+                game.gameStatus = 1
+            } else if (player2Score > player1Score) {
+                game.gameStatus = 2
+            } else {
+                game.gameStatus = 3
+            }
         } else {
             game.gameStatus = 0
         }
     }
-    
-    // Check if the board is complete (no further plays are possible)
-    const isBoardComplete = (game) => game.board.findIndex(piece => piece === 0) < 0
-
-    // returns whether the game as ended or not
-    const gameEnded = (game) => game.gameStatus > 0
-
 
     // Plays a specific piece of the game (defined by its index)
     // Returns true if the game play is valid or an object with an error code and message otherwise
@@ -62,22 +54,22 @@ exports.createGameEngine = () => {
                 errorMessage: 'Game has already ended!'
             }
         }
-        if (((game.currentPlayer == 1) && (playerSocketId != game.player1SocketId))
-            ||
-            ((game.currentPlayer == 2) && (playerSocketId != game.player2SocketId))){
-            return {
-                errorCode: 12,
-                errorMessage: 'Invalid play: It is not your turn!'
-            }
-        }
         if (game.board[index] !== 0) {
             return {
                 errorCode: 13,
-                errorMessage: 'Invalid play: cell already occupied!'
+                errorMessage: 'Invalid play: card is already found!'
             }
         }
-        game.board[index] = game.currentPlayer
-        game.currentPlayer = game.currentPlayer === 1 ? 2 : 1
+        game.flippedCards.push(index)
+        if (game.flippedCards.length === 2) {
+            const [firstIndex, secondIndex] = game.flippedCards
+            if (game.board[firstIndex] === game.board[secondIndex]) {
+                game.board[firstIndex] = game.currentPlayer
+                game.board[secondIndex] = game.currentPlayer
+            }
+            game.flippedCards = []
+            game.currentPlayer = game.currentPlayer === 1 ? 2 : 1
+        }
         changeGameStatus(game)
         return true
     }
