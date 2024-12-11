@@ -38,4 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
     //Buy coins
     Route::post('/transactions/buy-coins', [TransactionController::class, 'buyBrainCoins']);
 
+    //Purchase History
+    Route::get('/transactions/history', [TransactionController::class, 'transactionHistory']);
 });

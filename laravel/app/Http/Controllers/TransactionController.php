@@ -84,6 +84,15 @@ class TransactionController extends Controller
     }
     
 
+    public function transactionHistory(Request $request)
+    {
+        $transactions = Transaction::where('user_id', $request->user()->id)
+            ->orderBy('transaction_datetime', 'desc')
+            ->get();
+
+        return response()->json($transactions);
+    }
+
     /**
      * Display the specified resource.
      */
