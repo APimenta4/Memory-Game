@@ -95,13 +95,17 @@ export const useGamesStore = defineStore('games', () => {
     } 
     
     socket.on('gameStarted', async (game) => {
-        if (game.player1_id === storeAuth.user.id) {
+        if (game.players[0].player_id === storeAuth.user.id) {
             toast({
                     title: 'Game Started',
                     description: `Game #${game.id} has started!`,
                 })
         }
-        router.push("/multiplayer/game");
+        console.log("Received game:" + JSON.stringify(game))
+        router.push({
+            path: "/multiplayer/game",
+            query: { rows: 4, cols: 3 }
+        });
         fetchPlayingGames()
     })
 
