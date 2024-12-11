@@ -32,8 +32,20 @@ export const useGameStore = defineStore('game', () => {
             return false
         }
     }
+
+    const updateGameWithId = async (id, updateData) => {
+        try {
+            console.log('id', id)
+            const response = await axios.patch(`games/${id}`, updateData)
+            game.value = response.data.data
+            return response.data.data
+        } catch (e) {
+            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating game!')
+            return false
+        }
+    }
     
     return {
-        game, board, insertGame, updateGame
+        game, board, insertGame, updateGame, updateGameWithId
     }
 })

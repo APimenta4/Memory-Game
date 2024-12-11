@@ -61,8 +61,7 @@ export const useLobbyStore = defineStore('lobby', () => {
       if (webSocketServerResponseHasError(response)) {
         return
       }
-      console.log("inside removeGame")
-      await storeGame.updateGame({status: "I"})
+      await storeGame.updateGameWithId(id, {status: "I"})
     })
   }
 
@@ -75,7 +74,7 @@ export const useLobbyStore = defineStore('lobby', () => {
         return
       }
       // Update status and add player in pivot table
-      const updatedGame = await storeGame.updateGame({status: "PL"})
+      const updatedGame = await storeGame.updateGameWithId(id, {status: "PL"})
       updatedGame.player1SocketId = response.player1SocketId
       updatedGame.player2SocketId = response.player2SocketId
 
@@ -93,7 +92,7 @@ export const useLobbyStore = defineStore('lobby', () => {
 
   // Whether the current user can join a specific game from the lobby
   const canJoinGame = (game) => {
-    return storeAuth.user && game.player1.id !== storeAuth.userId
+    return game.player1.id !== storeAuth.user.id
   }
 
   return {
