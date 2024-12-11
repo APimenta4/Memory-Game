@@ -4,6 +4,7 @@ import { useLobbyStore } from '@/stores/lobby';
 
 const storeAuth = useAuthStore()
 const storeLobby = useLobbyStore()
+
 </script>
 
 <template>

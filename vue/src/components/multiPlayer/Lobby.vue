@@ -8,24 +8,22 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { onMounted } from 'vue'
 import ListGamesLobby from './ListGamesLobby.vue'
 import { useLobbyStore } from '@/stores/lobby'
+import { useAuthStore } from '@/stores/auth';
 
+const storeAuth = useAuthStore()
 const storeLobby = useLobbyStore()
-
-onMounted(() => {
-    storeLobby.fetchGames()
-})
 </script>
 
 <template>
-    <Card class="my-8 py-2 px-1 h-full max-h-screen overflow-hidden flex flex-col">
+    <Card :class="{'opacity-50': !storeAuth.user, 'pointer-events-none': !storeAuth.user}" class="my-8 py-2 px-1 h-full max-h-screen overflow-hidden flex flex-col">
         <CardHeader class="pb-0">
             <CardTitle>Lobby</CardTitle>
-            <CardDescription>{{ storeLobby.totalGames == 1 ? '1 game' : storeLobby.totalGames + ' games'}} waiting.</CardDescription>
+            <CardDescription v-if="isLoggedIn">{{ storeLobby.totalGames == 1 ? '1 game' : storeLobby.totalGames + ' games'}} waiting.</CardDescription>
+            <CardDescription v-else>You must be logged in to play multiplayer games!</CardDescription>
         </CardHeader>
-        <CardContent class="p-4 flex-1 overflow-hidden flex flex-col">
+        <CardContent v-if="isLoggedIn" class="p-4 flex-1 overflow-hidden flex flex-col">
             <div class="py-2">
                 <Button @click="storeLobby.addGame">
                     New Game
