@@ -12,7 +12,7 @@ const storeLobby = useLobbyStore()
         <div v-for="game in storeLobby.games" :key="game.id" class="flex ps-2 pe-1">
             <div class="flex flex-col grow">
                 <div class="text-base pe-4 grow leading-10 flex space-x-2">
-                    <span class="pl-1">{{ storeAuth.getFirstLastName(game.player1.name) }}</span>
+                    <span class="pl-1">{{ storeAuth.user.nickname }}</span>
                 </div>
                 <span class="text-xs ps-1 pb-2 -mt-1 text-gray-500">
                     {{ new Date(game.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second:

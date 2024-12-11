@@ -71,7 +71,7 @@ const handleMessageFromInputDialog = (message) => {
                                     <span :class="{
                                         'hover:text-green-300': canSendMessageToUser(messageObj.user),
                                         'hover:cursor-pointer' :canSendMessageToUser(messageObj.user)
-                                    }" @click="sendPrivateMessageToUser(messageObj.user)">{{ messageObj.user?.name ?? 'Anonymous' }}</span>
+                                    }" @click="sendPrivateMessageToUser(messageObj.user)">{{ messageObj.user?.nickname ?? 'Anonymous' }}</span>
                                 </div>
                                 <div class="mt-1 text-base grow leading-6">
                                     {{ messageObj.message }}

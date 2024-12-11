@@ -61,19 +61,8 @@ export const useLobbyStore = defineStore('lobby', () => {
       if (webSocketServerResponseHasError(response)) {
         return
       }
-      // TODO soft delete da api? não sei se é delete ou interrupted, mas fiz delete
-      try {
-        await axios.delete(`games/${id}`)
-        return true
-      } catch (e) {
-        storeError.setErrorMessages(
-          e.response.data.message,
-          e.response.data.errors,
-          e.response.status,
-          'Error updating game!'
-        )
-        return false
-      }
+      console.log("inside removeGame")
+      await storeGame.updateGame({status: "I"})
     })
   }
 
@@ -85,16 +74,13 @@ export const useLobbyStore = defineStore('lobby', () => {
       if (webSocketServerResponseHasError(response)) {
         return
       }
+      // Update status and add player in pivot table
+      const updatedGame = await storeGame.updateGame({status: "PL"})
+      updatedGame.player1SocketId = response.player1SocketId
+      updatedGame.player2SocketId = response.player2SocketId
 
-      const APIresponse = await axios.post('games', {
-        player1_id: response.player1.id,
-        player2_id: response.player2.id
-      })
-      const newGameOnDB = APIresponse.data.data
-      newGameOnDB.player1SocketId = response.player1SocketId
-      newGameOnDB.player2SocketId = response.player2SocketId
       // After adding the game to the DB emit a message to the server to start the game
-      socket.emit('startGame', newGameOnDB, (startedGame) => {
+      socket.emit('startGame', updatedGame, (startedGame) => {
         console.log('Game has started', startedGame)
       })
     })

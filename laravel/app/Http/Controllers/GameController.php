@@ -43,8 +43,13 @@ class GameController extends Controller
                 ]);
                 break;
         }
-
         $newGame->save();
+
+        // Save player 1 (for multiplayer games)
+        if($newGame->type == GameType::MULTIPLAYER){
+            $newGame->players()->attach($request->user()->id);
+        }
+
         return new GameResource($newGame);
     }
 
@@ -100,6 +105,9 @@ class GameController extends Controller
         }
         $game->status = $newStatus;
         $game->save();
+        if($game->type == GameType::MULTIPLAYER){
+            $game->players()->attach($request->user()->id);
+        }
         return new GameResource($game);
     }
 
