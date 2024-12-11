@@ -34,4 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Scoreboard
     Route::get('/scoreboards/personal/singleplayer', [ScoreboardController::class, 'indexPersonalScoreboard']);
     Route::get('/scoreboards/personal/multiplayer', [ScoreboardController::class, 'personalMultiplayerStatistics']); 
+
+    //Buy coins
+    Route::post('/transactions/buy-coins', [TransactionController::class, 'buyBrainCoins']);
+
 });
