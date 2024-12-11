@@ -1,13 +1,22 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, provide, useTemplateRef } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBoardStore } from '@/stores/board'
 import Toaster from './components/ui/toast/Toaster.vue'
+import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
 
 const storeAuth = useAuthStore()
 const storeBoard = useBoardStore()
 
-onMounted( () => {
+const alertDialog = useTemplateRef('alert-dialog')
+provide('alertDialog', alertDialog)
+
+const inputDialog = useTemplateRef('input-dialog')
+provide('inputDialog', inputDialog)
+
+
+onMounted(() => {
   storeBoard.fetchBoards()
 })
 </script>
@@ -37,7 +46,12 @@ onMounted( () => {
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Single Player
-            </RouterLink>
+          </RouterLink>
+          <RouterLink to="/multiplayer"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Multiplayer Player
+          </RouterLink>
           <RouterLink v-show="storeAuth.user" to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
