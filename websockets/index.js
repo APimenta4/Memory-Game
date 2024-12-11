@@ -89,41 +89,41 @@ io.on("connection", (socket) => {
     socket.data.user = undefined;
   });
 
-  // // ------------------------------------------------------
-  // // Chat and Private Messages
-  // // ------------------------------------------------------
+  // ------------------------------------------------------
+  // Chat and Private Messages
+  // ------------------------------------------------------
 
-  // socket.on("chatMessage", (message) => {
-  //   const payload = {
-  //     user: socket.data.user,
-  //     message: message,
-  //   };
-  //   io.sockets.emit("chatMessage", payload);
-  // });
+  socket.on("chatMessage", (message) => {
+    const payload = {
+      user: socket.data.user,
+      message: message,
+    };
+    io.sockets.emit("chatMessage", payload);
+  });
 
-  // socket.on("privateMessage", (clientMessageObj, callback) => {
-  //   const destinationRoomName = "user_" + clientMessageObj?.destinationUser?.id;
+  socket.on("privateMessage", (clientMessageObj, callback) => {
+    const destinationRoomName = "user_" + clientMessageObj?.destinationUser?.id;
 
-  //   // Check if the destination user is online
-  //   if (io.sockets.adapter.rooms.get(destinationRoomName)) {
-  //     const payload = {
-  //       user: socket.data.user,
-  //       message: clientMessageObj.message,
-  //     };
-  //     // send the "privateMessage" to the destination user (using "his" room)
-  //     io.to(destinationRoomName).emit("privateMessage", payload);
-  //     if (callback) {
-  //       callback({ success: true });
-  //     }
-  //   } else {
-  //     if (callback) {
-  //       callback({
-  //         errorCode: 1,
-  //         errorMessage: `User "${clientMessageObj?.destinationUser?.name}" is not online!`,
-  //       });
-  //     }
-  //   }
-  // });
+    // Check if the destination user is online
+    if (io.sockets.adapter.rooms.get(destinationRoomName)) {
+      const payload = {
+        user: socket.data.user,
+        message: clientMessageObj.message,
+      };
+      // send the "privateMessage" to the destination user (using "his" room)
+      io.to(destinationRoomName).emit("privateMessage", payload);
+      if (callback) {
+        callback({ success: true });
+      }
+    } else {
+      if (callback) {
+        callback({
+          errorCode: 1,
+          errorMessage: `User "${clientMessageObj?.destinationUser?.name}" is not online!`,
+        });
+      }
+    }
+  });
 
   // ------------------------------------------------------
   // Lobby
