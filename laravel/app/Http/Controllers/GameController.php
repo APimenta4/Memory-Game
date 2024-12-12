@@ -41,7 +41,6 @@ class GameController extends Controller
                     "status.in" =>
                         'The status must be one of PE (Pending), PL (Playing), E (Ended).'
                 ]);
-                break;
         }
 
         $newGame->save();
@@ -58,13 +57,6 @@ class GameController extends Controller
         $data = $request->validated();
 
         $newStatus = GameStatus::tryFrom($data["status"]);
-        if (!$newStatus) {
-            throw ValidationException::withMessages([
-                "status.in" =>
-                    'The status must be one of PE (Pending), PL (Playing), E (Ended) or I (Interrupted).'
-            ]);
-        }
-
         if ($game->status == GameStatus::ENDED || $game->status == GameStatus::INTERRUPTED){
             throw ValidationException::withMessages([
                 "status" =>
