@@ -14,7 +14,7 @@ import { useLobbyStore } from '@/stores/lobby'
 import { useAuthStore } from '@/stores/auth';
 import { useGamesStore } from '@/stores/games';
 import { useBoardStore } from '@/stores/board';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const storeGames = useGamesStore()
 const storeAuth = useAuthStore()
@@ -27,6 +27,10 @@ const selectBoard = (boardId) => {
     storeLobby.addGame(boardId)
     popoverOpen.value = false;
 }
+
+onMounted(()=>{
+  storeLobby.fetchGames()
+})
 </script>
 
 <template>
