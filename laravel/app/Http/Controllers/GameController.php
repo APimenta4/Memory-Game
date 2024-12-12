@@ -27,7 +27,7 @@ class GameController extends Controller
 
         switch ($newGame->status) {
             case GameStatus::PENDING:
-                break;  
+                break;
             case GameStatus::PLAYING:
                 $newGame->began_at = now();
                 break;
@@ -41,7 +41,6 @@ class GameController extends Controller
                     "status.in" =>
                         'The status must be one of PE (Pending), PL (Playing), E (Ended).'
                 ]);
-                break;
         }
 
         $newGame->save();
@@ -53,19 +52,13 @@ class GameController extends Controller
         return new GameResource($game);
     }
 
+
     public function update(GameUpdateRequest $request, Game $game)
     {
         $data = $request->validated();
-
         $newStatus = GameStatus::tryFrom($data["status"]);
-        if (!$newStatus) {
-            throw ValidationException::withMessages([
-                "status.in" =>
-                    'The status must be one of PE (Pending), PL (Playing), E (Ended) or I (Interrupted).'
-            ]);
-        }
 
-        if ($game->status == GameStatus::ENDED || $game->status == GameStatus::INTERRUPTED){
+        if ($game->status == GameStatus::ENDED || $game->status == GameStatus::INTERRUPTED) {
             throw ValidationException::withMessages([
                 "status" =>
                     "Cannot change game #" .
@@ -75,31 +68,21 @@ class GameController extends Controller
                     "' to '$newStatus->value'!",
             ]);
         }
-        else if ($game->status == GameStatus::PENDING){
-            // multiplayer
-        }
-        else if ($game->status == GameStatus::PLAYING) {
-            if ($newStatus == GameStatus::ENDED) {
-                $game->ended_at = now();
-                
-                if($game->type == GameType::MULTIPLAYER){
-                    // multiplayer
-                    // check if player is in players of the game
-                    $winner_user_id =  $data['winner_user_id'];
-                    if (!$winner_user_id) {
-                        throw ValidationException::withMessages([
-                            "winner_user_id.in" =>
-                                'A Ended Multiplayer game requires the winner id.'
-                        ]);
-                    }
-                    $game->winner_user_id = $winner_user_id;
-                }
-                $game->total_time = $data["total_time"];
-                $game->total_turns_winner = $data["total_turns_winner"];
+
+        if ($game->status == GameStatus::PLAYING && $newStatus == GameStatus::ENDED) {
+            $game->ended_at = now();
+
+            if ($game->type == GameType::MULTIPLAYER) {
+                $game->winner_user_id = $data['winner_user_id'];
             }
+
+            $game->total_time = $data["total_time"];
+            $game->total_turns_winner = $data["total_turns_winner"];
         }
+
         $game->status = $newStatus;
         $game->save();
+
         return new GameResource($game);
     }
 
