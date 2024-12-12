@@ -41,7 +41,7 @@ const restart = ()=>{
     <CardHeader>
       <CardTitle>Game Status: 
         <span class=" text-green-700" v-if="isGameOver"><b>Done</b></span>
-        <span class=" text-gray-400" v-if="time!=='0.0' && time"><b>In Progress</b></span>
+        <span class=" text-gray-400" v-if="time!=='0.0' && time && !isGameOver"><b>In Progress</b></span>
         <span class=" text-gray-400" v-if="time==='0.0' || !time">Ready</span>
       </CardTitle>
     </CardHeader>

@@ -3,8 +3,10 @@
 import { useErrorStore } from '@/stores/error';
 import { onMounted, ref, watch } from 'vue';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter} from "@/components/ui/card"
-import axios from 'axios';
 import { useGameStore } from '@/stores/game';
+
+// TODO move to store
+import axios from 'axios';
 
 const props = defineProps({
   board: {
@@ -16,7 +18,7 @@ const props = defineProps({
 const storeGame = useGameStore()
 
 watch(
-  () => storeGame.reloadRequest,
+  () => storeGame.reloadRequestTop5,
   ()=>{
     fetchScoreboardTurns()
     fetchScoreboardTime()

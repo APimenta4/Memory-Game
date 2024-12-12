@@ -1,4 +1,4 @@
-import { ref, reactive, computed } from "vue";
+import { ref } from "vue";
 
 export function useMemoryGame(board) {
     const cards = ref([]);

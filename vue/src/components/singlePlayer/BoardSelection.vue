@@ -1,9 +1,6 @@
 <script setup>
 import { Card, CardTitle } from '@/components/ui/card';
-import { useAuthStore } from '@/stores/auth';
 import { useGameStore } from '@/stores/game';
-import { onMounted } from 'vue';
-
 // Data to be fetched
 const props = defineProps({
   board: {

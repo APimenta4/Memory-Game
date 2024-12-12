@@ -1,7 +1,7 @@
 <script setup>
 
 import { useGameStore } from "@/stores/game";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps({
   cards: {
@@ -19,12 +19,19 @@ const storeGame = useGameStore();
 
 const gameStarted = ref(false)
 
+watch(
+  () => storeGame.reloadRequestMemoryGame,
+  ()=>gameStarted.value = false,
+  { deep: true }
+)
+
+// testar function
 const flipCardWrapper = (index)=>{
   if (!gameStarted.value){
     emit('gameStarted')
   }
   gameStarted.value = true
-  flipCard(index)
+  props.flipCard(index)
 }
 </script>
 
@@ -40,11 +47,11 @@ const flipCardWrapper = (index)=>{
       class="bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer shadow-lg transition-transform transform hover:scale-105"
       :class="{
         'w-16 h-24': storeGame.board.board_cols===6,
-        'w-24 h-30': storeGame.board.board_cols!==6,
+        'w-20 h-28': storeGame.board.board_cols!==6,
         'bg-white': card.isFlipped || card.isMatched,
         'pointer-events-none': card.isMatched,
       }"
-      @click="flipCard(index)"
+      @click="flipCardWrapper(index)"
     >
       <span
         v-if="card.isFlipped || card.isMatched"

@@ -1,13 +1,15 @@
 <script setup>
 import { onMounted, onUnmounted, onBeforeUnmount, watch, ref } from "vue";
-import { useMemoryGame } from "./memoryGame.js";
+import { useMemoryGame } from "@/components/game/memoryGame.js";
 import { useGameStore } from "@/stores/game";
 import { useAuthStore } from "@/stores/auth.js";
 
+import Top5Card from "@/components/game/Top5Card.vue";
+import GameStatusCard from "@/components/game/GameStatusCard.vue";
+import MemoryGame from "@/components/game/MemoryGame.vue";
+
 import router from "@/router";
-import Top5Card from "./Top5Card.vue";
-import GameStatusCard from "./GameStatusCard.vue";
-import MemoryGame from "./MemoryGame.vue";
+
 
 
 const storeGame = useGameStore();
@@ -23,7 +25,6 @@ const {
   getTotalTime
 } = useMemoryGame(storeGame.board);
 
-//const timer = setInterval(totalTime, 100);
 const currentTime = ref("")
 const updateCurrentTime = () => {
   currentTime.value = getCurrentTime();
@@ -32,9 +33,6 @@ const updateTimeInterval = setInterval(updateCurrentTime, 100);
 
 const createGame = async () => {
   console.log("Current board:", storeGame.board.id);
-  if (!storeGame.board.id){
-    router.push("/singleplayer");
-  }
   console.log("storeAuth.user = " + storeAuth.user)
   
   if(storeAuth.user){
@@ -64,9 +62,15 @@ watch(
         total_turns_winner: totalTurns.value,//change to actual value
       })
     }
-    storeGame.reloadRequest++
+    storeGame.reloadRequestTop5 = !storeGame.reloadRequestTop5
+    storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
   }
 )
+onMounted(()=>{
+  if (!storeGame.board.id){
+    router.push("/singleplayer");
+  }
+})
 
 onBeforeUnmount(() => clearInterval(updateTimeInterval));
 onUnmounted(async ()=>{

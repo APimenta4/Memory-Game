@@ -1,5 +1,5 @@
 <script setup>
-import Board from './Board.vue'
+import Board from './BoardSelection.vue'
 
 const props = defineProps({
   boards: {

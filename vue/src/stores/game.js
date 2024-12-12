@@ -9,7 +9,8 @@ export const useGameStore = defineStore('game', () => {
     const game = ref({})
     const board = ref({})
 
-    const reloadRequest = ref(0)
+    const reloadRequestTop5 = ref(false)
+    const reloadRequestMemoryGame = ref(false)
 
     
 
@@ -46,6 +47,6 @@ export const useGameStore = defineStore('game', () => {
     }
     
     return {
-        game, board, insertGame, updateGame, reloadRequest
+        game, board, insertGame, updateGame, reloadRequestTop5, reloadRequestMemoryGame
     }
 })
