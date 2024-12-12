@@ -1,15 +1,16 @@
 import HomeComponent from '@/components/HomeComponent.vue'
 import LaravelTester from '@/components/LaravelTester.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
+
 import SinglePlayerPage from '@/components/singlePlayer/SinglePlayerPage.vue'
 import SinglePlayerGame from '@/components/singlePlayer/SinglePlayerGame.vue'
+
 import HistoryPage from '@/components/HistoryPage.vue'
 import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
+
 import BuyCoinsPage from '@/components/BuyCoinsPage.vue';
 import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue';
-
-
 
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -29,6 +30,13 @@ const router = createRouter({
     {
         path: '/singleplayer/game',
         name: 'singlePlayerGame',
+        component: SinglePlayerGame,
+        props: route => ({
+            gameId: route.query.id || null,
+        }),
+    },
+    {
+        path: '/singleplayer/game/:id',
         component: SinglePlayerGame,
     },
     {
@@ -52,6 +60,16 @@ const router = createRouter({
       ]
     },
     {
+    path: '/transactions/buy-coins',
+    name: 'buyCoins',
+    component: BuyCoinsPage
+    },
+    {
+    path: '/transactions/history',
+    name: 'transactionsHistory',
+    component: TransactionsHistoryPage
+    },
+    {
       path: '/testers',
       children: [
         {
@@ -64,16 +82,6 @@ const router = createRouter({
         },
       ]
     },
-    {
-      path: '/transactions/buy-coins',
-      name: 'buyCoins',
-      component: BuyCoinsPage
-    },
-    {
-      path: '/transactions/history',
-      name: 'transactionsHistory',
-      component: TransactionsHistoryPage
-    }
   ]
 })
 
