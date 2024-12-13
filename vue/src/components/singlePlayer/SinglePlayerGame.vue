@@ -1,8 +1,11 @@
 <script setup>
-import { onMounted, onUnmounted, onBeforeUnmount, watch, ref } from "vue";
-import { useMemoryGame } from "@/components/game/memoryGame.js";
+import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h } from "vue";
+import { useMemoryGame } from "@/components/game/memoryGame";
 import { useGameStore } from "@/stores/game";
-import { useAuthStore } from "@/stores/auth.js";
+import { useAuthStore } from "@/stores/auth";
+
+import { useToast } from "@/components/ui/toast/use-toast";
+import { ToastAction } from '@/components/ui/toast'
 
 import Top5Card from "@/components/game/Top5Card.vue";
 import GameStatusCard from "@/components/game/GameStatusCard.vue";
@@ -10,7 +13,7 @@ import MemoryGame from "@/components/game/MemoryGame.vue";
 
 import router from "@/router";
 
-
+const { toast } = useToast()
 
 const storeGame = useGameStore();
 const storeAuth = useAuthStore();
@@ -69,6 +72,21 @@ watch(
 onMounted(()=>{
   if (!storeGame.board.id){
     router.push("/singleplayer");
+    return;
+  }
+  if(!storeAuth.user){
+    toast({
+      title: "Log in to Enhance Your Experience",
+      description: "Log in to ensure your records appear on the Scoreboard and stay saved. It's quick and easy!",
+      action: h(ToastAction, {
+        altText: "Log in to access additional features",
+        onclick: () => {
+          router.push({ name: "testers/laravel" });
+        },
+      }, {
+        default: () => "Log In",
+      }),
+    });
   }
 })
 
