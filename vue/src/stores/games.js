@@ -15,6 +15,9 @@ export const useGamesStore = defineStore('games', () => {
 
     const games = ref([])
 
+    const _game = ref({})
+    const board = ref({})
+
     const totalGames = computed(() => games.value.length)
 
     // Use this function to update the game object in the games array
@@ -97,16 +100,16 @@ export const useGamesStore = defineStore('games', () => {
     socket.on('gameStarted', async (game) => {
         if (game.players[0].player_id === storeAuth.user.id) {
             toast({
-                    title: 'Game Started',
-                    description: `Game #${game.id} has started!`,
-                })
+                title: 'Game Started',
+                description: `Game #${game.id} has started!`,
+            })
         }
         console.log("Received game:" + JSON.stringify(game))
-        router.push({
-            path: "/multiplayer/game",
-            query: { rows: 4, cols: 3 }
-        });
+        _game.value = game
         fetchPlayingGames()
+        router.push({
+            path: "/multiplayer/game"
+        });
     })
 
     socket.on('gameEnded', async (game) => {
@@ -152,6 +155,6 @@ export const useGamesStore = defineStore('games', () => {
     })
     
     return {
-        games, totalGames, playerNumberOfCurrentUser, fetchPlayingGames, play, quit, close
+        games, _game, board, totalGames, playerNumberOfCurrentUser, fetchPlayingGames, play, quit, close
     }
 })

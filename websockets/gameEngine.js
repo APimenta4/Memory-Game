@@ -1,18 +1,22 @@
 exports.createGameEngine = () => {
   const initGame = (newGame) => {
-    newGame.gameStatus = null;
+    newGame.gameStatus = 0;
     // statuses:
     // 0 - Playing
     // 1 - Player 1 wins
     // 2 - Player 2 wins
     newGame.currentPlayer = Math.random() < 0.5 ? 1 : 2;
-    newGame.board = newGame.board_size;
     // We have to split the string because the board size is received as a YxZ
     const [rows, columns] = newGame.board_size.split("x").map(Number);
     const totalCards = rows * columns;
 
     const pairs = Array.from({ length: totalCards / 2 }, (_, i) => i + 1);
-    newGame.board = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
+    let cardsNumber = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
+    
+    newGame.cards = []
+    cardsNumber.forEach(cardNumber => {
+        newGame.cards.push({value:cardNumber,isFlipped: false,isMatched:false})
+    });
 
     newGame.flippedCards = [];
     return newGame;
@@ -23,7 +27,7 @@ exports.createGameEngine = () => {
   // ------------------------------------------------------
 
   // Check if the board is complete (no further plays are possible)
-  const isBoardComplete = (game) => game.board.every((card) => card !== 0);
+  const isBoardComplete = (game) => game.cards.every((card) => card !== 0);
 
   // returns whether the game has ended or not
   const gameEnded = (game) => game.gameStatus > 0;
@@ -31,8 +35,8 @@ exports.createGameEngine = () => {
   // Check if the board is complete and change the gameStatus accordingly
   const changeGameStatus = (game) => {
     if (isBoardComplete(game)) {
-      const player1Score = game.board.filter((card) => card === 1).length;
-      const player2Score = game.board.filter((card) => card === 2).length;
+      const player1Score = game.cards.filter((card) => card === 1).length;
+      const player2Score = game.cards.filter((card) => card === 2).length;
       if (player1Score > player2Score) {
         game.gameStatus = 1;
       } else if (player2Score > player1Score) {
@@ -73,16 +77,16 @@ exports.createGameEngine = () => {
         errorMessage: "Invalid play: It is not your turn!",
       };
     }
-    if (game.board[index1] !== 0 || game.board[index2] !== 0) {
+    if (game.cards[index1] !== 0 || game.cards[index2] !== 0) {
       return {
         errorCode: 13,
         errorMessage:
           "Invalid play: one/both of the cards is/are already found!",
       };
     }
-    if (game.board[index1] === game.board[index2]) {
-      game.board[index1] = game.currentPlayer;
-      game.board[index2] = game.currentPlayer;
+    if (game.cards[index1] === game.cards[index2]) {
+      game.cards[index1] = game.currentPlayer;
+      game.cards[index2] = game.currentPlayer;
       game.flippedCards.push(index1);
       game.flippedCards.push(index2);
     } else {

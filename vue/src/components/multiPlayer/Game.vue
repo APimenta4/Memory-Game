@@ -1,32 +1,61 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useMemoryGame } from '../game/memoryGame.js';
-import { useGameStore } from '@/stores/game';
+import { useGamesStore } from '@/stores/games';
+import { useBoardStore } from '@/stores/board';
 import { useAuthStore } from '@/stores/auth.js';
 
-const storeGame = useGameStore();
+const storeGames = useGamesStore();
+const storeBoard = useBoardStore();
 const storeAuth = useAuthStore();
 
+const { cards, flipCard } = useMemoryGame(storeGames.board);
+
+storeGames.board = storeBoard.boards.find(board => board.id === storeGames._game.board_id)
+
+// console.log('storeGames._game.board_id =')
+// console.log(storeGames._game.board_id)
+
+// console.log('storeBoard.boards =')
+// console.log(storeBoard.boards)
+
+console.log('storeGames.board =')
+console.log(storeGames.board)
+
 onMounted(() => {
-    storeGame.board.rows = 4;
-    storeGame.board.cols = 3;
 });
 
-const { cards, flipCard } = useMemoryGame(storeGame.board);
+// testar function
+const flipCardWrapper = (index)=>{
+
+  flipCard(index)
+}
+
 </script>
+
 <template>
-    <div>
-        <div class="grid gap-4" :style="{ gridTemplateColumns: `repeat(${4}, 1fr)` }">
-            <div v-for="(card, index) in cards" :key="index"
-                class="w-20 h-28 bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer shadow-lg transition-transform transform hover:scale-105"
-                :class="{
-                    'bg-white': card.isFlipped || card.isMatched,
-                    'pointer-events-none': card.isMatched,
-                }" @click="flipCard(index)">
-                <span v-if="card.isFlipped || card.isMatched" class="text-xl font-semibold text-gray-900">
-                    {{ card.value }}
-                </span>
-            </div>
-        </div>
+  <div
+    class="h-full grid gap-4"
+    :style="{ gridTemplateColumns: `repeat(${storeGames.board.board_cols}, 1fr)` }"
+  >
+    <div
+      v-for="(card, index) in storeGames._game.cards"
+      :key="index"
+      class="bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer shadow-lg transition-transform transform hover:scale-105"
+      :class="{
+        'w-16 h-24': storeGames.board.board_cols===6,
+        'w-20 h-28': storeGames.board.board_cols!==6,
+        'bg-white': card.isFlipped || card.isMatched,
+        'pointer-events-none': card.isMatched,
+      }"
+      @click="flipCardWrapper(index)"
+    >
+      <span
+        v-if="card.isFlipped || card.isMatched"
+        class="text-xl font-semibold text-gray-900"
+      >
+        {{ card.value }}
+      </span>
     </div>
+  </div>
 </template>
