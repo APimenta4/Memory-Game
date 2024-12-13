@@ -247,13 +247,14 @@ io.on("connection", (socket) => {
       setTimeout(() => {
         gameEngine.flipDownCards(game);
         io.to(roomName).emit("gameChanged", game);
-      }, 1000);
-      if (gameEngine.gameEnded(game)) {
-        io.to(roomName).emit("gameEnded", game);
-      }
-      if (callback) {
-        callback(game);
-      }
+      }, 1000);     
+    }
+
+    if (gameEngine.gameEnded(game)) {
+      io.to(roomName).emit("gameEnded", game);
+    }
+    if (callback) {
+      callback(game);
     }
   });
 

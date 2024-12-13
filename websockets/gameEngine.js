@@ -2,7 +2,7 @@ exports.createGameEngine = () => {
   const initGame = (newGame) => {
     newGame.gameStatus = 0;
     // statuses:
-    // 0 - Playing
+    // 0 -> game has started and running
     // 1 - Player 1 wins
     // 2 - Player 2 wins
     newGame.currentPlayer = Math.random() < 0.5 ? 1 : 2;
@@ -22,6 +22,11 @@ exports.createGameEngine = () => {
     newGame.player1Score = 0;
     newGame.player2Score = 0;
     newGame.lastPairDiscoveredBy = null;
+
+    // turns count
+    newGame.player1Turns = 0;
+    newGame.player2Turns = 0;
+    
     return newGame;
   };
 
@@ -83,6 +88,13 @@ exports.createGameEngine = () => {
         errorMessage:
           "Invalid play: You cannot play a card that has already been flipped!",
       };
+    }
+    
+    // update turns count
+    if (playerSocketId == game.player1SocketId) {
+      game.player1Turns++;
+    } else {
+      game.player2Turns++;
     }
     
     if (game.flippedCardsIndex.length % 2 === 0) {

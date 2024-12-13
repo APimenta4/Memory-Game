@@ -5,6 +5,8 @@ import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useRouter } from 'vue-router'
+import { useGameStore } from '@/stores/game'
+import { useMemoryGame } from '@/components/game/memoryGame'
 
 export const useGamesStore = defineStore('games', () => {
     const storeAuth = useAuthStore()
@@ -12,6 +14,18 @@ export const useGamesStore = defineStore('games', () => {
     const { toast } = useToast()
     const router = useRouter()
     const socket = inject('socket')
+    const storeGame = useGameStore()
+    const { 
+        startTime,
+        cards,
+        isGameOver,
+        flipCard,
+        resetGame,
+        totalTurns,
+        pairsFound,
+        getCurrentTime,
+        getTotalTime
+      } = useMemoryGame(storeGame.board);
 
     const games = ref([])
 
@@ -30,10 +44,10 @@ export const useGamesStore = defineStore('games', () => {
     }
 
     const playerNumberOfCurrentUser = (game) => {
-        if (game.player1_id === storeAuth.userId) {
+        if (game.player1_id === storeAuth.user.id) {
             return 1
         }
-        if (game.player2_id === storeAuth.userId) {
+        if (game.player2_id === storeAuth.user.d) {
             return 2
         }
         return null
@@ -111,18 +125,15 @@ export const useGamesStore = defineStore('games', () => {
         router.push({
             path: "/multiplayer/game"
         });
+        startTime.value = Date.now()
     })
 
     socket.on('gameEnded', async (game) => {
         updateGame(game)
+        console.log('Game ended', JSON.stringify(game))
         // Player that created the game is responsible for updating on the database
         if (playerNumberOfCurrentUser(game) === 1) {
-            const APIresponse = await axios.patch('games/' + game.id, {
-                status: 'ended',
-                winner_id: game.gameStatus === 1 ? game.player1_id : (game.gameStatus === 2 ? game.player2_id : null),
-            })
-            const updatedGameOnDB = APIresponse.data.data
-            console.log('Game has ended and updated on the database: ', updatedGameOnDB)
+            await storeGame.updateGame({status: "E", winner_user_id: game.players[game.gameStatus-1].player_id, total_time: getTotalTime(), total_turns_winner: game[`player${playerNumberOfCurrentUser(game)}Turns`] })
         }
     })
 
@@ -138,6 +149,9 @@ export const useGamesStore = defineStore('games', () => {
             })
         }
         updateGame(payload.game)
+        console.log(storeAuth.user)
+        console.log(storeAuth.user.id)
+        await storeGame.updateGame({status: "E", winner_user_id: storeAuth.user.id, total_time: getTotalTime(), total_turns_winner: payload.game[`player${playerNumberOfCurrentUser(payload.game)}Turns`] })
     })
 
     socket.on('gameInterrupted', async (game) => {
@@ -147,12 +161,7 @@ export const useGamesStore = defineStore('games', () => {
             description: `Game #${game.id} was interrupted because your opponent has gone offline!`,
             variant: 'destructive'
         })
-        const APIresponse = await axios.patch('games/' + game.id, {
-            status: 'interrupted',
-            winner_id: game.gameStatus === 1 ? game.player1_id : (game.gameStatus === 2 ? game.player2_id : null),
-        })
-        const updatedGameOnDB = APIresponse.data.data
-        console.log('Game was interrupted and updated on the database: ', updatedGameOnDB)
+        await storeGame.updateGame({status: "I", total_time: getTotalTime()})
     })
     
     return {
