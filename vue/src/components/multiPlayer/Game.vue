@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
-import { useMemoryGame } from '../singlePlayer/memoryGame.js';
+import { useMemoryGame } from '../game/memoryGame.js';
 import { useGameStore } from '@/stores/game';
 import { useAuthStore } from '@/stores/auth.js';
 
@@ -12,7 +12,7 @@ onMounted(() => {
     storeGame.board.cols = 3;
 });
 
-const { cards, flipCard, resetGame } = useMemoryGame(storeGame.board);
+const { cards, flipCard } = useMemoryGame(storeGame.board);
 </script>
 <template>
     <div>
