@@ -43,7 +43,7 @@ exports.createGameEngine = () => {
       } else if (game.player2Score > game.player1Score) {
         game.gameStatus = 2;
       } else {
-        game.gameStatus = game.lastPairDiscoveredBy == game.player1SocketId ? 1 : 2;
+        game.gameStatus = game.lastPairDiscoveredBy == game.player1SocketId ? 2 : 1;
       }
     } else {
       game.gameStatus = 0;
@@ -95,7 +95,6 @@ exports.createGameEngine = () => {
       // match
       if (game.cards[previousIndex].value === game.cards[index].value) {
         game.flippedCardsIndex.push(index);
-        game.flippedCardsIndex.push(previousIndex);
         game.cards[index].isFlipped = true;
         game.cards[index].isMatched = true; 
         game.cards[previousIndex].isMatched = true;  
@@ -160,11 +159,19 @@ exports.createGameEngine = () => {
     return true;
   };
 
+  const flipDownCards = (game) => {
+    game.cards.forEach((card) => {
+      card.isFlipped = false;
+    });
+    game.flippedCardsIndex = [];
+  };
+
   return {
     initGame,
     gameEnded,
     play,
     quit,
     close,
+    flipDownCards,
   };
 };

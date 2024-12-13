@@ -19,7 +19,6 @@ onMounted(() => {
 
 const flipCardWrapper = (index)=>{
   storeGames.play(storeGames._game, index)
-  flipCard(index)
 }
 // watch _game
 //watch(() => storeGames._game, (newGame) => {

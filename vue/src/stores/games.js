@@ -74,9 +74,7 @@ export const useGamesStore = defineStore('games', () => {
             if (webSocketServerResponseHasError(response)) {
                 return
             }
-            console.log("Sent game:" + JSON.stringify(game))
             updateGame(response)
-            console.log("Updated game:" + JSON.stringify(response))
             _game.value = response
         })
     }
