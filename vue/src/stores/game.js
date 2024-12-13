@@ -19,9 +19,6 @@ export const useGameStore = defineStore('game', () => {
         try {
             const response = await axios.post('games', newGame)
             game.value = response.data.data
-
-            console.log("game.js:insertGame game.value=" + game.value)
-            console.log("game.js:insertGame response.data.data=" + response.data.data)
             return response.data.data
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error creating game!')

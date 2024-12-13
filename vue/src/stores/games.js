@@ -22,10 +22,11 @@ export const useGamesStore = defineStore('games', () => {
 
     // Use this function to update the game object in the games array
     const updateGame = (game) => {
-        const gameIndex = games.value.findIndex((g) => g.id === game.id)
-        if (gameIndex !== -1) {
-            games.value[gameIndex] = { ...game } // shallow copy
-        }
+        //const gameIndex = games.value.findIndex((g) => g.id === game.id)
+        //if (gameIndex !== -1) {
+        //    games.value[gameIndex] = { ...game } // shallow copy
+        //}
+        _game.value = game
     }
 
     const playerNumberOfCurrentUser = (game) => {
@@ -73,7 +74,10 @@ export const useGamesStore = defineStore('games', () => {
             if (webSocketServerResponseHasError(response)) {
                 return
             }
+            console.log("Sent game:" + JSON.stringify(game))
             updateGame(response)
+            console.log("Updated game:" + JSON.stringify(response))
+            _game.value = response
         })
     }
     
@@ -104,7 +108,6 @@ export const useGamesStore = defineStore('games', () => {
                 description: `Game #${game.id} has started!`,
             })
         }
-        console.log("Received game:" + JSON.stringify(game))
         _game.value = game
         fetchPlayingGames()
         router.push({

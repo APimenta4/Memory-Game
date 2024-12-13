@@ -232,7 +232,7 @@ io.on("connection", (socket) => {
       const roomName = 'game_' + playData.gameId
       // load game state from the game data stored directly on the room object:
       const game = socket.adapter.rooms.get(roomName).game
-      const playResult = gameEngine.play(game, playData.index1, playdata.index2, socket.id) 
+      const playResult = gameEngine.play(game, playData.index, socket.id) 
       if (playResult !== true) {
           if (callback) {
               callback(playResult)

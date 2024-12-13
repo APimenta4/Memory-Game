@@ -18,7 +18,10 @@ exports.createGameEngine = () => {
         newGame.cards.push({value:cardNumber,isFlipped: false,isMatched:false})
     });
 
-    newGame.flippedCards = [];
+    newGame.flippedCardsIndex = [];
+    newGame.player1Score = 0;
+    newGame.player2Score = 0;
+    newGame.lastPairDiscoveredBy = null;
     return newGame;
   };
 
@@ -27,7 +30,7 @@ exports.createGameEngine = () => {
   // ------------------------------------------------------
 
   // Check if the board is complete (no further plays are possible)
-  const isBoardComplete = (game) => game.cards.every((card) => card !== 0);
+  const isBoardComplete = (game) => game.cards.every((card) => card.isMatched);
 
   // returns whether the game has ended or not
   const gameEnded = (game) => game.gameStatus > 0;
@@ -35,15 +38,12 @@ exports.createGameEngine = () => {
   // Check if the board is complete and change the gameStatus accordingly
   const changeGameStatus = (game) => {
     if (isBoardComplete(game)) {
-      const player1Score = game.cards.filter((card) => card === 1).length;
-      const player2Score = game.cards.filter((card) => card === 2).length;
-      if (player1Score > player2Score) {
+      if (game.player1Score > game.player2Score) {
         game.gameStatus = 1;
-      } else if (player2Score > player1Score) {
+      } else if (game.player2Score > game.player1Score) {
         game.gameStatus = 2;
       } else {
-        // TODO Must untie
-        game.gameStatus = 3;
+        game.gameStatus = game.lastPairDiscoveredBy == game.player1SocketId ? 1 : 2;
       }
     } else {
       game.gameStatus = 0;
@@ -52,7 +52,7 @@ exports.createGameEngine = () => {
 
   // Plays a specific piece of the game (defined by its index)
   // Returns true if the game play is valid or an object with an error code and message otherwise
-  const play = (game, index1, index2, playerSocketId) => {
+  const play = (game, index, playerSocketId) => {
     if (
       playerSocketId != game.player1SocketId &&
       playerSocketId != game.player2SocketId
@@ -77,20 +77,41 @@ exports.createGameEngine = () => {
         errorMessage: "Invalid play: It is not your turn!",
       };
     }
-    if (game.cards[index1] !== 0 || game.cards[index2] !== 0) {
+    if (game.flippedCardsIndex.includes(index)) {
       return {
         errorCode: 13,
         errorMessage:
-          "Invalid play: one/both of the cards is/are already found!",
+          "Invalid play: You cannot play a card that has already been flipped!",
       };
     }
-    if (game.cards[index1] === game.cards[index2]) {
-      game.cards[index1] = game.currentPlayer;
-      game.cards[index2] = game.currentPlayer;
-      game.flippedCards.push(index1);
-      game.flippedCards.push(index2);
+    
+    if (game.flippedCardsIndex.length % 2 === 0) {
+      // first flip
+      game.cards[index].isFlipped = true;
+      game.flippedCardsIndex.push(index);
     } else {
-      game.currentPlayer = game.currentPlayer === 1 ? 2 : 1;
+      // second flip
+      const previousIndex = game.flippedCardsIndex[game.flippedCardsIndex.length - 1];
+      // match
+      if (game.cards[previousIndex].value === game.cards[index].value) {
+        game.flippedCardsIndex.push(index);
+        game.flippedCardsIndex.push(previousIndex);
+        game.cards[index].isFlipped = true;
+        game.cards[index].isMatched = true; 
+        game.cards[previousIndex].isMatched = true;  
+        if (playerSocketId == game.player1SocketId) {
+          game.player1Score++;
+        } else {
+          game.player2Score++;
+        }
+        game.lastPairDiscoveredBy = playerSocketId;
+        changeGameStatus(game);
+        return true;
+      }
+      // no match
+      game.cards[index].isFlipped = true;    
+      game.flippedCardsIndex.splice(game.flippedCardsIndex.indexOf(previousIndex), 1);
+      game.currentPlayer = game.currentPlayer == 1 ? 2 : 1;
     }
 
     changeGameStatus(game);

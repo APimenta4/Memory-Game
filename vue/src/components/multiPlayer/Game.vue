@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useMemoryGame } from '../game/memoryGame.js';
 import { useGamesStore } from '@/stores/games';
 import { useBoardStore } from '@/stores/board';
@@ -13,23 +13,20 @@ const { cards, flipCard } = useMemoryGame(storeGames.board);
 
 storeGames.board = storeBoard.boards.find(board => board.id === storeGames._game.board_id)
 
-// console.log('storeGames._game.board_id =')
-// console.log(storeGames._game.board_id)
-
-// console.log('storeBoard.boards =')
-// console.log(storeBoard.boards)
-
-console.log('storeGames.board =')
-console.log(storeGames.board)
-
 onMounted(() => {
 });
 
-// testar function
-const flipCardWrapper = (index)=>{
 
+const flipCardWrapper = (index)=>{
+  storeGames.play(storeGames._game, index)
   flipCard(index)
 }
+// watch _game
+//watch(() => storeGames._game, (newGame) => {
+//  if (newGame.isFinished) {
+//    storeGames.finishGame(newGame)
+//  }
+//})
 
 </script>
 

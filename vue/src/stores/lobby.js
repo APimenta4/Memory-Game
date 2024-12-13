@@ -79,8 +79,7 @@ export const useLobbyStore = defineStore('lobby', () => {
       updatedGame.player2SocketId = response.player2SocketId
 
       // After updating the game on the DB emit a message to the server to start the game
-      socket.emit('startGame', updatedGame, (startedGame) => {
-         console.log('Game has started', startedGame)
+      socket.emit('startGame', updatedGame, () => {
       })
     })
   }
