@@ -2,6 +2,7 @@
 
 <script setup>
 import { Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/components/ui/card"
+import { useAuthStore } from "@/stores/auth";
 
 const props = defineProps({
   time: {
@@ -25,6 +26,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const storeAuth = useAuthStore()
 const emit = defineEmits(['restart'])
 
 const restart = ()=>{
@@ -40,9 +43,9 @@ const restart = ()=>{
   class="h-fit">
     <CardHeader>
       <CardTitle>Game Status: 
-        <span class=" text-green-700" v-if="isGameOver"><b>Done</b></span>
-        <span class=" text-gray-400" v-if="time!=='0.0' && time && !isGameOver"><b>In Progress</b></span>
-        <span class=" text-gray-400" v-if="time==='0.0' || !time">Ready</span>
+        <span class="text-green-700" v-if="isGameOver"><b>Done</b></span>
+        <span class="text-gray-400" v-if="time!=='0.0' && time && !isGameOver"><b>In Progress</b></span>
+        <span class="text-gray-400" v-if="time==='0.0' || !time">Ready</span>
       </CardTitle>
     </CardHeader>
 
@@ -65,6 +68,11 @@ const restart = ()=>{
       </table>
     </CardContent>
     <CardFooter className="flex flex-col items-center mb-5">
+      <span 
+        v-show="!storeAuth.user"
+        class="text-gray-400 bold"
+        :class="{'text-gray-700 bold': isGameOver}"
+      >Login to be able to send your records</span>
       <div v-if="isGameOver" class="text-center mt-6">
         <p class="text-green-600 font-bold">🎉 Great memory! 🎉</p>
       </div>
