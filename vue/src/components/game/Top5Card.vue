@@ -1,9 +1,10 @@
 
 <script setup>
-import { useErrorStore } from '@/stores/error';
 import { onMounted, ref, watch } from 'vue';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter} from "@/components/ui/card"
+import { useErrorStore } from '@/stores/error';
 import { useGameStore } from '@/stores/game';
+import { useAuthStore } from '@/stores/auth';
 
 // TODO move to store
 import axios from 'axios';
@@ -27,6 +28,8 @@ watch(
 )
 
 const storeError = useErrorStore()
+const storeAuth = useAuthStore()
+
 const scoreboardTurns = ref([])
 const scoreboardTime = ref([])
 

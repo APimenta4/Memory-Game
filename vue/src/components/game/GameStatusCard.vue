@@ -26,8 +26,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const storeAuth = useAuthStore()
 const emit = defineEmits(['restart'])
 
 const restart = ()=>{
@@ -68,11 +66,6 @@ const restart = ()=>{
       </table>
     </CardContent>
     <CardFooter className="flex flex-col items-center mb-5">
-      <span 
-        v-show="!storeAuth.user"
-        class="text-gray-400 bold"
-        :class="{'text-gray-700 bold': isGameOver}"
-      >Login to be able to send your records</span>
       <div v-if="isGameOver" class="text-center mt-6">
         <p class="text-green-600 font-bold">🎉 Great memory! 🎉</p>
       </div>
