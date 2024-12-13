@@ -23,7 +23,7 @@ class ScoreboardController extends Controller
             ->where('board_id', $boardId)
             ->where('status', 'E')
             ->orderBy($scoreboardType)
-            ->orderBy('created_at', 'asc')
+            ->orderBy('began_at', 'asc')
             ->limit(5);
 
         if ($scope === ScoreboardScope::PERSONAL) {

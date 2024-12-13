@@ -67,10 +67,20 @@ onMounted(() => {
             active-class="text-blue-600 font-semibold">
             Global Scoreboard
           </RouterLink>
+          <RouterLink v-show="storeAuth.user" to="/transactions/buy-coins"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Buy coins
+          </RouterLink>
+          <RouterLink v-show="storeAuth.user" to="/transactions/history"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Transactions History
+          </RouterLink>
         </nav>
       </div>
     </header>
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-full mx-5 px-4 sm:px-6 lg:px-8">
       <RouterView />
     </main>
   </div>
