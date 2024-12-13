@@ -75,8 +75,7 @@ class GameController extends Controller
         $user = $request->user();
 
         $newStatus = GameStatus::tryFrom($data["status"]);
-
-        if ($game->status == GameStatus::ENDED || $game->status == GameStatus::INTERRUPTED) {
+        if ($game->status == GameStatus::ENDED || $game->status == GameStatus::INTERRUPTED){
             throw ValidationException::withMessages([
                 "status" =>
                     "Cannot change game #" .
