@@ -1,12 +1,15 @@
 exports.createLobby = () => { 
     const games = new Map()
 
-    const addGame = (user, socketId, gameDataId) => {
+    const addGame = (userId, userNickname, socketId, gameDataId, cols, rows) => {
         const game = {
             id: gameDataId,
-            created_at: Date.now(),
-            player1: user,
+            player1Id: userId,
+            player1Nickname: userNickname,
             player1SocketId: socketId,
+            cols: cols,
+            rows: rows,
+            lobby_timestamp: Date.now(),
         }
         games.set(gameDataId, game)
         return game

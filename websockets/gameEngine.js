@@ -5,28 +5,26 @@ exports.createGameEngine = () => {
     // 0 -> game has started and running
     // 1 - Player 1 wins
     // 2 - Player 2 wins
+
+    // randomize starting player
     newGame.currentPlayer = Math.random() < 0.5 ? 1 : 2;
-    // We have to split the string because the board size is received as a YxZ
-    const [rows, columns] = newGame.board_size.split("x").map(Number);
-    const totalCards = rows * columns;
+    const totalCards = newGame.rows * newGame.cols;
 
     const pairs = Array.from({ length: totalCards / 2 }, (_, i) => i + 1);
     let cardsNumber = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
     
+    newGame.flippedCardsIndex = [];
+    newGame.player1Score = 0;
+    newGame.player2Score = 0;
+    newGame.player1Turns = 0;
+    newGame.player2Turns = 0;
+    newGame.lastPairDiscoveredBy = null;
+
     newGame.cards = []
     cardsNumber.forEach(cardNumber => {
         newGame.cards.push({value:cardNumber,isFlipped: false,isMatched:false})
     });
 
-    newGame.flippedCardsIndex = [];
-    newGame.player1Score = 0;
-    newGame.player2Score = 0;
-    newGame.lastPairDiscoveredBy = null;
-
-    // turns count
-    newGame.player1Turns = 0;
-    newGame.player2Turns = 0;
-    
     return newGame;
   };
 
@@ -90,18 +88,19 @@ exports.createGameEngine = () => {
       };
     }
     
-    // update turns count
-    if (playerSocketId == game.player1SocketId) {
-      game.player1Turns++;
-    } else {
-      game.player2Turns++;
-    }
-    
+
+
     if (game.flippedCardsIndex.length % 2 === 0) {
       // first flip
       game.cards[index].isFlipped = true;
       game.flippedCardsIndex.push(index);
     } else {
+      // update turns count
+      if (playerSocketId == game.player1SocketId) {
+        game.player1Turns++;
+      } else {
+        game.player2Turns++;
+      }
       // second flip
       const previousIndex = game.flippedCardsIndex[game.flippedCardsIndex.length - 1];
       // match

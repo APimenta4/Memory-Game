@@ -137,11 +137,11 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("addGame", (gameDataId, callback) => {
+  socket.on("addGame", (gameDataId, cols, rows, callback) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return;
     }
-    const game = lobby.addGame(socket.data.user, socket.id, gameDataId);
+    const game = lobby.addGame(socket.data.user.id, socket.data.user.nickname, socket.id, gameDataId, cols, rows);
     io.to("lobby").emit("lobbyChanged", lobby.getGames());
     if (callback) {
       callback(game);
@@ -153,7 +153,7 @@ io.on("connection", (socket) => {
       return;
     }
     const game = lobby.getGame(id);
-    if (socket.data.user.id == game.player1.id) {
+    if (socket.data.user.id == game.player1Id) {
       if (callback) {
         callback({
           errorCode: 3,
@@ -162,7 +162,7 @@ io.on("connection", (socket) => {
       }
       return;
     }
-    game.player2 = socket.data.user;
+    game.player2Id = socket.data.user.id;
     game.player2SocketId = socket.id;
     lobby.removeGame(id);
     io.to("lobby").emit("lobbyChanged", lobby.getGames());
@@ -176,7 +176,7 @@ io.on("connection", (socket) => {
       return;
     }
     const game = lobby.getGame(id);
-    if (socket.data.user.id != game.player1.id) {
+    if (socket.data.user.id != game.player1Id) {
       if (callback) {
         callback({
           errorCode: 4,

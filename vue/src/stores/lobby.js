@@ -4,11 +4,13 @@ import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
 import { useGameStore } from '@/stores/game'
+import { useBoardStore } from '@/stores/board'
 
 export const useLobbyStore = defineStore('lobby', () => {
   const storeAuth = useAuthStore()
   const storeError = useErrorStore()
   const storeGame = useGameStore()
+  const storeBoard = useBoardStore()
   const socket = inject('socket')
 
   const games = ref([])
@@ -47,10 +49,15 @@ export const useLobbyStore = defineStore('lobby', () => {
       status: 'PE',
       board_id: chosenBoardId
     })
-    socket.emit('addGame', gameData.id, async (response) => {
+    console.log("Sending game to socket:" + gameData.id)
+    const board = storeBoard.boards.find(board => board.id === chosenBoardId)
+    const cols = board.board_cols
+    const rows = board.board_rows
+    socket.emit('addGame', gameData.id, cols, rows, async (response) => {
       if (webSocketServerResponseHasError(response)) {
         return
       }
+      console.log("Received data from socket:" + JSON.stringify(response))
     })
   }
 
@@ -74,24 +81,23 @@ export const useLobbyStore = defineStore('lobby', () => {
         return
       }
       // Update status and add player in pivot table
-      const updatedGame = await storeGame.updateGameWithId(id, {status: "PL"})
-      updatedGame.player1SocketId = response.player1SocketId
-      updatedGame.player2SocketId = response.player2SocketId
+      await storeGame.updateGameWithId(id, {status: "PL" })
 
+      console.log("Joining game:" + JSON.stringify(response))
       // After updating the game on the DB emit a message to the server to start the game
-      socket.emit('startGame', updatedGame, () => {
+      socket.emit('startGame', response, () => {
       })
     })
   }
 
   // Whether the current user can remove a specific game from the lobby
   const canRemoveGame = (game) => {
-    return game.player1.id === storeAuth.user.id
+    return game.player1Id === storeAuth.user.id
   }
 
   // Whether the current user can join a specific game from the lobby
   const canJoinGame = (game) => {
-    return game.player1.id !== storeAuth.user.id
+    return game.player1Id !== storeAuth.user.id
   }
 
   return {

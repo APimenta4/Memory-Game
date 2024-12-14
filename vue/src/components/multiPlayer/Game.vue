@@ -9,14 +9,6 @@ const storeGames = useGamesStore();
 const storeBoard = useBoardStore();
 const storeAuth = useAuthStore();
 
-const { cards, flipCard } = useMemoryGame(storeGames.board);
-
-storeGames.board = storeBoard.boards.find(board => board.id === storeGames._game.board_id)
-
-onMounted(() => {
-});
-
-
 const flipCardWrapper = (index)=>{
   storeGames.play(storeGames._game, index)
 }
@@ -32,7 +24,7 @@ const flipCardWrapper = (index)=>{
 <template>
   <div
     class="h-full grid gap-4"
-    :style="{ gridTemplateColumns: `repeat(${storeGames.board.board_cols}, 1fr)` }"
+    :style="{ gridTemplateColumns: `repeat(${storeGames._game.cols}, 1fr)` }"
   >
     <div
       v-for="(card, index) in storeGames._game.cards"

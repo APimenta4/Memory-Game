@@ -86,7 +86,7 @@ class GameController extends Controller
             ]);
         }
         else if ($game->status == GameStatus::PENDING){
-            // multiplayer
+            $game->began_at = now();
         }
         else if ($game->status == GameStatus::PLAYING) {
             if ($newStatus == GameStatus::ENDED) {
@@ -108,9 +108,6 @@ class GameController extends Controller
                 $game->total_turns_winner = $data["total_turns_winner"];
                 $checkNotification = true;
             }
-
-            $game->total_time = $data["total_time"];
-            $game->total_turns_winner = $data["total_turns_winner"];
         }
 
         $game->status = $newStatus;
