@@ -53,7 +53,7 @@ onMounted(() => {
           <RouterLink to="/multiplayer"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
-            Multiplayer Player
+            Multi Player
           </RouterLink>
           <RouterLink v-show="storeAuth.user" to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
