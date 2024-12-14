@@ -3,11 +3,14 @@ import { onMounted, provide, useTemplateRef } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBoardStore } from '@/stores/board'
 import Toaster from './components/ui/toast/Toaster.vue'
+import { useChatStore } from '@/stores/chat'
+
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
 
 const storeAuth = useAuthStore()
 const storeBoard = useBoardStore()
+const storeChat = useChatStore()
 
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
