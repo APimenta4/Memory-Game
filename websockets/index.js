@@ -238,6 +238,7 @@ io.on("connection", (socket) => {
       }
       return;
     }
+    console.log(`Current Player: ${game.currentPlayer}, Last Player: ${lastPlayer}`);
     // notify all users playing the game (in the room) that the game state has changed
     // Also, notify them that the game has ended
     io.to(roomName).emit("gameChanged", game);
@@ -245,7 +246,7 @@ io.on("connection", (socket) => {
     // If the player missed to match the cards, flip them back after 1 second
     if (game.currentPlayer !== lastPlayer) {
       setTimeout(() => {
-        gameEngine.flipDownCards(game);
+        gameEngine.flipDownCards(game, lastPlayer);
         io.to(roomName).emit("gameChanged", game);
       }, 1000);     
     }

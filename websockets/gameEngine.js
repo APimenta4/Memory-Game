@@ -46,7 +46,7 @@ exports.createGameEngine = () => {
       } else if (game.player2Score > game.player1Score) {
         game.gameStatus = 2;
       } else {
-        game.gameStatus = game.lastPairDiscoveredBy == game.player1SocketId ? 2 : 1;
+        game.gameStatus = game.currentPlayer == 1 ? 2 : 1;
       }
     } else {
       game.gameStatus = 0;
@@ -73,7 +73,8 @@ exports.createGameEngine = () => {
     }
     if (
       (game.currentPlayer == 1 && playerSocketId != game.player1SocketId) ||
-      (game.currentPlayer == 2 && playerSocketId != game.player2SocketId)
+      (game.currentPlayer == 2 && playerSocketId != game.player2SocketId) || 
+      (game.currentPlayer == 0)
     ) {
       return {
         errorCode: 12,
@@ -88,8 +89,6 @@ exports.createGameEngine = () => {
       };
     }
     
-
-
     if (game.flippedCardsIndex.length % 2 === 0) {
       // first flip
       game.cards[index].isFlipped = true;
@@ -121,10 +120,8 @@ exports.createGameEngine = () => {
       // no match
       game.cards[index].isFlipped = true;    
       game.flippedCardsIndex.splice(game.flippedCardsIndex.indexOf(previousIndex), 1);
-      game.currentPlayer = game.currentPlayer == 1 ? 2 : 1;
+      game.currentPlayer = 0;
     }
-
-    changeGameStatus(game);
     return true;
   };
 
@@ -170,11 +167,12 @@ exports.createGameEngine = () => {
     return true;
   };
 
-  const flipDownCards = (game) => {
+  const flipDownCards = (game, lastPlayer) => {
     game.cards.forEach((card) => {
       card.isFlipped = false;
     });
     game.flippedCardsIndex = [];
+    game.currentPlayer = lastPlayer == 1 ? 2 : 1;
   };
 
   return {
