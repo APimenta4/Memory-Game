@@ -49,7 +49,6 @@ export const useLobbyStore = defineStore('lobby', () => {
       status: 'PE',
       board_id: chosenBoardId
     })
-    console.log("Sending game to socket:" + gameData.id)
     const board = storeBoard.boards.find(board => board.id === chosenBoardId)
     const cols = board.board_cols
     const rows = board.board_rows
@@ -57,7 +56,6 @@ export const useLobbyStore = defineStore('lobby', () => {
       if (webSocketServerResponseHasError(response)) {
         return
       }
-      console.log("Received data from socket:" + JSON.stringify(response))
     })
   }
 
@@ -82,8 +80,7 @@ export const useLobbyStore = defineStore('lobby', () => {
       }
       // Update status and add player in pivot table
       await storeGame.updateGameWithId(id, {status: "PL" })
-
-      console.log("Joining game:" + JSON.stringify(response))
+      
       // After updating the game on the DB emit a message to the server to start the game
       socket.emit('startGame', response, () => {
       })

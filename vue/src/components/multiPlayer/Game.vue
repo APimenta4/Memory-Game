@@ -18,10 +18,17 @@ const flipCardWrapper = (index)=>{
 //    storeGames.finishGame(newGame)
 //  }
 //})
-
 </script>
 
 <template>
+  <div>
+    <div v-if="storeGames.myPlayerNumber === storeGames._game.currentPlayer" class="text-center text-lg font-bold mb-4">
+      Your turn
+    </div>
+    <div>
+      {{ storeGames.myPlayerNumber }}
+    </div>
+  </div>
   <div
     class="h-full grid gap-4"
     :style="{ gridTemplateColumns: `repeat(${storeGames._game.cols}, 1fr)` }"

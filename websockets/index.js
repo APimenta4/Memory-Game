@@ -16,7 +16,7 @@ const util = createUtil();
 const { createGameEngine } = require("./gameEngine");
 const gameEngine = createGameEngine();
 
-//gameEngine.initGame({ id: 1, player1: { id: 1, name: 'Player 1' } }) // test game????
+const turnTimers = new Map();
 
 httpServer.listen(PORT, () => {
   console.log(`listening on localhost:${PORT}`);
@@ -37,20 +37,18 @@ io.on("connection", (socket) => {
 
   socket.on("disconnecting", (reason) => {
     socket.rooms.forEach((room) => {
-      if (room == "lobby") {
+      if (room === "lobby") {
         lobby.leaveLobby(socket.id);
         io.to("lobby").emit("lobbyChanged", lobby.getGames());
       }
     });
     util.getRoomGamesPlaying(socket).forEach(([roomName, room]) => {
-      socket.leave(roomName);
-      if (!gameEngine.gameEnded(room.game)) {
-        //room.game.status = "interrupted";
-        //room.game.gameStatus = 3;
-        // TODO a nossa logica do jogo aqui
-
-        io.to(roomName).emit("gameInterrupted", room.game);
+      const game = room.game;
+      if (!gameEngine.gameEnded(game)) {
+        io.to(roomName).emit("gameInterrupted", game);
       }
+      clearTurnTimer(roomName); // Clear the timer for this game
+      socket.leave(roomName);
     });
   });
 
@@ -76,10 +74,6 @@ io.on("connection", (socket) => {
       util.getRoomGamesPlaying(socket).forEach(([roomName, room]) => {
         socket.leave(roomName);
         if (!gameEngine.gameEnded(room.game)) {
-          //room.game.status = "interrupted";
-          //room.game.gameStatus = 3;
-          // TODO a nossa logica do jogo aqui
-
           io.to(roomName).emit("gameInterrupted", room.game);
         }
       });
@@ -141,7 +135,14 @@ io.on("connection", (socket) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return;
     }
-    const game = lobby.addGame(socket.data.user.id, socket.data.user.nickname, socket.id, gameDataId, cols, rows);
+    const game = lobby.addGame(
+      socket.data.user.id,
+      socket.data.user.nickname,
+      socket.id,
+      gameDataId,
+      cols,
+      rows
+    );
     io.to("lobby").emit("lobbyChanged", lobby.getGames());
     if (callback) {
       callback(game);
@@ -200,6 +201,9 @@ io.on("connection", (socket) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return;
     }
+
+    console.log("Starting new game");
+
     const roomName = "game_" + clientGame.id;
     const game = gameEngine.initGame(clientGame);
     // join the 2 players to the game room
@@ -211,6 +215,14 @@ io.on("connection", (socket) => {
     io.to(roomName).emit("gameStarted", game);
     if (callback) {
       callback(game);
+    }
+    // Start the timer for the first player's turn
+    if(game.currentPlayer == 1) {
+      startTurnTimer(roomName, game.player1Id);
+      console.log("Starting timer for player: " + game.player1Id);
+    } else {
+      startTurnTimer(roomName, game.player2Id);
+      console.log("Starting timer for player: " + game.player2Id);
     }
   });
 
@@ -238,20 +250,23 @@ io.on("connection", (socket) => {
       }
       return;
     }
-    console.log(`Current Player: ${game.currentPlayer}, Last Player: ${lastPlayer}`);
     // notify all users playing the game (in the room) that the game state has changed
     // Also, notify them that the game has ended
     io.to(roomName).emit("gameChanged", game);
 
     // If the player missed to match the cards, flip them back after 1 second
+    // and change the current player to the other player inside flipDownCards method
     if (game.currentPlayer !== lastPlayer) {
       setTimeout(() => {
         gameEngine.flipDownCards(game, lastPlayer);
         io.to(roomName).emit("gameChanged", game);
-      }, 1000);     
+        resetTurnTimer(roomName, game.currentPlayer);
+      }, 1000);
     }
 
+    // Game is over
     if (gameEngine.gameEnded(game)) {
+      clearTurnTimer(roomName); // Clear the timer
       io.to(roomName).emit("gameEnded", game);
     }
     if (callback) {
@@ -277,12 +292,9 @@ io.on("connection", (socket) => {
     // Also, notify them that the game has been quit and the game has ended
     io.to(roomName).emit("gameChanged", game);
     io.to(roomName).emit("gameQuitted", {
-      userQuit: socket.data.user,
+      userQuit: socket.data.user.id,
       game: game,
     });
-    if (gameEngine.gameEnded(game)) {
-      io.to(roomName).emit("gameEnded", game);
-    }
     socket.leave(roomName);
     if (callback) {
       callback(game);
@@ -308,4 +320,53 @@ io.on("connection", (socket) => {
       callback(true);
     }
   });
+
+  // Turn timer functions
+
+  function startTurnTimer(roomName, playerId) {
+    clearTurnTimer(roomName); // Clear any existing timer
+    const timer = setTimeout(() => {
+      handleTurnTimeout(roomName, playerId);
+    }, 5000); // 20000 milliseconds = 20 seconds
+    turnTimers.set(roomName, timer);
+  }
+
+  function resetTurnTimer(roomName, playerId) {
+    console.log("Resetting timer for player: " + playerId);
+    startTurnTimer(roomName, playerId);
+  }
+
+  function clearTurnTimer(roomName) {
+    if (turnTimers.has(roomName)) {
+      clearTimeout(turnTimers.get(roomName));
+      turnTimers.delete(roomName);
+    }
+  }
+
+  function handleTurnTimeout(roomName, playerId) {
+    const room = socket.adapter.rooms.get(roomName);
+    if (!room || !room.game) {
+      return; // Exit if the room or game no longer exists
+    }
+
+    const game = room.game;
+
+    if (gameEngine.gameEnded(game)) {
+      console.log("Game has already ended!");
+      return;
+    }
+
+    if ((game.currentPlayer === 1 && playerId === game.player1Id) || 
+        (game.currentPlayer === 2 && playerId === game.player2Id)) {
+      // Player timed out, force quit the game
+      gameEngine.timeout(game, game.currentPlayer);
+      console.log("Player " + playerId + " has been forced to quit the game!");
+      io.to(roomName).emit("gameQuitted", {
+        userQuit: playerId,
+        game: game,
+      });
+    }
+    socket.leave(roomName);
+    clearTurnTimer(roomName);
+  }
 });

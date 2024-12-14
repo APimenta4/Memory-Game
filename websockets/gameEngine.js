@@ -18,7 +18,6 @@ exports.createGameEngine = () => {
     newGame.player2Score = 0;
     newGame.player1Turns = 0;
     newGame.player2Turns = 0;
-    newGame.lastPairDiscoveredBy = null;
 
     newGame.cards = []
     cardsNumber.forEach(cardNumber => {
@@ -113,7 +112,6 @@ exports.createGameEngine = () => {
         } else {
           game.player2Score++;
         }
-        game.lastPairDiscoveredBy = playerSocketId;
         changeGameStatus(game);
         return true;
       }
@@ -143,7 +141,19 @@ exports.createGameEngine = () => {
       };
     }
     game.gameStatus = playerSocketId == game.player1SocketId ? 2 : 1;
-    game.status = "ended";
+    return true;
+  };
+
+
+  // Timeout 
+  const timeout = (game, currentPlayer) => {
+    if (gameEnded(game)) {
+      return {
+        errorCode: 11,
+        errorMessage: "Game has already ended!",
+      };
+    }
+    game.gameStatus = currentPlayer == 1 ? 2 : 1;
     return true;
   };
 
@@ -182,5 +192,6 @@ exports.createGameEngine = () => {
     quit,
     close,
     flipDownCards,
+    timeout,
   };
 };

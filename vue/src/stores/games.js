@@ -33,6 +33,7 @@ export const useGamesStore = defineStore('games', () => {
   const games = ref([])
 
   const _game = ref({})
+  const myPlayerNumber = ref(null)
   const board = ref({})
 
   const totalGames = computed(() => games.value.length)
@@ -126,14 +127,16 @@ export const useGamesStore = defineStore('games', () => {
         title: 'Game Started',
         description: `Game #${game.id} has started!`
       })
+      myPlayerNumber.value = 1
+    } else {
+      myPlayerNumber.value = 2
     }
     _game.value = game
     fetchPlayingGames()
     router.push({
       path: '/multiplayer/game'
     })
-    startTime.value = Date.now()
-    
+    startTime.value = Date.now()  
   })
 
   socket.on('gameEnded', async (game) => {
@@ -155,20 +158,22 @@ export const useGamesStore = defineStore('games', () => {
   })
 
   socket.on('gameQuitted', async (payload) => {
-    if (payload.userQuit.id != storeAuth.userId) {
+    console.log("Payload"+ JSON.stringify(payload))
+    console.log('Game quitted', payload.userQuit, "My id", storeAuth.user.id)
+    updateGame(payload.game)
+    if(payload.userQuit != storeAuth.user.id) {
       toast({
         title: 'Game Quit',
         description: `${payload.userQuit.name} has quitted game #${payload.game.id}, giving you the win!`
       })
+      endTime.value = Date.now()
+      await storeGame.updateGame({
+        status: 'E',
+        winner_user_id: storeAuth.user.id,
+        total_time: getTotalTime(),
+        total_turns_winner: payload.game[`player${playerNumberOfCurrentUser(payload.game)}Turns`]
+      })
     }
-    updateGame(payload.game)
-    endTime.value = Date.now()
-    await storeGame.updateGame({
-      status: 'E',
-      winner_user_id: storeAuth.user.id,
-      total_time: getTotalTime(),
-      total_turns_winner: payload.game[`player${playerNumberOfCurrentUser(payload.game)}Turns`]
-    })
   })
 
   socket.on('gameInterrupted', async (game) => {
@@ -185,6 +190,7 @@ export const useGamesStore = defineStore('games', () => {
   return {
     games,
     _game,
+    myPlayerNumber,
     board,
     totalGames,
     playerNumberOfCurrentUser,
