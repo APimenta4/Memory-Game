@@ -165,6 +165,7 @@ io.on("connection", (socket) => {
     }
     game.player2Id = socket.data.user.id;
     game.player2SocketId = socket.id;
+    game.player2Nickname = socket.data.user.nickname;
     lobby.removeGame(id);
     io.to("lobby").emit("lobbyChanged", lobby.getGames());
     if (callback) {
@@ -201,9 +202,6 @@ io.on("connection", (socket) => {
     if (!util.checkAuthenticatedUser(socket, callback)) {
       return;
     }
-
-    console.log("Starting new game");
-
     const roomName = "game_" + clientGame.id;
     const game = gameEngine.initGame(clientGame);
     // join the 2 players to the game room
@@ -219,10 +217,8 @@ io.on("connection", (socket) => {
     // Start the timer for the first player's turn
     if(game.currentPlayer == 1) {
       startTurnTimer(roomName, game.player1Id);
-      console.log("Starting timer for player: " + game.player1Id);
     } else {
       startTurnTimer(roomName, game.player2Id);
-      console.log("Starting timer for player: " + game.player2Id);
     }
   });
 
@@ -293,7 +289,8 @@ io.on("connection", (socket) => {
     // Also, notify them that the game has been quit and the game has ended
     io.to(roomName).emit("gameChanged", game);
     io.to(roomName).emit("gameQuitted", {
-      userQuit: socket.data.user.id,
+      userQuitId: socket.data.user.id,
+      userQuitNickname: socket.data.user.nickname,
       game: game,
     });
     socket.leave(roomName);
@@ -328,12 +325,11 @@ io.on("connection", (socket) => {
     clearTurnTimer(roomName); // Clear any existing timer
     const timer = setTimeout(() => {
       handleTurnTimeout(roomName, playerId);
-    }, 5000); // 20000 milliseconds = 20 seconds
+    }, 20000); // 20000 milliseconds = 20 seconds
     turnTimers.set(roomName, timer);
   }
 
   function resetTurnTimer(roomName, playerId) {
-    console.log("Resetting timer for player: " + playerId);
     startTurnTimer(roomName, playerId);
   }
 
@@ -353,7 +349,6 @@ io.on("connection", (socket) => {
     const game = room.game;
 
     if (gameEngine.gameEnded(game)) {
-      console.log("Game has already ended!");
       return;
     }
 
@@ -361,9 +356,9 @@ io.on("connection", (socket) => {
         (game.currentPlayer === 2 && playerId === game.player2Id)) {
       // Player timed out, force quit the game
       gameEngine.timeout(game, game.currentPlayer);
-      console.log("Player " + playerId + " has been forced to quit the game!");
       io.to(roomName).emit("gameQuitted", {
-        userQuit: playerId,
+        userQuitId: playerId,
+        userQuitNickname: socket.data.user.nickname,
         game: game,
       });
     }

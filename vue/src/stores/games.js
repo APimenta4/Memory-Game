@@ -21,7 +21,6 @@ export const useGamesStore = defineStore('games', () => {
     startTime,
     endTime,
     cards,
-    isGameOver,
     flipCard,
     resetGame,
     totalTurns,
@@ -34,6 +33,8 @@ export const useGamesStore = defineStore('games', () => {
 
   const _game = ref({})
   const myPlayerNumber = ref(null)
+  const opponentPlayerNumber = ref(null)
+  const gameStatus = ref(null)
   const board = ref({})
 
   const totalGames = computed(() => games.value.length)
@@ -128,8 +129,10 @@ export const useGamesStore = defineStore('games', () => {
         description: `Game #${game.id} has started!`
       })
       myPlayerNumber.value = 1
+      opponentPlayerNumber.value = 2
     } else {
       myPlayerNumber.value = 2
+      opponentPlayerNumber.value = 1
     }
     _game.value = game
     fetchPlayingGames()
@@ -137,11 +140,13 @@ export const useGamesStore = defineStore('games', () => {
       path: '/multiplayer/game'
     })
     startTime.value = Date.now()  
+    gameStatus.value = "Playing"
   })
 
   socket.on('gameEnded', async (game) => {
     updateGame(game)
     endTime.value = Date.now()
+    gameStatus.value = "Ended"
     // Player that created the game is responsible for updating on the database
     if (playerNumberOfCurrentUser(game) === 1) {
       await storeGame.updateGame({
@@ -154,17 +159,16 @@ export const useGamesStore = defineStore('games', () => {
   })
 
   socket.on('gameChanged', (game) => {
+    console.log('gameChanged', game)
     updateGame(game)
   })
 
   socket.on('gameQuitted', async (payload) => {
-    console.log("Payload"+ JSON.stringify(payload))
-    console.log('Game quitted', payload.userQuit, "My id", storeAuth.user.id)
     updateGame(payload.game)
     if(payload.userQuit != storeAuth.user.id) {
       toast({
         title: 'Game Quit',
-        description: `${payload.userQuit.name} has quitted game #${payload.game.id}, giving you the win!`
+        description: `${payload.userQuitNickname} has quitted game #${payload.game.id}, giving you the win!`
       })
       endTime.value = Date.now()
       await storeGame.updateGame({
@@ -173,11 +177,13 @@ export const useGamesStore = defineStore('games', () => {
         total_time: getTotalTime(),
         total_turns_winner: payload.game[`player${playerNumberOfCurrentUser(payload.game)}Turns`]
       })
+      gameStatus.value = 'Opponent quit'
+    }else{
+      gameStatus.value = 'You quit'
     }
   })
 
   socket.on('gameInterrupted', async (game) => {
-    console.log('Game interrupted', JSON.stringify(game))
     updateGame(game)
     toast({
       title: 'Game Interruption',
@@ -190,9 +196,12 @@ export const useGamesStore = defineStore('games', () => {
   return {
     games,
     _game,
+    gameStatus,
     myPlayerNumber,
+    opponentPlayerNumber,
     board,
     totalGames,
+    getCurrentTime,
     playerNumberOfCurrentUser,
     fetchPlayingGames,
     play,
