@@ -29,16 +29,17 @@ onBeforeUnmount(() => clearInterval(updateTimeInterval));
 
 <template>
   <div>
-    <div v-if="storeGames.myPlayerNumber === storeGames._game.currentPlayer" class="text-2xl font-bold mt-6 mb-4">
-      Your turn
-    </div>
-    <div v-else class="text-2xl font-bold mt-6 mb-4">
-      {{ storeGames._game['player' + storeGames.opponentPlayerNumber + 'Nickname'] }}'s turn
-    </div>
-
     <Card>
       <CardHeader>
-        <CardTitle>Game Status: {{ storeGames.gameStatus }}</CardTitle>
+      <CardTitle>
+        Game Status: 
+        <span v-if="storeGames.myPlayerNumber === storeGames._game.currentPlayer">
+        Your turn
+        </span>
+        <span v-else>
+        {{ storeGames._game['player' + storeGames.opponentPlayerNumber + 'Nickname'] }}'s turn
+        </span>
+      </CardTitle>
       </CardHeader>
       <CardContent>
         <div :class="{ 'text-green-500': storeGames.myPlayerNumber === 1 }">
@@ -54,10 +55,6 @@ onBeforeUnmount(() => clearInterval(updateTimeInterval));
         </div>
       </CardContent>
     </Card>
-
-    <div>
-      {{ storeGames.myPlayerNumber }}
-    </div>
   </div>
   <div class="h-full grid gap-4" :style="{ gridTemplateColumns: `repeat(${storeGames._game.cols}, 1fr)` }">
     <div v-for="(card, index) in storeGames._game.cards" :key="index"
