@@ -29,7 +29,9 @@ const selectBoard = (boardId) => {
 }
 
 onMounted(()=>{
-  storeLobby.fetchGames()
+  if(storeAuth.user){
+    storeLobby.fetchGames()
+  }  
 })
 </script>
 
