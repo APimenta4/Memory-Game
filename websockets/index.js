@@ -260,7 +260,8 @@ io.on("connection", (socket) => {
       setTimeout(() => {
         gameEngine.flipDownCards(game, lastPlayer);
         io.to(roomName).emit("gameChanged", game);
-        resetTurnTimer(roomName, game.currentPlayer);
+        const currentPlayerId = game.currentPlayer === 1 ? game.player1Id : game.player2Id;
+        resetTurnTimer(roomName, currentPlayerId);
       }, 1000);
     }
 
@@ -369,4 +370,6 @@ io.on("connection", (socket) => {
     socket.leave(roomName);
     clearTurnTimer(roomName);
   }
+
+
 });
