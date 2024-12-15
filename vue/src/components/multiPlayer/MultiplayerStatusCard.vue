@@ -16,12 +16,7 @@ const storeGames = useGamesStore()
 
 const isDialogOpen = ref(false)
 const openDialog = () => {
-  if (storeGames._game.gameStatus != 0) {
-    isDialogOpen.value = false
-    router.back()
-  }
   isDialogOpen.value = true
-  console.log(storeGames._game.gameStatus)
 }
 const closeDialog = () => {
   isDialogOpen.value = false
@@ -80,8 +75,8 @@ const abandonGame = async () => {
         </tbody>
       </table>
 
-      <Button @click="openDialog" class="bg-red-500 mt-2 mr-3"> Quit Game </Button>
-      <Button v-if="storeGames._game.gameStatus != 0" @click="abandonGame" class="bg-gray-200 text-gray-700 mt-2">Return to lobby</Button>
+      <Button v-if="storeGames._game.gameStatus == 0" @click="openDialog" class="bg-red-500 mt-2 mr-3"> Quit Game </Button>
+      <Button v-else @click="abandonGame" class="bg-gray-200 text-gray-700 mt-2">Return to lobby</Button>
 
       <Dialog v-model:open="isDialogOpen">
         <DialogContent>

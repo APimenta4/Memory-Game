@@ -11,7 +11,8 @@ exports.createGameEngine = () => {
     const totalCards = newGame.rows * newGame.cols;
 
     const pairs = Array.from({ length: totalCards / 2 }, (_, i) => i + 1);
-    let cardsNumber = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
+    let cardsNumber = [...pairs, ...pairs]
+    //.sort(() => Math.random() - 0.5);
     
     newGame.flippedCardsIndex = [];
     newGame.player1Score = 0;

@@ -2,7 +2,18 @@
 import { useGamesStore } from '@/stores/games'
 import MultiplayerStatusCard from '@/components/multiPlayer/MultiplayerStatusCard.vue'
 import MultiplayerStatistics from '../MultiplayerStatistics.vue'
-import { onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = ref(null)
+
+onMounted(() => {
+  jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
+})
+
+const celebrate = () => {
+  
+}
 
 const storeGames = useGamesStore()
 
@@ -10,14 +21,33 @@ const flipCardWrapper = (index) => {
   storeGames.play(storeGames._game, index)
 }
 
-onUnmounted(async ()=>{
-  if(storeGames._game.gameStatus === 0){
+onUnmounted(async () => {
+  if (storeGames._game.gameStatus === 0) {
     await storeGames.quit(storeGames._game)
   }
 })
+
+watch(()=>storeGames.gameStatus, (newValue) => {
+  if (newValue === 'You win') {
+    jsConfetti.value
+    .addConfetti({
+      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲', '+500 AURA']
+    })
+    .then(() => {
+      jsConfetti.value.addConfetti()
+    })
+    
+  }else if (newValue === 'You lose') {
+    jsConfetti.value
+    .addConfetti({
+     emojis: ['❓', '💩', '🤡', '❓', '💩', '🤡', '-500 AURA']
+    })
+  }
+}, { deep: true })
 </script>
 
 <template>
+  <canvas id="confetti"></canvas>
   <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
     <div class="flex flex-col justify-start items-center max-h-full mt-5">
       <MultiplayerStatusCard />

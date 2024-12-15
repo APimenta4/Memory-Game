@@ -145,7 +145,14 @@ export const useGamesStore = defineStore('games', () => {
   socket.on('gameEnded', async (game) => {
     updateGame(game)
     endTime.value = Date.now()
-    gameStatus.value = "Ended"
+    if(game.gameStatus > 0){
+      if(playerNumberOfCurrentUser(game)==game.gameStatus){
+        gameStatus.value = "You win"
+      }else{
+        gameStatus.value = "You lose"
+      }
+    } 
+
     // Player that created the game is responsible for updating on the database
     if (playerNumberOfCurrentUser(game) === 1) {
       await storeGame.updateGame({
