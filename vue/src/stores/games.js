@@ -7,8 +7,7 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game'
 import { useMemoryGame } from '@/components/game/memoryGame'
-import { extendTailwindMerge } from 'tailwind-merge'
-import { end } from '@popperjs/core'
+
 
 export const useGamesStore = defineStore('games', () => {
   const storeAuth = useAuthStore()
@@ -159,13 +158,12 @@ export const useGamesStore = defineStore('games', () => {
   })
 
   socket.on('gameChanged', (game) => {
-    console.log('gameChanged', game)
     updateGame(game)
   })
 
   socket.on('gameQuitted', async (payload) => {
     updateGame(payload.game)
-    if(payload.userQuit != storeAuth.user.id) {
+    if(payload.userQuitId != storeAuth.user.id) {
       toast({
         title: 'Game Quit',
         description: `${payload.userQuitNickname} has quitted game #${payload.game.id}, giving you the win!`

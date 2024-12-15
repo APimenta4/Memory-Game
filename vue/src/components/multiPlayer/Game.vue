@@ -1,73 +1,68 @@
 <script setup>
-import { onMounted, onBeforeUnmount, watch, ref } from 'vue';
-import { useMemoryGame } from '../game/memoryGame.js';
-import { useGamesStore } from '@/stores/games';
-import { useBoardStore } from '@/stores/board';
-import { useAuthStore } from '@/stores/auth.js';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import GameStatusCard from "@/components/game/GameStatusCard.vue";
+import { useGamesStore } from '@/stores/games'
+import MultiplayerStatusCard from '@/components/multiPlayer/MultiplayerStatusCard.vue'
+import MultiplayerStatistics from '../MultiplayerStatistics.vue'
+import { onUnmounted } from 'vue'
 
-const storeGames = useGamesStore();
-const storeBoard = useBoardStore();
-const storeAuth = useAuthStore();
+const storeGames = useGamesStore()
 
 const flipCardWrapper = (index) => {
   storeGames.play(storeGames._game, index)
 }
 
-const currentTime = ref("")
-const updateCurrentTime = () => {
-  currentTime.value = storeGames.getCurrentTime();
-};
-
-const updateTimeInterval = setInterval(updateCurrentTime, 100);
-
-onBeforeUnmount(() => clearInterval(updateTimeInterval));
-
-
+onUnmounted(async ()=>{
+  if(storeGames._game.gameStatus === 0){
+    await storeGames.quit(storeGames._game)
+  }
+})
 </script>
 
 <template>
-  <div>
-    <Card>
-      <CardHeader>
-      <CardTitle>
-        Game Status: 
-        <span v-if="storeGames.myPlayerNumber === storeGames._game.currentPlayer">
-        Your turn
+  <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
+    <div class="flex flex-col justify-start items-center max-h-full mt-5">
+      <MultiplayerStatusCard />
+    </div>
+
+    <div class="flex flex-col items-center w-full md:w-3/4">
+      <h1 class="text-2xl font-bold mt-6 mb-4">
+        <span
+          :class="{
+            'text-green-500': storeGames.myPlayerNumber === storeGames._game.currentPlayer
+          }"
+        >
+          {{
+            storeGames.myPlayerNumber === storeGames._game.currentPlayer
+              ? 'Your turn'
+              : storeGames._game['player' + storeGames.opponentPlayerNumber + 'Nickname'] +
+                "'s turn"
+          }}
         </span>
-        <span v-else>
-        {{ storeGames._game['player' + storeGames.opponentPlayerNumber + 'Nickname'] }}'s turn
-        </span>
-      </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div :class="{ 'text-green-500': storeGames.myPlayerNumber === 1 }">
-          {{ storeGames._game.player1Nickname }} {{ storeGames._game.player1Score }}/{{ storeGames._game.cols *
-            storeGames._game.rows / 2 }} pairs found 🃏
+      </h1>
+      <div
+        class="h-full grid gap-4 justify-center"
+        :style="{ gridTemplateColumns: `repeat(${storeGames._game.cols}, 1fr)` }"
+      >
+        <div
+          v-for="(card, index) in storeGames._game.cards"
+          :key="index"
+          class="bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer shadow-lg transition-transform transform hover:scale-105"
+          :class="{
+            'w-16 h-24': storeGames.board.board_cols === 6,
+            'w-20 h-28': storeGames.board.board_cols !== 6,
+            'bg-white': card.isFlipped || card.isMatched,
+            'pointer-events-none': card.isMatched
+          }"
+          @click="flipCardWrapper(index)"
+        >
+          <span v-if="card.isFlipped || card.isMatched" class="text-xl font-semibold text-gray-900">
+            {{ card.value }}
+          </span>
         </div>
-        <div :class="{ 'text-green-500': storeGames.myPlayerNumber === 2 }">
-          {{ storeGames._game.player2Nickname }} {{ storeGames._game.player2Score }}/{{ storeGames._game.cols *
-            storeGames._game.rows / 2 }} pairs found 🃏
-        </div>
-        <div>
-          Time: {{ currentTime }}s
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-  <div class="h-full grid gap-4" :style="{ gridTemplateColumns: `repeat(${storeGames._game.cols}, 1fr)` }">
-    <div v-for="(card, index) in storeGames._game.cards" :key="index"
-      class="bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer shadow-lg transition-transform transform hover:scale-105"
-      :class="{
-        'w-16 h-24': storeGames.board.board_cols === 6,
-        'w-20 h-28': storeGames.board.board_cols !== 6,
-        'bg-white': card.isFlipped || card.isMatched,
-        'pointer-events-none': card.isMatched,
-      }" @click="flipCardWrapper(index)">
-      <span v-if="card.isFlipped || card.isMatched" class="text-xl font-semibold text-gray-900">
-        {{ card.value }}
-      </span>
+      </div>
+    </div>
+
+    <div class="flex flex-col justify-start items-center max-h-full mt-5">
+      <MultiplayerStatistics />
     </div>
   </div>
 </template>

@@ -92,7 +92,6 @@ onMounted(()=>{
 
 onBeforeUnmount(() => clearInterval(updateTimeInterval));
 onUnmounted(async ()=>{
-  //clearInterval(timer);
   console.log("isGameOver.value = " + isGameOver.value)
   console.log("storeAuth.user = " + storeAuth.user)
   if (!isGameOver.value && storeAuth.user){
