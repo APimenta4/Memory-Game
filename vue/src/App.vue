@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, provide, useTemplateRef } from 'vue'
+import { onMounted, provide, useTemplateRef, inject } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBoardStore } from '@/stores/board'
 import Toaster from './components/ui/toast/Toaster.vue'
@@ -11,13 +11,28 @@ import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
 const storeAuth = useAuthStore()
 const storeBoard = useBoardStore()
 const storeChat = useChatStore()
+const socket = inject('socket')
 
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
-
 const inputDialog = useTemplateRef('input-dialog')
 provide('inputDialog', inputDialog)
 
+let userDestination = null
+socket.on('privateMessage', (messageObj) => {
+    userDestination = messageObj.user   
+    inputDialog.value.open(
+        handleMessageFromInputDialog,
+        'Message from ' + messageObj.user.name,
+        `This is a private message sent by ${messageObj?.user?.name}!`,
+        'Reply Message', '',
+        'Close', 'Reply',
+        messageObj.message
+    )
+})
+const handleMessageFromInputDialog = (message) => {
+    storeChat.sendPrivateMessageToUser(userDestination, message)
+}
 
 onMounted(() => {
   storeBoard.fetchBoards()
@@ -26,6 +41,8 @@ onMounted(() => {
 
 <template>
   <Toaster />
+  <GlobalAlertDialog ref="alert-dialog"></GlobalAlertDialog>
+  <GlobalInputDialog ref="input-dialog"></GlobalInputDialog>
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -47,7 +47,6 @@ watch(()=>storeGames.gameStatus, (newValue) => {
 </script>
 
 <template>
-  <canvas id="confetti"></canvas>
   <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
     <div class="flex flex-col justify-start items-center max-h-full mt-5">
       <MultiplayerStatusCard />
@@ -95,4 +94,5 @@ watch(()=>storeGames.gameStatus, (newValue) => {
       <MultiplayerStatistics />
     </div>
   </div>
+  <canvas id="confetti"></canvas>
 </template>

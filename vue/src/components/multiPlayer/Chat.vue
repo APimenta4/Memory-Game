@@ -10,12 +10,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
 
 const storeChat = useChatStore()
 const storeAuth = useAuthStore()
+
 
 const inputDialog = inject('inputDialog')
 
@@ -32,7 +32,6 @@ const sendMessageToChat = () => {
 
 let userDestination = null
 const sendPrivateMessageToUser = (user) => {
-    console.log('sendPrivateMessageToUser', user)
     userDestination = null
     if (canSendMessageToUser(user)) {
         userDestination = user
