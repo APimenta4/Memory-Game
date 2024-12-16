@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h } from 'vue'
+import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h, inject } from 'vue'
 import { useMemoryGame } from '@/components/game/memoryGame'
 import { useGameStore } from '@/stores/game'
 import { useAuthStore } from '@/stores/auth'
@@ -13,6 +13,7 @@ import MemoryGame from '@/components/game/MemoryGame.vue'
 
 import router from '@/router'
 
+const socket = inject('socket')
 const { toast } = useToast()
 
 const storeGame = useGameStore()
@@ -58,17 +59,23 @@ const restartGame = async () => {
   resetGame()
 }
 
-watch(isGameOver, async (newValue) => {
-  if (newValue && storeAuth.user) {
-    await storeGame.updateGame({
-      status: 'E',
-      total_time: getTotalTime(),
-      total_turns_winner: totalTurns.value
-    })
+
+watch(
+  isGameOver,
+  async (newValue) => {
+    if (newValue && storeAuth.user){
+      await storeGame.updateGame({
+        status: "E",
+        total_time: getTotalTime(),
+        total_turns_winner: totalTurns.value,
+      })
+    }
+    storeGame.reloadRequestTop5 = !storeGame.reloadRequestTop5
+    storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
+
+    socket.emit('notification_alert', storeAuth.user.id)
   }
-  storeGame.reloadRequestTop5 = !storeGame.reloadRequestTop5
-  storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
-})
+)
 onMounted(() => {
   if (!storeGame.board.id) {
     router.push('/singleplayer')
