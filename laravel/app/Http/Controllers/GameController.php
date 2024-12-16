@@ -27,6 +27,7 @@ class GameController extends Controller
     public function store(GameRequest $request)
     {
         // TODO dont allow singleplayer games have multiplayers status?
+        $checkNotification = false;
         $user = $request->user();
         $newGame = new Game();
         $newGame->fill($request->validated());
@@ -43,8 +44,7 @@ class GameController extends Controller
                 $newGame->ended_at = now();
                 $newGame->began_at = Carbon::parse($newGame->ended_at)->subSeconds($newGame->total_time);
                 // notifications
-                $this->checkNewRecord($newGame, $user, 'total_time');
-                $this->checkNewRecord($newGame, $user, 'total_turns_winner');
+                $checkNotification = true;
                 break;
             default:
                 throw ValidationException::withMessages([
@@ -54,6 +54,11 @@ class GameController extends Controller
         }
 
         $newGame->save();
+        if ($checkNotification){
+            // notifications
+            $this->checkNewRecord($newGame, $user, 'total_time');
+            $this->checkNewRecord($newGame, $user, 'total_turns_winner');
+        }
         return new GameResource($newGame);
     }
 
