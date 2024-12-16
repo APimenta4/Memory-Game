@@ -91,7 +91,7 @@ class ScoreboardController extends Controller
             });
 
         // if the request is made by a logged in non-administrator user, calculate and append his personal position
-        if ($request->user('sanctum')) {
+        if ($request->user('sanctum') && $request->user('sanctum')->type != 'A') {
             $user = $request->user('sanctum');
             $userVictories = Game::where('winner_user_id', $user->id)
                 ->where('status', 'E')

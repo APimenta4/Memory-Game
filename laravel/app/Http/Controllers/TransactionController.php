@@ -10,6 +10,7 @@ use App\Http\Resources\TransactionResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Notifications\TransactionNotification;
+use App\Http\Requests\TransactionHistoryRequest;
 
 
 
@@ -17,7 +18,7 @@ class TransactionController extends Controller
 {
 
     public function store(TransactionRequest $request)
-    {   
+    {
         $newTransaction = new Transaction();
         $newTransaction->fill($request->validated());
         $newTransaction->transaction_datetime = now();
@@ -50,11 +51,11 @@ class TransactionController extends Controller
             $brainCoins = $validated['value'] * 10;
             $user = $request->user();
 
-           
+
             $user->brain_coins_balance += $brainCoins;
             $user->save();
 
-          
+
             $transaction = Transaction::create([
                 'transaction_datetime' => now(),
                 'user_id' => $user->id,
@@ -75,37 +76,43 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Transaction failed'], 500);
         }
     }
-    
 
-    public function transactionHistory(Request $request)
+
+    public function transactionHistory(TransactionHistoryRequest $request)
     {
-        $transactions = Transaction::where('user_id', $request->user()->id)
-            ->orderBy('transaction_datetime', 'desc')
-            ->get();
+        $user = $request->user();
 
-        return response()->json($transactions);
+        $validated = $request->validated();
+        $perPage = $validated['per_page'] ?? 15; 
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+        $type = $validated['type'] ?? null;
+
+        // Check if the user is an Administrator, and if he is, show all games
+        if ($user->type === 'A') {
+            $query = Transaction::orderBy('transaction_datetime', 'desc');
+        } else {
+            // if they aren't, show only the user's games
+            $query = Transaction::where('user_id', $user->id)->orderBy('transaction_datetime', 'desc');
+        }
+        
+        if ($startDate) {
+            $query->whereDate('transaction_datetime', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('transaction_datetime', '<=', $endDate);
+        }
+
+        if ($type) {
+            $query->where('type', $type);
+        }
+
+        $transactions = $query->paginate($perPage);
+        return TransactionResource::collection($transactions);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(TransactionRequest $request, Transaction $transaction)
-    {
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+
 }
