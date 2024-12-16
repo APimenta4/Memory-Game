@@ -1,22 +1,33 @@
 <script setup>
-import { onMounted, provide, useTemplateRef, inject } from 'vue'
+import { onMounted, provide, useTemplateRef, ref, inject } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBoardStore } from '@/stores/board'
 import Toaster from './components/ui/toast/Toaster.vue'
+import { useToast } from '@/components/ui/toast/use-toast'
+import { useErrorStore } from './stores/error'
 import { useChatStore } from '@/stores/chat'
+import axios from 'axios';
 
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
 
+
+
 const storeAuth = useAuthStore()
 const storeBoard = useBoardStore()
 const storeChat = useChatStore()
+const storeError = useErrorStore()
 const socket = inject('socket')
+const { toast } = useToast()
+
+const notifications = ref([])
 
 const alertDialog = useTemplateRef('alert-dialog')
 provide('alertDialog', alertDialog)
 const inputDialog = useTemplateRef('input-dialog')
 provide('inputDialog', inputDialog)
+
+
 
 let userDestination = null
 socket.on('privateMessage', (messageObj) => {
@@ -34,8 +45,60 @@ const handleMessageFromInputDialog = (message) => {
     storeChat.sendPrivateMessageToUser(userDestination, message)
 }
 
-onMounted(() => {
+const fetchNotifications = () => {
+    storeError.resetMessages()
+    try {
+        const response = axios.get('notifications/unread')
+        console.log(response.data)
+        notifications.value = response.data.unread_notifications
+        return true
+    }
+    catch (e) {
+      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching boards!')
+      return false
+    }
+}
+
+onMounted( async () => {
+  
   storeBoard.fetchBoards()
+  socket.on('notification',()=>{
+    let txtTitle;
+    let txtDescription;
+    console.log("Notifications")
+    fetchNotifications()
+    console.log(notifications.value)
+    notifications.value.forEach((notification)=>{
+      if (notification.data === null | notification.type === null){
+        return
+      }
+      if (notification.type.includes("TopScoreNotification")){
+        // Game Record
+        if (notification.data.scope === "personal"){
+          txtTitle = 'Beat your personal record'
+        } else {
+          txtTitle = 'You Beat a Global record'
+        }
+
+        if (notification.data.score_type === "total_time"){
+          txtDescription = "Top"+notification.data.position+" Time in "+notification.data.board_size+". Total Time "+notification.data.score+"s"
+        } else {
+          txtDescription = "Top"+notification.data.position+" Turns in "+notification.data.board_size+". Total Time "+notification.data.score+"s"
+        }
+
+      }
+      else{
+        // Transaction
+        txtTitle = 'Transaction Successful'
+        txtDescription = "Spent "+notification.data.euros+"€ for "+notification.data.brain_coins+" coins via "+notification.data.payment_type
+      }
+    })
+
+    toast({
+      title: txtTitle,
+      description: txtDescription,
+    })
+  })
 })
 </script>
 

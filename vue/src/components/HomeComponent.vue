@@ -1,21 +1,88 @@
 <script setup>
+import router from '@/router';
+import { useAuthStore } from '@/stores/auth';
+
+const authstore = useAuthStore();
+
+const navigateTo = (route) => {
+  router.push(route);
+};
 </script>
 
-
 <template>
-    <div class="flex flex-col items-center text-center space-y-8 py-12">
-        <div class="w-full px-4">
-            <img src="/estg_h-01.png" alt="ESTG Logo" class="w-full h-auto object-contain mx-auto" />
-        </div>
-
-        <div class="max-w-2xl mx-auto px-4 space-y-4">
-            <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">
-                DAD Intermediate Submission
-            </h1>
-
-            <p class="text-lg text-gray-600 max-w-prose">
-                This application allows for testing the full stack needed for the DAD Project
-            </p>
-        </div>
+  <div class="flex flex-col items-center text-center space-y-8 py-12">
+    <!-- Logo and Header -->
+    <div class="w-full px-4">
+      <img src="/estg_h-01.png" alt="ESTG Logo" class="w-48 h-auto object-contain mx-auto" />
+      <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">Memory Game</h1>
     </div>
+
+    <!-- Login Section -->
+    <div 
+      class="max-w-2xl mx-auto px-4 space-y-4"
+      v-show="!authstore.user"
+    >
+      <h2 class="text-xl font-semibold text-gray-800">Login</h2>
+      <button 
+        class="w-full py-3 px-6 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition"
+        @click="navigateTo('/testers/laravel')">
+        Login
+      </button>
+    </div>
+    <!-- Horizontal Sections for Categories, Games, and Scoreboard -->
+    <div class="max-w-2xl mx-auto px-4 space-y-8">
+      <div class="flex justify-center space-x-8">
+        <div class="max-w-2xl mx-auto px-4 space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">Games</h2>
+          <button 
+            class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+            @click="navigateTo('/singleplayer')">
+            Singleplayer
+          </button>
+          <button 
+            class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+            @click="navigateTo('multiplayer')">
+            Multiplayer
+          </button>
+        </div>
+        <div class="max-w-2xl mx-auto px-4 space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">Scoreboard</h2>
+          <button 
+            v-show="authstore.user"
+            class="w-full py-3 px-6 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
+            @click="navigateTo('/scoreboard/personal')">
+            Scoreboard Personal
+          </button>
+          <button 
+            class="w-full py-3 px-6 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
+            @click="navigateTo('/scoreboard/global')">
+            Scoreboard Global
+          </button>
+        </div>
+        <div v-show="authstore.user"
+        class="max-w-2xl mx-auto px-4 space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">History</h2>
+          <button 
+            class="w-full py-3 px-6 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 transition"
+            @click="navigateTo('/history')">
+            Games History
+          </button>
+          <button 
+            class="w-full py-3 px-6 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 transition"
+            @click="navigateTo('/transactions/history')">
+            Transactions History
+          </button>
+        </div>
+        <div v-show="authstore.user"
+        class="max-w-2xl mx-auto px-4 space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">Transactions</h2>
+          <button 
+            class="w-full py-3 px-6 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+            @click="navigateTo('/transactions/buy-coins')">
+            Buy Coins
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

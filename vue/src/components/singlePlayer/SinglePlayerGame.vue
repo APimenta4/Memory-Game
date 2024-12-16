@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h } from 'vue'
+import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h, inject } from 'vue'
 import { useMemoryGame } from '@/components/game/memoryGame'
 import { useGameStore } from '@/stores/game'
 import { useAuthStore } from '@/stores/auth'
@@ -12,6 +12,12 @@ import GameStatusCard from '@/components/game/GameStatusCard.vue'
 import MemoryGame from '@/components/game/MemoryGame.vue'
 
 import router from '@/router'
+
+const socket = inject('socket')
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = ref(null)
+
 
 const { toast } = useToast()
 
@@ -59,17 +65,28 @@ const restartGame = async () => {
 }
 
 watch(isGameOver, async (newValue) => {
-  if (newValue && storeAuth.user) {
-    await storeGame.updateGame({
-      status: 'E',
-      total_time: getTotalTime(),
-      total_turns_winner: totalTurns.value
+  if(newValue){
+    if (storeAuth.user) {
+      await storeGame.updateGame({
+        status: 'E',
+        total_time: getTotalTime(),
+        total_turns_winner: totalTurns.value
+      })
+      socket.emit('notification_alert')
+    }
+    jsConfetti.value
+    .addConfetti({
+      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲']
     })
+    .then(() => {
+      jsConfetti.value.addConfetti()
+    })
+    storeGame.reloadRequestTop5 = !storeGame.reloadRequestTop5
+    storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
   }
-  storeGame.reloadRequestTop5 = !storeGame.reloadRequestTop5
-  storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
 })
 onMounted(() => {
+  jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
   if (!storeGame.board.id) {
     router.push('/singleplayer')
     return
