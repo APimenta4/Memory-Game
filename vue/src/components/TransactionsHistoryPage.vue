@@ -207,34 +207,39 @@ watch(
           </PaginationList>
         </Pagination>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead v-if="authStore.user.type === 'A'" style="width: 150px"
-              >User's Name</TableHead
-            >
-            <TableHead>Type</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead>Amount (€)</TableHead>
-            <TableHead>Brain Coins</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow v-for="transaction in transactions" :key="transaction.id">
-            <TableCell style="width: 175px">{{
-              new Date(transaction.transaction_datetime).toLocaleString()
-            }}</TableCell>
-            <TableCell v-if="authStore.user.type === 'A'" style="width: 275px">{{
-              transaction.user_name
-            }}</TableCell>
-            <TableCell>{{ transaction.type }}</TableCell>
-            <TableCell>{{ transaction.payment_type || '—' }}</TableCell>
-            <TableCell>{{ transaction.euros ? transaction.euros + '€' : '—' }}</TableCell>
-            <TableCell style="width: 150px">{{ transaction.brain_coins }} 🟡</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+      <div v-if="transactions.length === 0" class="mt-6 ml-5">
+        <p>No transactions found for the specified criteria :(</p>
+      </div>
+      <div v-else>
+        <Table>
+          <TableHeader>
+        <TableRow>
+          <TableHead>Date</TableHead>
+          <TableHead v-if="authStore.user.type === 'A'" style="width: 150px"
+            >User's Name</TableHead
+          >
+          <TableHead>Type</TableHead>
+          <TableHead>Method</TableHead>
+          <TableHead>Amount (€)</TableHead>
+          <TableHead>Brain Coins</TableHead>
+        </TableRow>
+          </TableHeader>
+          <TableBody>
+        <TableRow v-for="transaction in transactions" :key="transaction.id">
+          <TableCell style="width: 175px">{{
+            new Date(transaction.transaction_datetime).toLocaleString()
+          }}</TableCell>
+          <TableCell v-if="authStore.user.type === 'A'" style="width: 275px">{{
+            transaction.user_name
+          }}</TableCell>
+          <TableCell>{{ transaction.type }}</TableCell>
+          <TableCell>{{ transaction.payment_type || '—' }}</TableCell>
+          <TableCell>{{ transaction.euros ? transaction.euros + '€' : '—' }}</TableCell>
+          <TableCell style="width: 150px">{{ transaction.brain_coins }} 🟡</TableCell>
+        </TableRow>
+          </TableBody>
+        </Table>
+      </div>
     </div>
   </div>
 </template>
