@@ -13,6 +13,11 @@ import MemoryGame from '@/components/game/MemoryGame.vue'
 
 import router from '@/router'
 
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = ref(null)
+
+
 const { toast } = useToast()
 
 const storeGame = useGameStore()
@@ -59,17 +64,28 @@ const restartGame = async () => {
 }
 
 watch(isGameOver, async (newValue) => {
-  if (newValue && storeAuth.user) {
-    await storeGame.updateGame({
-      status: 'E',
-      total_time: getTotalTime(),
-      total_turns_winner: totalTurns.value
+  if(newValue){
+    if (storeAuth.user) {
+      await storeGame.updateGame({
+        status: 'E',
+        total_time: getTotalTime(),
+        total_turns_winner: totalTurns.value
+      })
+    }
+    jsConfetti.value
+    .addConfetti({
+      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲']
     })
+    .then(() => {
+      jsConfetti.value.addConfetti()
+    })
+    
+    storeGame.reloadRequestTop5 = !storeGame.reloadRequestTop5
+    storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
   }
-  storeGame.reloadRequestTop5 = !storeGame.reloadRequestTop5
-  storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
 })
 onMounted(() => {
+  jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
   if (!storeGame.board.id) {
     router.push('/singleplayer')
     return
