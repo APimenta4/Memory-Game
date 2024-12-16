@@ -12,6 +12,9 @@ class HistoryController extends Controller
 
     public function index(HistoryRequest $request)
     {
+
+        // TODO if 'A'
+
         $validated = $request->validated();
         $user = $request->user();
         $type = $validated['type'] ?? null;

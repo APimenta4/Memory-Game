@@ -35,6 +35,9 @@ class ScoreboardController extends Controller
 
     public function indexPersonalScoreboard(ScoreboardRequest $request)
     {
+        if($request->user('sanctum')?->type=='A'){
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         return $this->singleplayerScoreboard($request, ScoreboardScope::PERSONAL);
     }
 
@@ -46,6 +49,9 @@ class ScoreboardController extends Controller
     public function personalMultiplayerStatistics(Request $request)
     {
         $user = $request->user();
+        if($user->type=='A'){
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         $victories = $user->multiplayerGames()
             ->where('winner_user_id', $user->id)
             ->count();
@@ -84,7 +90,7 @@ class ScoreboardController extends Controller
                 ];
             });
 
-        // if the request is made by a logged in user, calculate and append his personal position
+        // if the request is made by a logged in non-administrator user, calculate and append his personal position
         if ($request->user('sanctum')) {
             $user = $request->user('sanctum');
             $userVictories = Game::where('winner_user_id', $user->id)

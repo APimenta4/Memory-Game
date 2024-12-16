@@ -327,8 +327,10 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                       <p><strong>Players:</strong></p>
                       <div v-for="player in game.players" :key="player.id" class="player-name">
                         <span>
-                          <span v-if="player.player_nickname === game?.winner_nickname">👑</span>
-                          {{ player.player_nickname }} - {{ player.pairs_discovered || 0 }} Pairs Discovered
+                            <span v-if="player.player_nickname === game?.winner_nickname">👑</span>
+                            <span v-else>🤡</span>
+                            {{ player.player_nickname }}
+                            <span v-if="player.player_nickname === game?.winner_nickname"> - Won in {{ game.total_turns_winner || 0 }} turns</span>
                         </span>
                       </div>
                     </div>

@@ -64,7 +64,8 @@ class GameController extends Controller
 
     public function show(Game $game)
     {
-        return new GameResource($game);
+        // not implemented
+        //return new GameResource($game);
     }
 
 

@@ -33,7 +33,7 @@ onMounted( () => {
             active-class="text-blue-600 font-semibold">
             WebSockets Tester
           </RouterLink>
-          <RouterLink to="/singleplayer"
+          <RouterLink v-show="storeAuth.user && storeAuth.user?.type != 'A'" to="/singleplayer"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Single Player
@@ -41,19 +41,21 @@ onMounted( () => {
           <RouterLink v-show="storeAuth.user" to="/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
-            My History
+            <span v-if="storeAuth.user?.type != 'A'">My </span>Game History
           </RouterLink>
-          <RouterLink v-show="storeAuth.user" to="/scoreboard/personal"
+          <RouterLink v-show="storeAuth.user && storeAuth.user.type !='A'" to="/scoreboard/personal"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Personal Scoreboard
           </RouterLink>
+          <!--Multiplayer goes here
+          Also protect it for administrators -->
           <RouterLink to="/scoreboard/global"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Global Scoreboard
           </RouterLink>
-          <RouterLink v-show="storeAuth.user" to="/transactions/buy-coins"
+          <RouterLink v-show="storeAuth.user && storeAuth.user.type !='A'" to="/transactions/buy-coins"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Buy coins
@@ -61,8 +63,10 @@ onMounted( () => {
           <RouterLink v-show="storeAuth.user" to="/transactions/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
-            Transactions History
+            <span v-if="storeAuth.user?.type != 'A'">My </span>Transaction History
           </RouterLink>
+          <!-- <RouterLink>
+          </RouterLink> -->
         </nav>
       </div>
     </header>

@@ -40,7 +40,7 @@ const router = createRouter({
         component: SinglePlayerGame,
     },
     {
-      path: '/history', // The URL path for the new page
+      path: '/history',
       name: 'history',
       component: HistoryPage,
     },
