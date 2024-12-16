@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
@@ -12,14 +12,10 @@ export const useGameStore = defineStore('game', () => {
     const reloadRequestTop5 = ref(false)
     const reloadRequestMemoryGame = ref(false)
 
-    
-
     const insertGame = async (newGame) => {
         storeError.resetMessages()
-        try {
-            
+        try {        
             const response = await axios.post('games', newGame)
-            console.log("comentado")
             game.value = response.data.data
             return response.data.data
         } catch (e) {

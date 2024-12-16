@@ -1,6 +1,5 @@
 import { ref, computed, inject } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/components/ui/toast/use-toast'
@@ -19,32 +18,23 @@ export const useGamesStore = defineStore('games', () => {
   const {
     startTime,
     endTime,
-    cards,
-    flipCard,
-    resetGame,
-    totalTurns,
-    pairsFound,
     getCurrentTime,
     getTotalTime
   } = useMemoryGame(storeGame.board)
 
   const games = ref([])
-
-  const _game = ref({})
+  const currentGame = ref({})
   const myPlayerNumber = ref(null)
   const opponentPlayerNumber = ref(null)
   const gameStatus = ref(null)
   const board = ref({})
+  const isClosed = ref(false)
 
   const totalGames = computed(() => games.value.length)
 
-  // Use this function to update the game object in the games array
+  // Update the local copy of the game
   const updateGame = (game) => {
-    //const gameIndex = games.value.findIndex((g) => g.id === game.id)
-    //if (gameIndex !== -1) {
-    //    games.value[gameIndex] = { ...game } // shallow copy
-    //}
-    _game.value = game
+    currentGame.value = game
   }
 
   const playerNumberOfCurrentUser = (game) => {
@@ -96,7 +86,7 @@ export const useGamesStore = defineStore('games', () => {
           return
         }
         updateGame(response)
-        _game.value = response
+        currentGame.value = response
       }
     )
   }
@@ -133,7 +123,7 @@ export const useGamesStore = defineStore('games', () => {
       myPlayerNumber.value = 2
       opponentPlayerNumber.value = 1
     }
-    _game.value = game
+    currentGame.value = game
     fetchPlayingGames()
     router.push({
       path: '/multiplayer/game'
@@ -200,12 +190,13 @@ export const useGamesStore = defineStore('games', () => {
 
   return {
     games,
-    _game,
+    currentGame,
     gameStatus,
     myPlayerNumber,
     opponentPlayerNumber,
     board,
     totalGames,
+    isClosed,
     getCurrentTime,
     playerNumberOfCurrentUser,
     fetchPlayingGames,
