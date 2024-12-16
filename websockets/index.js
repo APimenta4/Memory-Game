@@ -325,7 +325,11 @@ io.on("connection", (socket) => {
     }
     const roomName = "game_" + gameId;
     // load game state from the game data stored directly on the room object:
-    const game = socket.adapter.rooms.get(roomName).game;
+    const socketRoom = socket.adapter.rooms.get(roomName)
+    if (!socketRoom){
+        return
+    }
+    const game = socketRoom.game;
     const closeResult = gameEngine.close(game, socket.id);
     if (closeResult !== true) {
       if (callback) {

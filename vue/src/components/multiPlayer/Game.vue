@@ -31,7 +31,7 @@ watch(()=>storeGames.gameStatus, (newValue) => {
   if (newValue === 'You win') {
     jsConfetti.value
     .addConfetti({
-      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲']
+      emojis: ['🏆','✅','🧠','💪','🧠']
     })
     .then(() => {
       jsConfetti.value.addConfetti()

@@ -19,7 +19,7 @@ onMounted(() => {
       Boards
     </h1>
     <div v-show="storeBoard.totalBoards > 0" class="text-gray-500 text-center">
-      The coin will be used when you flip the first card
+      The brain coin will be used when you flip the first card
     </div>
     <div class="flex justify-center w-full pb-4 items-center">
       <BoardList 

@@ -76,7 +76,7 @@ watch(isGameOver, async (newValue) => {
     }
     jsConfetti.value
     .addConfetti({
-      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲']
+      emojis:  ['🏆','✅','🧠','💪','🧠']
     })
     .then(() => {
       jsConfetti.value.addConfetti()

@@ -235,7 +235,7 @@ watch(
           <TableCell>{{ transaction.type }}</TableCell>
           <TableCell>{{ transaction.payment_type || '—' }}</TableCell>
           <TableCell>{{ transaction.euros ? transaction.euros + '€' : '—' }}</TableCell>
-          <TableCell style="width: 150px">{{ transaction.brain_coins }} 🟡</TableCell>
+          <TableCell style="width: 150px">{{ transaction.brain_coins }} 🧠</TableCell>
         </TableRow>
           </TableBody>
         </Table>

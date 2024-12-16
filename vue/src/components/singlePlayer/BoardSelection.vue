@@ -56,8 +56,8 @@ const showToast = () => {
       class="w-96 h-64 flex flex-col justify-center items-center p-6 hover:shadow-lg cursor-pointer"
     >
       <CardTitle class="my-5 text-4xl"> {{ board.board_cols }}x{{ board.board_rows }} </CardTitle>
-      <CardDescription class="text-2xl" v-if="(board.board_cols===3 && board.board_rows===4)">0 🪙</CardDescription>
-      <CardDescription class="text-2xl"v-else>1 🪙</CardDescription>
+      <CardDescription class="text-2xl" v-if="(board.board_cols===3 && board.board_rows===4)">0 🧠</CardDescription>
+      <CardDescription class="text-2xl"v-else>1 🧠</CardDescription>
     </Card>
   </RouterLink>
 
@@ -75,7 +75,7 @@ const showToast = () => {
     <CardTitle class="my-5 text-4xl">
       {{ board.board_cols }}x{{ board.board_rows }}
     </CardTitle>
-    <CardDescription class="text-gray-400 text-2xl" v-if="!(board.board_cols===3 && board.board_rows===4)">1 🪙</CardDescription>
+    <CardDescription class="text-gray-400 text-2xl" v-if="!(board.board_cols===3 && board.board_rows===4)">1 🧠</CardDescription>
     </Card>
   </RouterLink>
 </template>

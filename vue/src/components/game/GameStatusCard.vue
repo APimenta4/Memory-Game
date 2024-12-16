@@ -76,7 +76,7 @@ const goBoardSelection = ()=>{
         <p class="text-green-600 font-bold">🎉 Great memory! 🎉</p>
       </div>
       <CardDescription class="pt-4" v-if="totalPairs!=6">
-        The coin will be used when you flip the first card
+        The brain coin will be used when you flip the first card
       </CardDescription>
       <button @click="restart"
         :class="{
@@ -85,7 +85,7 @@ const goBoardSelection = ()=>{
         }"
         class="mt-4 text-white px-6 py-2 rounded shadow bg-gray-400 hover:bg-gray-600 transition"
       >
-      Restart Game <span v-if="(isGameOver || time!=='0.0' && time && !isGameOver) && totalPairs!=6"> 1🪙</span> 
+      Restart Game <span v-if="(isGameOver || time!=='0.0' && time && !isGameOver) && totalPairs!=6"> 1🧠</span> 
       </button>
       <button @click="router.back"
         :class="{
