@@ -8,6 +8,7 @@ use App\Http\Controllers\BoardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\StatisticsController;
 
 // ## PUBLIC ##
 
@@ -19,6 +20,9 @@ Route::get('/boards', [BoardController::class, 'index']);
 Route::get('/scoreboards/global/multiplayer', [ScoreboardController::class, 'globalMultiplayerStatistics']);
 Route::get('/scoreboards/global/singleplayer', [ScoreboardController::class, 'indexGlobalScoreboard']);
 
+
+//Statistics anonymous
+//Route::get('/statistics', [StatisticsController::class, 'index']);
 
 // AUTHENTICATED
 Route::middleware('auth:sanctum')->group(function () {
@@ -41,4 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Purchase History
     Route::get('/transactions/history', [TransactionController::class, 'transactionHistory']);
+
+    //Statistics personal
+    Route::get('/statistics/personal', [StatisticsController::class, 'indexPersonalStatistics']);
+
+    //Statistics Admin?
+    //Route::get('/statistics', [StatisticsController::class, 'index']);
+
 });

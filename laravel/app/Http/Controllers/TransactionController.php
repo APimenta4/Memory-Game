@@ -93,6 +93,22 @@ class TransactionController extends Controller
         return response()->json($transactions);
     }
 
+
+    public function internalTransaction(TransactionRequest $request){
+        $newTransaction = new Transaction();
+        $newTransaction->fill($request->validated());
+        $newTransaction->transaction_datetime = now();
+        $newTransaction->user_id = $request->user()->id;
+        $newTransaction->save();
+
+        $user = $request->user();
+
+        $user->brain_coins_balance += $newTransaction->brain_Coins;
+
+                
+        return new TransactionResource($newTransaction);
+    }
+
     /**
      * Display the specified resource.
      */

@@ -43,6 +43,8 @@ class GameController extends Controller
                 ]);
                 break;
         }
+        
+        
 
         $newGame->save();
         return new GameResource($newGame);

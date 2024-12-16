@@ -8,7 +8,7 @@ import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
 import BuyCoinsPage from '@/components/BuyCoinsPage.vue';
 import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue';
-
+import StatisticsPersonalPage from '@/components/StatisticsPersonalPage.vue';
 
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -73,6 +73,11 @@ const router = createRouter({
       path: '/transactions/history',
       name: 'transactionsHistory',
       component: TransactionsHistoryPage
+    },
+    {
+      path: '/statistics/personal',
+      name: 'indexPersonalStatistics',
+      component: StatisticsPersonalPage
     }
   ]
 })
