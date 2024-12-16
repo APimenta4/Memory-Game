@@ -12,7 +12,15 @@ import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
 import BuyCoinsPage from '@/components/BuyCoinsPage.vue';
 import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue';
 
+import Login from '@/components/auth/Login.vue';
+
+import ProfilePageEdit from '@/components/ProfilePageEdit.vue';
+
+import ProfilePage from '@/components/ProfilePage.vue';
+
 import { createRouter, createWebHistory } from 'vue-router'
+
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +51,21 @@ const router = createRouter({
       path: '/history', // The URL path for the new page
       name: 'history',
       component: HistoryPage,
+    },
+    {
+      path: '/login', 
+      name: 'login',
+      component: Login,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfilePage,
+    },
+    {
+      path: '/profile/edit',
+      name: 'profileEdit',
+      component: ProfilePageEdit,
     },
     {
       path: '/scoreboard',
@@ -84,5 +107,23 @@ const router = createRouter({
     },
   ]
 })
+
+let handlingFirstRoute = true
+
+router.beforeEach(async (to, from, next) => {
+    const storeAuth = useAuthStore()
+    if (handlingFirstRoute) {
+        handlingFirstRoute = false
+        await storeAuth.restoreToken()
+    }
+    // routes that are only accessible when user is logged in
+    if (((to.name == 'history') || (to.name == 'profile') || (to.name == 'profileEdit') || (to.name == 'scoreboardGlobal') || (to.name == 'scoreboardPersonal') || (to.name == 'buyCoins') || (to.name == 'transactionsHistory') ) && (!storeAuth.user)) {
+        next({ name: 'login' })
+        return
+    }
+    // all other routes are accessible to everyone, including anonymous users
+    next()
+})
+
 
 export default router

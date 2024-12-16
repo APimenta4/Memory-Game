@@ -13,10 +13,14 @@ import MemoryGame from "@/components/game/MemoryGame.vue";
 
 import router from "@/router";
 
+
+
 const { toast } = useToast()
 
 const storeGame = useGameStore();
 const storeAuth = useAuthStore();
+
+
 const { 
   cards,
   isGameOver,
