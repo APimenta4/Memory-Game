@@ -19,9 +19,6 @@ export const useGameStore = defineStore('game', () => {
         try {
             const response = await axios.post('games', newGame)
             game.value = response.data.data
-
-            console.log("game.js:insertGame game.value=" + game.value)
-            console.log("game.js:insertGame response.data.data=" + response.data.data)
             return response.data.data
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error creating game!')
@@ -31,7 +28,24 @@ export const useGameStore = defineStore('game', () => {
 
     const updateGame = async (updateData) => {
         try {
-            const response = await axios.put(`games/${game.value.id}`, updateData)
+            const response = await axios.patch(`games/${game.value.id}`, updateData)
+            game.value = response.data.data
+            if (response.data.data.status === "PL" | response.data.data.status === "PE"){
+                game.value = response.data.data
+            } else {
+                game.value = {}
+            }
+            
+            return response.data.data
+        } catch (e) {
+            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating game!')
+            return false
+        }
+    }
+
+    const updateGameWithId = async (id, updateData) => {
+        try {
+            const response = await axios.patch(`games/${id}`, updateData)
             game.value = response.data.data
             if (response.data.data.status === "PL" | response.data.data.status === "PE"){
                 game.value = response.data.data
@@ -47,6 +61,6 @@ export const useGameStore = defineStore('game', () => {
     }
     
     return {
-        game, board, insertGame, updateGame, reloadRequestTop5, reloadRequestMemoryGame
+        game, board, insertGame, updateGame, updateGameWithId, reloadRequestTop5, reloadRequestMemoryGame
     }
 })

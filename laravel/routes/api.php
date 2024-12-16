@@ -32,7 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Games
     Route::post('/games', [GameController::class, 'store'])->can('create', Game::class);
-    Route::put('/games/{game}', [GameController::class, 'update'])->can('update', 'game');
+    Route::post('/games', [GameController::class, 'store']);
+    Route::get('/games/{game}', [GameController::class, 'show']);
+    Route::patch('/games/{game}', [GameController::class, 'update'])->can('update', 'game');
 
     // History 
     Route::get('/history', [HistoryController::class, 'index']);

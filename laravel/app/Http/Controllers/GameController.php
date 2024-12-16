@@ -52,13 +52,18 @@ class GameController extends Controller
                         'The status must be one of PE (Pending), PL (Playing), E (Ended).'
                 ]);
         }
-
         $newGame->save();
         if ($checkNotification){
             // notifications
             $this->checkNewRecord($newGame, $user, 'total_time');
             $this->checkNewRecord($newGame, $user, 'total_turns_winner');
         }
+
+        // Save player 1 (for multiplayer games)
+        if($newGame->type == GameType::MULTIPLAYER){
+            $newGame->players()->attach($request->user()->id);
+        }
+
         return new GameResource($newGame);
     }
 
@@ -87,7 +92,7 @@ class GameController extends Controller
             ]);
         }
         else if ($game->status == GameStatus::PENDING){
-            // multiplayer
+            $game->began_at = now();
         }
         else if ($game->status == GameStatus::PLAYING) {
             if ($newStatus == GameStatus::ENDED) {
@@ -109,13 +114,13 @@ class GameController extends Controller
                 $game->total_turns_winner = $data["total_turns_winner"];
                 $checkNotification = true;
             }
-
-            $game->total_time = $data["total_time"];
-            $game->total_turns_winner = $data["total_turns_winner"];
         }
 
         $game->status = $newStatus;
         $game->save();
+        if($game->type == GameType::MULTIPLAYER && $game->status == GameStatus::PLAYING){
+            $game->players()->attach($request->user()->id);
+        }
 
         if ($checkNotification){
             // notifications

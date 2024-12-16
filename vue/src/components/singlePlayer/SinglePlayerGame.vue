@@ -97,8 +97,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => clearInterval(updateTimeInterval))
 onUnmounted(async () => {
-  console.log('isGameOver.value = ' + isGameOver.value)
-  console.log('storeAuth.user = ' + storeAuth.user)
   if (storeAuth.user && gameStarted && !isGameOver.value) {
     await storeGame.updateGame({ status: 'I' })
   }

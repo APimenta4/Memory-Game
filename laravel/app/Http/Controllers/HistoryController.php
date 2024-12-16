@@ -9,7 +9,6 @@ use App\Http\Requests\HistoryRequest;
 
 class HistoryController extends Controller
 {
-
     public function index(HistoryRequest $request)
     {
 
