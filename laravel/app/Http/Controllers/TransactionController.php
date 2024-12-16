@@ -28,12 +28,14 @@ class TransactionController extends Controller
      */
     public function store(TransactionRequest $request)
     {   
-        //for taes
+        // For TAES
         $newTransaction = new Transaction();
         $newTransaction->fill($request->validated());
         $newTransaction->transaction_datetime = now();
         $newTransaction->user_id = $request->user()->id;
         $newTransaction->save();
+        $request->user()->brain_coins_balance += $newTransaction->brain_coins;
+        $request->user()->save();
         return new TransactionResource($newTransaction);
     }
 
