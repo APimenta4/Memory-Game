@@ -28,6 +28,7 @@ class TransactionController extends Controller
      */
     public function store(TransactionRequest $request)
     {   
+        //for taes
         $newTransaction = new Transaction();
         $newTransaction->fill($request->validated());
         $newTransaction->transaction_datetime = now();
@@ -95,6 +96,7 @@ class TransactionController extends Controller
 
         return response()->json($transactions);
     }
+
 
     /**
      * Display the specified resource.
