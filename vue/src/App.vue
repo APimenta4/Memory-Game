@@ -162,8 +162,13 @@ onMounted( async () => {
             active-class="text-blue-600 font-semibold">
             <span v-if="storeAuth.user?.type != 'A'">My </span>Transaction History
           </RouterLink>
-          <!-- <RouterLink>
-          </RouterLink> -->
+          
+          <RouterLink to="/statistics/personal"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Statistics
+          </RouterLink>
+         
         </nav>
       </div>
     </header>

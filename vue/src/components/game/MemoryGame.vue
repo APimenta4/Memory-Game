@@ -35,7 +35,6 @@ const flipCardWrapper = (index)=>{
 }
 </script>
 
-
 <template>
   <div
     class="h-full grid gap-4"

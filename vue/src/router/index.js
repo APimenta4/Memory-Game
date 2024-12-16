@@ -12,6 +12,8 @@ import MultiPlayerGames from '@/components/multiPlayer/MultiPlayerGames.vue'
 import Game from '@/components/multiPlayer/Game.vue'
 import BuyCoinsPage from '@/components/BuyCoinsPage.vue';
 import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue';
+import StatisticsPersonalPage from '@/components/StatisticsPersonalPage.vue';
+
 
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -90,6 +92,21 @@ const router = createRouter({
         },
       ]
     },
+    {
+      path: '/transactions/buy-coins',
+      name: 'buyCoins',
+      component: BuyCoinsPage
+    },
+    {
+      path: '/transactions/history',
+      name: 'transactionsHistory',
+      component: TransactionsHistoryPage
+    },
+    {
+      path: '/statistics/personal',
+      name: 'indexPersonalStatistics',
+      component: StatisticsPersonalPage
+    }
   ]
 })
 
