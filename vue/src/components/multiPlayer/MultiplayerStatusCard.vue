@@ -23,10 +23,14 @@ const closeDialog = () => {
 }
 
 const abandonGame = async () => {
-  if (storeGames._game.status === 0) {
-    await storeGames.quit(storeGames._game)
+  if (storeGames.currentGame.status === 0) {
+    await storeGames.quit(storeGames.currentGame)
   }
   isDialogOpen.value = false
+  setTimeout(() => {
+    storeGames.close(storeGames.currentGame);
+    storeGames.isClosed = true;
+  }, 1000);
   router.back()
 }
 </script>
@@ -63,19 +67,19 @@ const abandonGame = async () => {
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr :class="{ 'text-green-500': storeGames.myPlayerNumber === 1 }">
-            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames._game.player1Nickname }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames._game.player1Score }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames._game.player1Turns }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames.currentGame.player1Nickname }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames.currentGame.player1Score }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames.currentGame.player1Turns }}</td>
           </tr>
           <tr :class="{ 'text-green-500': storeGames.myPlayerNumber === 2 }">
-            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames._game.player2Nickname }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames._game.player2Score }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames._game.player2Turns }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames.currentGame.player2Nickname }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames.currentGame.player2Score }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ storeGames.currentGame.player2Turns }}</td>
           </tr>
         </tbody>
       </table>
 
-      <Button v-if="storeGames._game.gameStatus == 0" @click="openDialog" class="bg-red-500 mt-2 mr-3"> Quit Game </Button>
+      <Button v-if="storeGames.currentGame.gameStatus == 0" @click="openDialog" class="bg-red-500 mt-2 mr-3"> Quit Game </Button>
       <Button v-else @click="abandonGame" class="bg-gray-200 text-gray-700 mt-2">Return to lobby</Button>
 
       <Dialog v-model:open="isDialogOpen">
