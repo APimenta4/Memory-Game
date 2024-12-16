@@ -45,7 +45,7 @@ const perPage = 7
 const transactionType = ref('')
 const startDate = ref('')
 const endDate = ref('')
-const username = ref('') // New reactive variable for username
+const username = ref('')
 
 // Check if given dates are invalid
 const isDateInvalid = computed(() => {
@@ -70,7 +70,7 @@ const fetchTransactionHistory = async () => {
       params.end_date = endDate.value
     }
     if (username.value) {
-      params.user_name_like = username.value // Include username filter in request parameters
+      params.user_name_like = username.value
     }
     const response = await axios.get('/transactions/history', { params })
     transactions.value = response.data.data
@@ -91,11 +91,31 @@ onMounted(() => {
   fetchTransactionHistory()
 })
 
+// Debounce function to delay the search by name
+function debounce(fn, delay) {
+  let timeoutID
+  return function (...args) {
+    clearTimeout(timeoutID)
+    timeoutID = setTimeout(() => {
+      fn(...args)
+    }, delay)
+  }
+}
+
 // Watch for changes in the filters to refetch transactions
-watch([transactionType, startDate, endDate, username], () => {
+watch([transactionType, startDate, endDate], () => {
   page.value = 1
   fetchTransactionHistory()
 })
+
+// Watch for changes in the username with debounce
+watch(
+  username,
+  debounce(() => {
+    page.value = 1
+    fetchTransactionHistory()
+  }, 500)
+)
 </script>
 
 <template>
@@ -124,13 +144,13 @@ watch([transactionType, startDate, endDate, username], () => {
           </Select>
         </div>
         <div>
-          <div>
-          <label for="username" class="block text-sm font-medium text-gray-700"
-            >Search by Name:</label
-          >
-          <Input v-model="username" placeholder="Name..." /> <!-- Bind input to username variable -->
-        </div>
-          <label for="start-date" class="block text-sm font-medium text-gray-700 mt-5"
+          <div v-if="authStore.user.type === 'A'" class="mb-5">
+            <label for="username" class="block text-sm font-medium text-gray-700"
+              >Search by Name:</label
+            >
+            <Input v-model="username" placeholder="Name..." />
+          </div>
+          <label for="start-date" class="block text-sm font-medium text-gray-700"
             >Start Date:</label
           >
           <input
@@ -152,7 +172,6 @@ watch([transactionType, startDate, endDate, username], () => {
             Start Date cannot be greater than End Date.
           </p>
         </div>
-
       </div>
     </div>
 

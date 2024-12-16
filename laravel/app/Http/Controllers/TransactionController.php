@@ -87,6 +87,7 @@ class TransactionController extends Controller
         $startDate = $validated['start_date'] ?? null;
         $endDate = $validated['end_date'] ?? null;
         $type = $validated['type'] ?? null;
+        $userNameLike = null;
 
         // Check if the user is an Administrator, and if he is, show all games
         if ($user->type === 'A') {
