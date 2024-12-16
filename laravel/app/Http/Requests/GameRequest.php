@@ -40,4 +40,5 @@ class GameRequest extends FormRequest
             'status.in' => 'The status must be one of PE (Pending), PL (Playing), E (Ended), or I (Invalid).',
         ];
     }
+
 }

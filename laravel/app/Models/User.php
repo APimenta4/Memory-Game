@@ -58,7 +58,10 @@ class User extends Authenticatable
 
     public function allGames()
     {
-        return $this->hasMany(Game::class, 'created_user_id');
+        return $this->hasMany(Game::class, 'created_user_id')
+            ->orWhereHas('players', function ($query) {
+            $query->where('user_id', $this->id);
+            });
     }
     
 

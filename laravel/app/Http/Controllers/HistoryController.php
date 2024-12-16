@@ -9,7 +9,6 @@ use App\Http\Requests\HistoryRequest;
 
 class HistoryController extends Controller
 {
-
     public function index(HistoryRequest $request)
     {
         $validated = $request->validated();
@@ -26,7 +25,7 @@ class HistoryController extends Controller
 
         if ($type === 'multiplayer') {
             $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
-        } elseif($type === 'singleplayer') {
+        } elseif ($type === 'singleplayer') {
             $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
         } else {
             $query = $user->allGames()->orderBy($sortBy, $sortOrder);
