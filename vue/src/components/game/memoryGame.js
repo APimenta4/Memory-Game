@@ -133,6 +133,8 @@ export function useMemoryGame(board) {
     generateCards();
 
     return {
+        startTime,
+        endTime,
         cards,
         isGameOver,
         flipCard,
