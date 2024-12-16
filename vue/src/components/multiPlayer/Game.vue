@@ -31,7 +31,7 @@ watch(()=>storeGames.gameStatus, (newValue) => {
   if (newValue === 'You win') {
     jsConfetti.value
     .addConfetti({
-      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲', '+500 AURA']
+      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲']
     })
     .then(() => {
       jsConfetti.value.addConfetti()
@@ -40,7 +40,7 @@ watch(()=>storeGames.gameStatus, (newValue) => {
   }else if (newValue === 'You lose') {
     jsConfetti.value
     .addConfetti({
-     emojis: ['❓', '💩', '🤡', '❓', '💩', '🤡', '-500 AURA']
+     emojis: ['😢', '💀', '🤡', '❌', '⁉️']
     })
   }
 }, { deep: true })
