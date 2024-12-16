@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use App\Notifications\TopScoreNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\Models\Transaction;
 
 
 
@@ -31,9 +32,17 @@ class GameController extends Controller
         $newGame = new Game();
         $newGame->fill($request->validated());
         $newGame->created_user_id = $user->id;
+        $braincoins = 0;
 
         switch ($newGame->status) {
             case GameStatus::PENDING:
+
+                if($newGame->type === GameType::MULTIPLAYER){
+                    $braincoins = -5;
+                } else{
+                    $braincoins = -1;
+                }
+             
                 break;
             case GameStatus::PLAYING:
                 $newGame->began_at = now();
@@ -53,6 +62,10 @@ class GameController extends Controller
                 ]);
         }
         $newGame->save();
+
+        if($braincoins !== 0){
+            $this->internalTransaction($user, $newGame->id, $braincoins);
+        }
 
         // Save player 1 (for multiplayer games)
         if($newGame->type == GameType::MULTIPLAYER){
@@ -76,6 +89,8 @@ class GameController extends Controller
         $data = $request->validated();
         $user = $request->user();
 
+        $braincoins = 0;
+
         $newStatus = GameStatus::tryFrom($data["status"]);
         if ($game->status == GameStatus::ENDED || $game->status == GameStatus::INTERRUPTED){
             throw ValidationException::withMessages([
@@ -89,6 +104,7 @@ class GameController extends Controller
         }
         else if ($game->status == GameStatus::PENDING){
             $game->began_at = now();
+            $braincoins = -5;       
         }
         else if ($game->status == GameStatus::PLAYING) {
             if ($newStatus == GameStatus::ENDED) {
@@ -105,6 +121,8 @@ class GameController extends Controller
                         ]);
                     }
                     $game->winner_user_id = $winner_user_id;
+                    
+                
                 }
                 $game->total_time = $data["total_time"];
                 $game->total_turns_winner = $data["total_turns_winner"];
@@ -114,6 +132,15 @@ class GameController extends Controller
 
         $game->status = $newStatus;
         $game->save();
+
+        if($braincoins !== 0){
+            if($game->type == GameType::MULTIPLAYER && $game->status == GameStatus::ENDED){
+                $this->internalTransaction($game->winner, $game->id, $braincoins);
+            }else{
+                $this->internalTransaction($user, $game->id, $braincoins);
+            }
+        }
+
         if($game->type == GameType::MULTIPLAYER && $game->status == GameStatus::PLAYING){
             $game->players()->attach($request->user()->id);
         }
@@ -124,6 +151,24 @@ class GameController extends Controller
             $this->checkNewRecord($game, $user, 'total_turns_winner');
         }
         return new GameResource($game);
+    }
+
+    public function internalTransaction(User $user, int $game_id, int $brain_coins){
+           
+        $transaction = Transaction::create([
+            'transaction_datetime' => now(),
+            'user_id' => $user->id,
+            'type' => 'I',
+            'game_id' => $game_id,
+            'brain_coins' => $brain_coins,
+        ]);
+
+        $transaction->save();
+
+        $user->brain_coins_balance += $transaction->brain_Coins;
+
+        $user->save();
+
     }
 
     /**

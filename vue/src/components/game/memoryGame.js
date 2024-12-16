@@ -17,7 +17,7 @@ export function useMemoryGame(board) {
     const generateCards = () => {
         const numbers = Array.from({ length: cardPairs }, (_, i) => i + 1);
         const deck = [...numbers, ...numbers]
-        .sort(() => Math.random() - 0.5)// Shuffle
+        //.sort(() => Math.random() - 0.5)// Shuffle
         .map((value) => ({
             value,
             isFlipped: false,

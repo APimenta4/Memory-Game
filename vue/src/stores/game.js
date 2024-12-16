@@ -17,7 +17,9 @@ export const useGameStore = defineStore('game', () => {
     const insertGame = async (newGame) => {
         storeError.resetMessages()
         try {
+            
             const response = await axios.post('games', newGame)
+            console.log("comentado")
             game.value = response.data.data
             return response.data.data
         } catch (e) {
