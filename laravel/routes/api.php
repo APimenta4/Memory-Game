@@ -9,8 +9,9 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\NotificationController;
 
-// ## PUBLIC ##
+// PUBLIC
 
 Route::post('/auth/login', [AuthController::class, "login"]);
 
@@ -20,6 +21,7 @@ Route::get('/boards', [BoardController::class, 'index']);
 Route::get('/scoreboards/global/multiplayer', [ScoreboardController::class, 'globalMultiplayerStatistics']);
 Route::get('/scoreboards/global/singleplayer', [ScoreboardController::class, 'indexGlobalScoreboard']);
 
+Route::get('/test/{game}', [GameController::class, 'getTopScoresTest']);
 
 //Statistics anonymous
 //Route::get('/statistics', [StatisticsController::class, 'index']);
@@ -31,7 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Games
     Route::post('/games', [GameController::class, 'store']);
     Route::get('/games/{game}', [GameController::class, 'show']);
-    Route::put('/games/{game}', [GameController::class, 'update']);
+    Route::patch('/games/{game}', [GameController::class, 'update']);
+    Route::delete('/games/{game}', [GameController::class, 'destroy']);
 
     // History 
     Route::get('/history', [HistoryController::class, 'index']);
@@ -40,10 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/scoreboards/personal/singleplayer', [ScoreboardController::class, 'indexPersonalScoreboard']);
     Route::get('/scoreboards/personal/multiplayer', [ScoreboardController::class, 'personalMultiplayerStatistics']); 
 
-    //Buy coins
+    // Transactions
     Route::post('/transactions/buy-coins', [TransactionController::class, 'buyBrainCoins']);
-
-    //Purchase History
     Route::get('/transactions/history', [TransactionController::class, 'transactionHistory']);
 
     //Statistics personal
@@ -52,4 +53,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //Statistics Admin?
     //Route::get('/statistics', [StatisticsController::class, 'index']);
 
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread', [NotificationController::class, 'unread']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });

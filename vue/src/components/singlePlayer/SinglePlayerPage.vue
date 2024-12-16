@@ -1,9 +1,8 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { useBoardStore } from '@/stores/board'
-import { useAuthStore } from '@/stores/auth'
 import { useErrorStore } from '@/stores/error'
-import BoardList from './BoardList.vue';
+import BoardList from './BoardSelectionList.vue';
 
 const storeBoard = useBoardStore()
 const storeError = useErrorStore()

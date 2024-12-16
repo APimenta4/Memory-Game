@@ -9,6 +9,7 @@ use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Notifications\TransactionNotification;
 
 
 
@@ -64,7 +65,7 @@ class TransactionController extends Controller
             $user->save();
 
           
-            Transaction::create([
+            $transaction = Transaction::create([
                 'transaction_datetime' => now(),
                 'user_id' => $user->id,
                 'type' => 'P',
@@ -75,6 +76,8 @@ class TransactionController extends Controller
             ]);
 
             DB::commit();
+
+            $user->notify(new TransactionNotification($transaction));
 
             return response()->json(['message' => 'Purchase successful', 'brain_coins' => $brainCoins]);
         } catch (\Exception $e) {
