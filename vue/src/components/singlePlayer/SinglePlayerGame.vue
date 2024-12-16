@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h } from 'vue'
+import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h, onBeforeMount } from 'vue'
 import { useMemoryGame } from '@/components/game/memoryGame'
 import { useGameStore } from '@/stores/game'
 import { useAuthStore } from '@/stores/auth'
@@ -84,12 +84,19 @@ watch(isGameOver, async (newValue) => {
     storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
   }
 })
-onMounted(() => {
-  jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
+onBeforeMount(()=>{
   if (!storeGame.board.id) {
     router.push('/singleplayer')
     return
   }
+})
+onMounted(() => {
+  if (!storeGame.board.id) {
+    router.push('/singleplayer')
+    return
+  }
+  jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
+  
   if (!storeAuth.user) {
     toast({
       title: 'Log in to Enhance Your Experience',
@@ -120,7 +127,6 @@ onUnmounted(async () => {
   }
 })
 </script>
-
 <template>
   <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
     <div class="flex flex-row justify-center w-full">
@@ -133,14 +139,11 @@ onUnmounted(async () => {
         :turns="totalTurns"
         @restart="restartGame"
       />
-
-      <!-- Main Memory Game Section -->
       <div class="flex flex-col items-center w-full md:w-3/4">
         <h1 class="text-2xl font-bold mt-6 mb-4">Memory Game</h1>
         <MemoryGame :cards="cards" :flipCard="flipCard" @gameStarted="createGame" />
       </div>
     </div>
-    <!-- Leaderboard as Sticky Navigation Panel on the Right -->
     <Top5Card class="mt-5 mx-5" :board="storeGame.board" />
   </div>
 </template>

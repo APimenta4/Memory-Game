@@ -72,8 +72,10 @@ const fetchScoreboardTime = async () => {
 };
 
 onMounted(()=>{
-  fetchScoreboardTurns()
-  fetchScoreboardTime()
+  if(props.board.id){
+    fetchScoreboardTurns()
+    fetchScoreboardTime()
+  }
 })
 
 </script>

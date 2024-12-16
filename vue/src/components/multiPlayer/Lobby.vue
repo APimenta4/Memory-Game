@@ -51,8 +51,8 @@ onMounted(()=>{
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent class="w-48">
-                        <div v-for="board in storeBoard.boards" :key="board.id" @click="selectBoard(board.id)" class="cursor-pointer p-2 hover:bg-gray-200">
-                            {{ board.board_cols }}x{{ board.board_rows }}
+                        <div v-for="board in storeBoard.boards" :key="board.id" @click="selectBoard(board.id)" class="cursor-pointer p-2 hover:bg-gray-200 flex justify-between">
+                            {{ board.board_cols }}x{{ board.board_rows }}<span>5 🪙</span>
                         </div>
                     </PopoverContent>
                 </Popover>
