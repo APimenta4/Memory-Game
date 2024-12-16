@@ -29,6 +29,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
 
@@ -44,6 +45,7 @@ const perPage = 7
 const transactionType = ref('')
 const startDate = ref('')
 const endDate = ref('')
+const username = ref('') // New reactive variable for username
 
 // Check if given dates are invalid
 const isDateInvalid = computed(() => {
@@ -67,6 +69,9 @@ const fetchTransactionHistory = async () => {
     if (endDate.value) {
       params.end_date = endDate.value
     }
+    if (username.value) {
+      params.user_name_like = username.value // Include username filter in request parameters
+    }
     const response = await axios.get('/transactions/history', { params })
     transactions.value = response.data.data
     totalPages.value = response.data.meta.last_page
@@ -87,7 +92,7 @@ onMounted(() => {
 })
 
 // Watch for changes in the filters to refetch transactions
-watch([transactionType, startDate, endDate], () => {
+watch([transactionType, startDate, endDate, username], () => {
   page.value = 1
   fetchTransactionHistory()
 })
@@ -119,7 +124,13 @@ watch([transactionType, startDate, endDate], () => {
           </Select>
         </div>
         <div>
-          <label for="start-date" class="block text-sm font-medium text-gray-700"
+          <div>
+          <label for="username" class="block text-sm font-medium text-gray-700"
+            >Search by Name:</label
+          >
+          <Input v-model="username" placeholder="Name..." /> <!-- Bind input to username variable -->
+        </div>
+          <label for="start-date" class="block text-sm font-medium text-gray-700 mt-5"
             >Start Date:</label
           >
           <input
@@ -137,10 +148,11 @@ watch([transactionType, startDate, endDate], () => {
             v-model="endDate"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
+          <p v-if="isDateInvalid" class="text-red-500 mt-2">
+            Start Date cannot be greater than End Date.
+          </p>
         </div>
-        <p v-if="isDateInvalid" class="text-red-500 mt-2">
-          Start Date cannot be greater than End Date.
-        </p>
+
       </div>
     </div>
 
@@ -180,7 +192,9 @@ watch([transactionType, startDate, endDate], () => {
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
-            <TableHead v-if="authStore.user.type === 'A'" style="width: 150px">User's Name</TableHead>
+            <TableHead v-if="authStore.user.type === 'A'" style="width: 150px"
+              >User's Name</TableHead
+            >
             <TableHead>Type</TableHead>
             <TableHead>Method</TableHead>
             <TableHead>Amount (€)</TableHead>
@@ -189,7 +203,9 @@ watch([transactionType, startDate, endDate], () => {
         </TableHeader>
         <TableBody>
           <TableRow v-for="transaction in transactions" :key="transaction.id">
-            <TableCell style="width: 175px">{{ new Date(transaction.transaction_datetime).toLocaleString() }}</TableCell>
+            <TableCell style="width: 175px">{{
+              new Date(transaction.transaction_datetime).toLocaleString()
+            }}</TableCell>
             <TableCell v-if="authStore.user.type === 'A'" style="width: 275px">{{
               transaction.user_name
             }}</TableCell>

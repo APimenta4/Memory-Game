@@ -24,6 +24,7 @@ class TransactionHistoryRequest extends FormRequest
             'start_date' => 'sometimes|date|nullable',
             'end_date' => 'sometimes|date|nullable',
             'type' => 'sometimes|string|in:I,B,P|nullable',
+            'user_name_like' => 'sometimes|string|nullable',
         ];
     }
 

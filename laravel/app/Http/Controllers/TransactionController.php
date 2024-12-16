@@ -83,7 +83,7 @@ class TransactionController extends Controller
         $user = $request->user();
 
         $validated = $request->validated();
-        $perPage = $validated['per_page'] ?? 15; 
+        $perPage = $validated['per_page'] ?? 15;
         $startDate = $validated['start_date'] ?? null;
         $endDate = $validated['end_date'] ?? null;
         $type = $validated['type'] ?? null;
@@ -91,11 +91,12 @@ class TransactionController extends Controller
         // Check if the user is an Administrator, and if he is, show all games
         if ($user->type === 'A') {
             $query = Transaction::orderBy('transaction_datetime', 'desc');
+            $userNameLike = $validated['user_name_like'] ?? null;
         } else {
             // if they aren't, show only the user's games
             $query = Transaction::where('user_id', $user->id)->orderBy('transaction_datetime', 'desc');
         }
-        
+
         if ($startDate) {
             $query->whereDate('transaction_datetime', '>=', $startDate);
         }
@@ -107,6 +108,13 @@ class TransactionController extends Controller
         if ($type) {
             $query->where('type', $type);
         }
+
+        if ($userNameLike) {
+            $query->whereHas('user', function ($q) use ($userNameLike) {
+                $q->where('name', 'like', '%' . $userNameLike . '%');
+            });
+        }
+
 
         $transactions = $query->paginate($perPage);
         return TransactionResource::collection($transactions);
