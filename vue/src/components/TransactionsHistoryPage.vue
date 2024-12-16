@@ -226,7 +226,7 @@ watch(
           </TableHeader>
           <TableBody>
         <TableRow v-for="transaction in transactions" :key="transaction.id">
-          <TableCell style="width: 175px">{{
+          <TableCell style="width: 225px">{{
             new Date(transaction.transaction_datetime).toLocaleString()
           }}</TableCell>
           <TableCell v-if="authStore.user.type === 'A'" style="width: 275px">{{
