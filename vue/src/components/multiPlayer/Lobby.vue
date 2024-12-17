@@ -36,7 +36,7 @@ onMounted(()=>{
 </script>
 
 <template>
-    <Card :class="{'opacity-50': !storeAuth.user || storeAuth.user?.type == 'A', 'pointer-events-none': !storeAuth.user || storeAuth.user?.type == 'A'}" class="my-8 py-2 px-1 h-full max-h-screen overflow-hidden flex flex-col">
+    <Card :class="{'opacity-50 pointer-events-none': !storeAuth.user || storeAuth.user?.type == 'A'}" class="my-8 py-2 px-1 h-full max-h-screen overflow-hidden flex flex-col">
         <CardHeader class="pb-0">
             <CardTitle>Lobby</CardTitle>
             <CardDescription v-if="storeAuth.user">{{ storeLobby.totalGames == 1 ? '1 game' : storeLobby.totalGames + ' games'}} waiting.</CardDescription>

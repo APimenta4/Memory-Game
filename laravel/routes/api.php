@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 
 use App\Models\Game;
 use App\Models\Transaction;
+use App\Models\User;
 
 
 // PUBLIC
@@ -27,6 +28,9 @@ Route::get('/scoreboards/global/multiplayer', [ScoreboardController::class, 'glo
 Route::get('/scoreboards/global/singleplayer', [ScoreboardController::class, 'indexGlobalScoreboard']);
 
 Route::get('/test/{game}', [GameController::class, 'getTopScoresTest']);
+
+// Register new account
+Route::post('/register', [UserController::class, 'store']);
 
 //Statistics anonymous
 //Route::get('/statistics', [StatisticsController::class, 'index']);
@@ -73,4 +77,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread', [NotificationController::class, 'unread']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+    // Administrate users
+    Route::get('/users', [UserController::class, 'index'])->can('manage', User::class);;
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->can('manage', User::class);
+    Route::patch('/users/{user}/block', [UserController::class, 'block'])->can('manage', User::class);
+    Route::patch('/users/{user}/unblock', [UserController::class, 'unblock'])->can('manage', User::class);
 });

@@ -170,13 +170,16 @@ const editProfile = () => {
             active-class="text-blue-600 font-semibold">
             <span v-if="storeAuth.user?.type != 'A'">My </span>Game History
           </RouterLink>
+          <RouterLink v-show="storeAuth.user?.type =='A'" to="/users"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            User List
+          </RouterLink>
           <RouterLink v-show="storeAuth.user && storeAuth.user.type !='A'" to="/scoreboard/personal"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Personal Scoreboard
           </RouterLink>
-          <!--Multiplayer goes here
-          Also protect it for administrators -->
           <RouterLink to="/scoreboard/global"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
@@ -191,8 +194,7 @@ const editProfile = () => {
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             <span v-if="storeAuth.user?.type != 'A'">My </span>Transaction History
-          </RouterLink>
-          
+          </RouterLink>        
           <RouterLink to="/statistics/personal"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">

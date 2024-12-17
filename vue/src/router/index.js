@@ -13,7 +13,8 @@ import Game from '@/components/multiPlayer/Game.vue'
 import BuyCoinsPage from '@/components/BuyCoinsPage.vue';
 import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue';
 import StatisticsPersonalPage from '@/components/StatisticsPersonalPage.vue';
-
+import UsersPage from '@/components/UsersPage.vue';
+import Register from '@/components/auth/Register.vue';
 
 import Login from '@/components/auth/Login.vue';
 
@@ -24,6 +25,7 @@ import ProfilePage from '@/components/ProfilePage.vue';
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
+
 
 
 const router = createRouter({
@@ -66,6 +68,11 @@ const router = createRouter({
       path: '/login', 
       name: 'login',
       component: Login,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register,
     },
     {
       path: '/profile',
@@ -114,6 +121,11 @@ const router = createRouter({
           component: WebSocketTester
         },
       ]
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersPage,
     },
     {
       path: '/transactions/buy-coins',
