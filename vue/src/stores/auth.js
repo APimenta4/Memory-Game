@@ -157,7 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = storedToken
         axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
         const responseUser = await axios.get('users/me')
-        user.value = responseUser.data.data
+        user.value = responseUser.data
         repeatRefreshToken()
         return true
       } catch {
