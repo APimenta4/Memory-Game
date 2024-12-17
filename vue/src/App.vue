@@ -201,16 +201,21 @@ const editProfile = () => {
             Statistics
           </RouterLink>
           <RouterLink v-show="!storeAuth.user" to="/login"
-            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            active-class="text-blue-600 font-semibold">
+            class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="bg-blue-700">
             Login
+          </RouterLink>
+          <RouterLink v-show="!storeAuth.user" to="/register"
+            class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="bg-blue-700">
+            Register
           </RouterLink>
           <!-- Profile Image -->
             <img v-if="storeAuth.user" @click="toggleSubMenu" class="w-14 h-14 rounded-full cursor-pointer"
               :src="storeAuth.userPhotoUrl" alt="Profile Picture" />
 
             <!-- Submenu (Conditional Rendering) -->
-            <div v-if="isSubMenuVisible" class="absolute top-16 right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border">
+            <div v-if="isSubMenuVisible" class="absolute top-16 right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border z-50">
               <ul class="space-y-2 p-2 text-gray-700">
                 <li>
                   <button @click="editProfile" class="block px-4 py-2 w-full text-left hover:bg-gray-100 rounded-md">

@@ -246,10 +246,13 @@ export const useAuthStore = defineStore('auth', () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      if (response.data) {
+      if (response.data && user.value?.type != 'A') {
         return await login({ email: userData.email, password: userData.password });
+      } else {
+        router.back();
       }
     } catch (e) {
+      console.log(e);
       storeError.setErrorMessages(
         e.response?.data?.message,
         e.response?.data?.errors || [],
