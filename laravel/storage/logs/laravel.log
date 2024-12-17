@@ -2978,3 +2978,19 @@ Did you mean one of these?
 #20 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('...')
 #21 {main}
 "} 
+[2024-12-17 13:53:40] local.ERROR: There are no commands defined in the "storage:" namespace.
+
+Did you mean this?
+    storage {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"storage:\" namespace.
+
+Did you mean this?
+    storage at /var/www/html/vendor/symfony/console/Application.php:636)
+[stacktrace]
+#0 /var/www/html/vendor/symfony/console/Application.php(685): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /var/www/html/vendor/symfony/console/Application.php(258): Symfony\\Component\\Console\\Application->find()
+#2 /var/www/html/vendor/symfony/console/Application.php(167): Symfony\\Component\\Console\\Application->doRun()
+#3 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(197): Symfony\\Component\\Console\\Application->run()
+#4 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1205): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 /var/www/html/artisan(13): Illuminate\\Foundation\\Application->handleCommand()
+#6 {main}
+"} 
