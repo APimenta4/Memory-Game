@@ -1,8 +1,8 @@
 import { ref, computed, inject } from 'vue'
 import { defineStore } from 'pinia'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
-
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -12,8 +12,10 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const token = ref('')
 
+  const router = useRouter()
+
   const userName = computed(() => {
-    return user.value ? user.value.name : ''
+    return user.value.data.name
   })
 
   const getFirstLastName = (fullName) => {
@@ -31,21 +33,26 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const userEmail = computed(() => {
-    return user.value ? user.value.email : ''
+    return user.value.data.email
+  })
+
+  const userNickname = computed(() => {
+    return user.value.data.nickname
   })
 
   const userType = computed(() => {
-    return user.value ? user.value.type : ''
+    return user.value.data.type
   })
 
   const userGender = computed(() => {
-    return user.value ? user.value.gender : ''
+    return user.value.data.gender
   })
 
   const userPhotoUrl = computed(() => {
-    const photoFile = user.value ? (user.value.photoFileName ?? '') : ''
+    const photoFile = user.value.data.photo_filename
+    const basePath = "/storage/photos/"; // Base path for the images
     if (photoFile) {
-      return axios.defaults.baseURL.replaceAll('/api', photoFile)
+      return axios.defaults.baseURL.replaceAll('/api', basePath + photoFile)
     }
     return avatarNoneAssetURL
   })
@@ -67,11 +74,13 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const responseLogin = await axios.post('auth/login', credentials)
       token.value = responseLogin.data.token
+      localStorage.setItem('token', token.value)
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       const responseUser = await axios.get('users/me')
       user.value = responseUser.data
       socket.emit('login', user.value)
       repeatRefreshToken()
+      router.push({ name: 'singleplayer' });
       return user.value
     } catch (e) {
       clearUser()
@@ -90,6 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await axios.post('auth/logout')
       clearUser()
+      router.push({ name: 'home' });
       return true
     } catch (e) {
       clearUser()
@@ -121,6 +131,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
           const response = await axios.post('auth/refreshtoken')
           token.value = response.data.token
+          localStorage.setItem('token', token.value)
           axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
           return true
         } catch (e) {
@@ -139,16 +150,96 @@ export const useAuthStore = defineStore('auth', () => {
     return intervalToRefreshToken
   }
 
+  const restoreToken = async function () {
+    let storedToken = localStorage.getItem('token')
+    if (storedToken) {
+      try {
+        token.value = storedToken
+        axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
+        const responseUser = await axios.get('users/me')
+        user.value = responseUser.data
+        repeatRefreshToken()
+        return true
+      } catch {
+        clearUser()
+        return false
+      }
+    }
+    return false
+  }
+
+
+  // Fetch user data
+  const fetchUser = async () => {
+    storeError.resetMessages()
+    try {
+      const response = await axios.get('users/me') // API endpoint for fetching the authenticated user
+      user.value = response.data
+      return user.value
+    } catch (e) {
+      storeError.setErrorMessages(
+        e.response?.data?.message,
+        e.response?.data?.errors || [],
+        e.response?.status,
+        'Failed to fetch user data'
+      )
+      return null
+    }
+  }
+
+  // Update user data
+  const updateUser = async (updatedData) => {
+    storeError.resetMessages();
+    try {
+      // Send the updated profile data to the backend
+      const response = await axios.put("/profile", updatedData);
+      user.value = response.data; // Update the store with the new user data
+      return user.value;
+
+    } catch (e) {
+      storeError.setErrorMessages(
+        e.response?.data?.message,
+        e.response?.data?.errors || [],
+        e.response?.status,
+        'Failed to update user data'
+      );
+      throw e;
+    }
+  };
+
+  const updatePhoto = async (file) => {
+    const formData = new FormData();
+    formData.append("photo", file);
+
+    try {
+      const response = await axios.post("/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data.photo.replace("photos/", ""); // Returns the filename
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      throw error;
+    }
+  };
+
+
   return {
     user,
     userName,
     userFirstLastName,
     userEmail,
+    userNickname,
     userType,
     userGender,
     userPhotoUrl,
-    login,
-    logout, 
     getFirstLastName,
+    login,
+    logout,
+    restoreToken,
+    fetchUser,
+    updateUser,
+    updatePhoto
   }
 })

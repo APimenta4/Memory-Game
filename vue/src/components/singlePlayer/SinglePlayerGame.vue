@@ -19,6 +19,8 @@ import JSConfetti from 'js-confetti'
 const jsConfetti = ref(null)
 
 
+
+
 const { toast } = useToast()
 
 const storeGame = useGameStore()
@@ -76,7 +78,7 @@ watch(isGameOver, async (newValue) => {
     }
     jsConfetti.value
     .addConfetti({
-      emojis: ['🏆', '✅', '🧠', '💪', '💲', '💲']
+      emojis:  ['🏆','✅','🧠','💪','🧠']
     })
     .then(() => {
       jsConfetti.value.addConfetti()
