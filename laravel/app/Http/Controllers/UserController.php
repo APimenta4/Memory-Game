@@ -32,12 +32,11 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('photo')) {
-            return 1;
             $path = $request->file('photo')->store('photos', 'public');
-            $newUserData['photo_filename'] = $path;
+            $newUserData['photo_filename'] = basename($path);
         }
 
-        $user = User::create($validated);
+        $user = User::create($newUserData);
         return new UserResource($user);
     }
 
