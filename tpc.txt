@@ -1,6 +1,0 @@
-arranjar statistics como a scoreboard, por 2 enpoints para logados e anonyomous e no controller fazer duas funções e uma função entrar como parâmetro para outra
-
-
-sail art db
-
-ou então 170... : 8080 (cardenciais na .env)

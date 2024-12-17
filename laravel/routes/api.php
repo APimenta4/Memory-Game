@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 
 use App\Models\Game;
 use App\Models\Transaction;
+use App\Models\User;
 
 
 // PUBLIC
@@ -73,4 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread', [NotificationController::class, 'unread']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+    // Administrate users
+    Route::get('/users', [UserController::class, 'index'])->can('viewAny', User::class);;
 });

@@ -63,7 +63,7 @@ class HistoryController extends Controller
         }
     
         $games = $query->paginate($perPage);
-    
+        
         return GameResource::collection($games);
     }
     
