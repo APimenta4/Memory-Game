@@ -21,8 +21,10 @@ import { Button } from '@/components/ui/button'
 import { Pagination, PaginationEllipsis, PaginationFirst, PaginationLast, PaginationList, PaginationListItem, PaginationNext, PaginationPrev } from '@/components/ui/pagination';
 import { useBoardStore } from '@/stores/board';
 import { useErrorStore } from '@/stores/error';
+import { useAuthStore } from '@/stores/auth';
 import axios from 'axios';
 
+const authStore = useAuthStore()
 const storeBoard = useBoardStore()
 const storeError = useErrorStore()
 
@@ -176,7 +178,7 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
               </SelectContent>
             </Select>
           </div>
-          <div class="flex items-center space-x-2">
+          <div v-if="authStore.user.type!='A'" class="flex items-center space-x-2">
             <input type="checkbox" id="won" v-model="won" :disabled="gameType !== 'multiplayer'"
               class="peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 checked:bg-primary checked:text-primary-foreground" />
             <label for="won"
