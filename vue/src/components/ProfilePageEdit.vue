@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useAuthStore } from '@/stores/auth' // For userPhotoUrl
+import { useAuthStore } from '@/stores/auth'
 import { Button } from '@/components/ui/button'
 import {
     Card,
@@ -10,11 +10,21 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-const storeAuth = useAuthStore() // Fetch userPhotoUrl
-const newPhotoFile = ref(null) // New photo file to upload
+const storeAuth = useAuthStore()
+const newPhotoFile = ref(null)
+const showRemoveDialog = ref(false) // Reactive state for the dialog visibility
 
 onMounted(async () => {
     await storeAuth.fetchUser()
@@ -37,47 +47,52 @@ const handleFileChange = (event) => {
 
 const uploadPhoto = async () => {
     if (!newPhotoFile.value) {
-        alert("Please select a file to upload!");
-        return;
+        alert("Please select a file to upload!")
+        return
     }
 
     try {
-        const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value);
-        userData.value.photo = photoFilename; // Store the filename in userData for the update
-        alert("Profile photo uploaded successfully!");
+        const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value)
+        userData.value.photo = photoFilename
+        alert("Profile photo uploaded successfully!")
     } catch (error) {
-        console.error("Error uploading photo:", error);
-        alert("Failed to upload photo.");
+        console.error("Error uploading photo:", error)
+        alert("Failed to upload photo.")
     }
-};
+}
 
 const updateProfile = async () => {
-    const updatedData = {};
+    const updatedData = {}
 
-    // Include only fields that have values (non-empty)
-    if (userData.value.name) updatedData.name = userData.value.name;
-    if (userData.value.email) updatedData.email = userData.value.email;
-    if (userData.value.nickname) updatedData.nickname = userData.value.nickname;
-    if (userData.value.password) updatedData.password = userData.value.password;
+    if (userData.value.name) updatedData.name = userData.value.name
+    if (userData.value.email) updatedData.email = userData.value.email
+    if (userData.value.nickname) updatedData.nickname = userData.value.nickname
+    if (userData.value.password) updatedData.password = userData.value.password
 
     try {
         if (newPhotoFile.value) {
-            // Upload photo and include filename in profile update
-            const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value);
-            updatedData.photo_filename = photoFilename;
+            const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value)
+            updatedData.photo_filename = photoFilename
         }
 
-        await storeAuth.updateUser(updatedData);
-        alert("Profile updated successfully!");
-
-        // Optionally refresh the user data in the store
-        await storeAuth.fetchUser();
+        await storeAuth.updateUser(updatedData)
+        alert("Profile updated successfully!")
+        await storeAuth.fetchUser()
     } catch (error) {
-        console.error("Error updating profile:", error);
-        alert("Failed to update profile.");
+        console.error("Error updating profile:", error)
+        alert("Failed to update profile.")
     }
-};
+}
 
+const removeAccount = async () => {
+    try {
+        await storeAuth.deleteAccount()
+        alert("Account successfully deleted!")
+    } catch (error) {
+        console.error("Error removing account:", error)
+        alert("Failed to remove account.")
+    }
+}
 </script>
 
 <template>
@@ -89,17 +104,14 @@ const updateProfile = async () => {
 
         <CardContent>
             <form class="grid items-center w-full gap-4">
-
                 <!-- Profile Photo -->
                 <div class="flex flex-col space-y-1.5">
                     <Label for="photo">Profile Photo</Label>
-                    <!-- Display the current user photo -->
                     <div class="flex justify-center mb-4">
                         <img v-if="storeAuth.userPhotoUrl" :src="storeAuth.userPhotoUrl" alt="User Profile"
                             class="w-32 h-32 object-cover rounded-lg border" />
                     </div>
 
-                    <!-- Upload new photo -->
                     <div class="flex items-center justify-start space-x-4">
                         <input type="file" accept="image/*" @change="handleFileChange"
                             class="text-sm text-gray-500 file:mr-2 file:py-1 file:px-3 file:border file:rounded-md file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100" />
@@ -108,8 +120,6 @@ const updateProfile = async () => {
                         </Button>
                     </div>
                 </div>
-
-
 
                 <!-- Email -->
                 <div class="flex flex-col space-y-1.5">
@@ -137,7 +147,36 @@ const updateProfile = async () => {
             </form>
         </CardContent>
 
+        <!-- Footer Buttons -->
         <CardFooter class="flex justify-between px-6 pb-6">
+            <Dialog>
+                <!-- Trigger Button -->
+                <DialogTrigger as-child>
+                    <Button variant="danger" class="bg-red-600 text-white" @click="showRemoveDialog = true">
+                        Remove Account
+                    </Button>
+                </DialogTrigger>
+
+                <!-- Dialog Content -->
+                <DialogContent v-if="showRemoveDialog">
+                    <DialogHeader>
+                        <DialogTitle>Confirm Account Removal</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to permanently remove your account? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter class="flex justify-end gap-2">
+                        <Button variant="outline" @click="showRemoveDialog = false">
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" class="bg-red-600 text-white" @click="removeAccount">
+                            Confirm
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Cancel and Save Buttons -->
             <Button variant="outline" @click="$router.back()">
                 Cancel
             </Button>
