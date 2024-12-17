@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { useErrorStore } from '@/stores/error'
@@ -34,12 +34,16 @@ const credentials = ref({
 const cancel = () => {
   router.back()
 }
+
+const title = computed(() => {
+  return storeAuth.user?.type === 'A' ? 'Creating Administrator Account' : 'Register'
+})
 </script>
 
 <template>
   <Card class="w-[450px] mx-auto my-8 p-4 px-8">
     <CardHeader>
-      <CardTitle>Register</CardTitle>
+      <CardTitle>{{ title }}</CardTitle>
       <CardDescription>Enter the fields to create your brand new account.</CardDescription>
     </CardHeader>
     <CardContent>

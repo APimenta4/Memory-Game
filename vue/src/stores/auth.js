@@ -247,13 +247,14 @@ export const useAuthStore = defineStore('auth', () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      if (response.data) {
-        console.log(response.data)
+      if (response.data && user.value?.type != 'A') {
         // socket.emit('notification_alert', user.value)
         return await login({ email: userData.email, password: userData.password });
-
+      } else {
+        router.back();
       }
     } catch (e) {
+      console.log(e);
       storeError.setErrorMessages(
         e.response?.data?.message,
         e.response?.data?.errors || [],

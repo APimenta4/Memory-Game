@@ -14,9 +14,11 @@ import {
 } from '@/components/ui/card'
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 const storeError = useErrorStore()
 const storeAuth = useAuthStore()
+const router = useRouter()
 
 const allUsers = ref([])
 const filteredUsers = ref([])
@@ -123,9 +125,8 @@ function removeUser(user) {
     });
 }
 
-
 function createAdmin() {
-  alert('This button will create an Administrator account.');
+  router.push('/register')
 }
 </script>
 
