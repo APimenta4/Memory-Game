@@ -82,7 +82,7 @@ class ScoreboardController extends Controller
             ->limit(5)
             ->get()
             ->map(function ($victory, $index) {
-                $victory->nickname = User::find($victory->winner_user_id)->nickname;
+                $victory->nickname = $victory->winner->nickname;
                 return [
                     'position' => $index + 1,
                     'victories' => $victory->victories,
