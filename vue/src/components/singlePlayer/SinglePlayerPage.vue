@@ -2,10 +2,14 @@
 import { onMounted } from 'vue';
 import { useBoardStore } from '@/stores/board'
 import { useErrorStore } from '@/stores/error'
-import BoardList from './BoardSelectionList.vue';
+import BoardList from './BoardSelectionList.vue'
+import { useAuthStore } from '@/stores/auth' ;
 
 const storeBoard = useBoardStore()
 const storeError = useErrorStore()
+const storeAuth = useAuthStore()  
+
+console.log(storeAuth.user);
 
 onMounted(() => {
     storeError.resetMessages()

@@ -19,6 +19,8 @@ import JSConfetti from 'js-confetti'
 const jsConfetti = ref(null)
 
 
+
+
 const { toast } = useToast()
 
 const storeGame = useGameStore()

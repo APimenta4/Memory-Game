@@ -10,6 +10,7 @@ use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
 
 use App\Models\Game;
 use App\Models\Transaction;
@@ -32,7 +33,18 @@ Route::get('/test/{game}', [GameController::class, 'getTopScoresTest']);
 
 // AUTHENTICATED
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Login
+    Route::post('/auth/logout', [AuthController::class, 'logout']); 
+    Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']); 
+    
     Route::get('/users/me', [UserController::class, 'me']);
+
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show']); // Fetch user profile
+    Route::put('/profile', [ProfileController::class, 'update']); // Update profile
+    Route::post('/profile', [ProfileController::class, 'changePhoto']); //change profile photo
+
 
     // Games
     Route::post('/games', [GameController::class, 'store'])->can('create', Game::class);
