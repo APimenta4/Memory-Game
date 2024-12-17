@@ -21,12 +21,22 @@ const filteredUsers = ref([])
 
 const username = ref('')
 
+const defaultAdminCard = {
+  id: 'default-admin',
+  photo_filename: null,
+  name: 'Create Administrator Account',
+  nickname: '',
+  email: '',
+  type: 'A', 
+  blocked: false
+}
+
 const fetchUsers = async () => {
   storeError.resetMessages()
   try {
     const response = await axios.get(`/users`)
     allUsers.value = response.data.data
-    filteredUsers.value = allUsers.value
+    filteredUsers.value = [defaultAdminCard, ...allUsers.value] // Ensure default card is first
   } catch (e) {
     storeError.setErrorMessages(
       e.response.data.message,
@@ -43,9 +53,9 @@ onMounted(() => {
 
 watch(username, (newVal) => {
   const searchTerm = newVal.toLowerCase()
-  filteredUsers.value = allUsers.value.filter((user) =>
+  filteredUsers.value = [defaultAdminCard, ...allUsers.value.filter((user) =>
     user.name.toLowerCase().includes(searchTerm)
-  )
+  )] 
 })
 
 function toggleBlock(user) {
@@ -78,7 +88,6 @@ function toggleBlock(user) {
     });
 }
 
-
 function removeUser(user) {
   const url = `/users/${user.id}`;
   axios.delete(url)
@@ -106,6 +115,11 @@ function removeUser(user) {
         );
       }
     });
+}
+
+
+function createAdmin() {
+  alert('This button will create an Administrator account.');
 }
 </script>
 
@@ -147,10 +161,25 @@ function removeUser(user) {
       </CardContent>
 
       <CardFooter class="flex justify-between absolute bottom-0 left-0 right-0 p-3">
-        <Button :class="user.blocked ? 'bg-green-500' : 'bg-orange-500'" @click="toggleBlock(user)">
-          {{ user.blocked ? 'Unblock' : 'Block' }}
+        <!-- Special button for the default admin card -->
+        <Button 
+          v-if="user.id === 'default-admin'"
+          class="bg-blue-500 mx-auto" 
+          @click="createAdmin"
+        >
+          Create Account
         </Button>
-        <Button class="bg-red-500" @click="removeUser(user)">Remove</Button>
+        
+        <!-- Regular buttons for other users -->
+        <template v-else>
+          <Button 
+            :class="user.blocked ? 'bg-green-500' : 'bg-orange-500'" 
+            @click="toggleBlock(user)"
+          >
+            {{ user.blocked ? 'Unblock' : 'Block' }}
+          </Button>
+          <Button class="bg-red-500" @click="removeUser(user)">Remove</Button>
+        </template>
       </CardFooter>
     </Card>
   </div>

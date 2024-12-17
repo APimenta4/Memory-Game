@@ -12,7 +12,7 @@ class UserController extends Controller
 
     public function index(UserListRequest $request) 
     {   
-        $users = User::all();
+        $users = User::orderBy('type', 'asc')->get();
         return UserResource::collection($users);    
     }
 
