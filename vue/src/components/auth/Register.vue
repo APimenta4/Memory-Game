@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { useErrorStore } from '@/stores/error'
@@ -27,6 +27,9 @@ const credentials = ref({
   password: '',
   photo: null
 })
+
+
+
 
 const cancel = () => {
   router.back()

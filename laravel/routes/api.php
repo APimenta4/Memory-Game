@@ -19,6 +19,8 @@ use App\Models\User;
 
 // PUBLIC
 
+// User
+Route::post('/register', [UserController::class, 'store']);
 Route::post('/auth/login', [AuthController::class, "login"]);
 
 Route::get('/boards', [BoardController::class, 'index']);
@@ -29,8 +31,6 @@ Route::get('/scoreboards/global/singleplayer', [ScoreboardController::class, 'in
 
 Route::get('/test/{game}', [GameController::class, 'getTopScoresTest']);
 
-// Register new account
-Route::post('/register', [UserController::class, 'store']);
 
 //Statistics anonymous
 //Route::get('/statistics', [StatisticsController::class, 'index']);

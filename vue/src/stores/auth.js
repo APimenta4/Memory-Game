@@ -248,7 +248,10 @@ export const useAuthStore = defineStore('auth', () => {
         },
       });
       if (response.data) {
+        console.log(response.data)
+        // socket.emit('notification_alert', user.value)
         return await login({ email: userData.email, password: userData.password });
+
       }
     } catch (e) {
       storeError.setErrorMessages(

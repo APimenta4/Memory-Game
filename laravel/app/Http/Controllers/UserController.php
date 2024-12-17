@@ -32,7 +32,6 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('photo')) {
-            return 1;
             $path = $request->file('photo')->store('photos', 'public');
             $newUserData['photo_filename'] = $path;
         }
