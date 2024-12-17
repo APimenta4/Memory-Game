@@ -11,5 +11,10 @@ class UserPolicy
         return $user->type == 'A';
     }
 
+    public function delete(User $user): bool
+    {
+        return $user->type == 'A' || $user->id = auth()->id();
+    }
+
 
 }

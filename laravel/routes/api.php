@@ -80,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Administrate users
     Route::get('/users', [UserController::class, 'index'])->can('manage', User::class);;
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->can('manage', User::class);
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->can('delete', User::class);
     Route::patch('/users/{user}/block', [UserController::class, 'block'])->can('manage', User::class);
     Route::patch('/users/{user}/unblock', [UserController::class, 'unblock'])->can('manage', User::class);
 });
