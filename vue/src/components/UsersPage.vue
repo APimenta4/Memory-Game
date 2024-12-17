@@ -53,9 +53,13 @@ onMounted(() => {
 
 watch(username, (newVal) => {
   const searchTerm = newVal.toLowerCase()
-  filteredUsers.value = [defaultAdminCard, ...allUsers.value.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm)
-  )] 
+  if (searchTerm) {
+    filteredUsers.value = allUsers.value.filter((user) =>
+      user.name.toLowerCase().includes(searchTerm)
+    )
+  } else {
+    filteredUsers.value = [defaultAdminCard, ...allUsers.value] // Add the default card back when input is erased
+  }
 })
 
 function toggleBlock(user) {
