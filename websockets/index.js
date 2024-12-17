@@ -34,22 +34,18 @@ io.on("connection", (socket) => {
   // ------------------------------------------------------
   // Notification Alert
   // ------------------------------------------------------
-  socket.on("new_device", (userId) => {
-  console.log(`New Device of User ${userId} connected with socket ID ${socket.id}`);
-  socket.join(`user_${userId}`);
-  });
-  
   socket.on("notification_alert", (userId) => {
-  console.log(`Notification Alert of User ${userId} connected with socket ID ${socket.id}`);
-  const userRoom = `user_${userId}`;
-  setTimeout(
-      ()=>{
-          io.to(userRoom).emit("notification");
-          console.log(`Notification sent`);
-      },
-      1000
-  )
+    console.log(`Notification Alert of User ${userId} connected with socket ID ${socket.id}`);
+    const userRoom = `user_${userId}`;
+    setTimeout(
+        ()=>{
+            io.to(userRoom).emit("notification");
+            console.log(`Notification sent`);
+        },
+        1000
+    )
   });
+
   // ------------------------------------------------------
   // Disconnect
   // ------------------------------------------------------

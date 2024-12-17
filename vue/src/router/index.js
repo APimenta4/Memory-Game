@@ -1,5 +1,4 @@
 import HomeComponent from '@/components/HomeComponent.vue'
-import LaravelTester from '@/components/LaravelTester.vue'
 import WebSocketTester from '@/components/WebSocketTester.vue'
 
 import SinglePlayerPage from '@/components/singlePlayer/SinglePlayerPage.vue'
@@ -25,8 +24,6 @@ import ProfilePage from '@/components/ProfilePage.vue';
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
-
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -112,10 +109,6 @@ const router = createRouter({
     {
       path: '/testers',
       children: [
-        {
-          path: 'laravel',
-          component: LaravelTester
-        },
         {
           path: 'websocket',
           component: WebSocketTester

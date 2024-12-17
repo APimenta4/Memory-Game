@@ -51,12 +51,12 @@ const login = async () => {
           <div class="flex flex-col space-y-1.5">
             <Label for="email">Email</Label>
             <Input id="email" type="email" placeholder="User Email" v-model="credentials.email" />
-            <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage>
+            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="password">Password</Label>
             <Input id="password" type="password" v-model="credentials.password" />
-            <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage>
+            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage> -->
           </div>
         </div>
       </form>

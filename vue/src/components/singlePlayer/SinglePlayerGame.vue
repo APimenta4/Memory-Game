@@ -110,7 +110,7 @@ onMounted(() => {
         {
           altText: 'Log in to access additional features',
           onclick: () => {
-            router.push('/testers/laravel')
+            router.push('/login')
           }
         },
         {

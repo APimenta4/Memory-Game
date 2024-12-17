@@ -32,7 +32,7 @@ const showToast = () => {
         {
           altText: 'Log in',
           onclick: () => {
-            router.push('/testers/laravel')
+            router.push('/login')
           }
         },
         {

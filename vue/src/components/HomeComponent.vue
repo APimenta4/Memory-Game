@@ -25,7 +25,7 @@ const navigateTo = (route) => {
       <h2 class="text-xl font-semibold text-gray-800">Login</h2>
       <button 
         class="w-full py-3 px-6 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition"
-        @click="navigateTo('/testers/laravel')">
+        @click="navigateTo('/login')">
         Login
       </button>
     </div>

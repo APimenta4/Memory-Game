@@ -1,78 +1,71 @@
 <script setup>
-import { useRouter } from 'vue-router'
-import { onMounted, provide, useTemplateRef, ref, inject } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useBoardStore } from '@/stores/board'
-import Toaster from './components/ui/toast/Toaster.vue'
-import { useToast } from '@/components/ui/toast/use-toast'
-import { useErrorStore } from './stores/error'
-import { useChatStore } from '@/stores/chat'
-import axios from 'axios';
+  import { useRouter } from 'vue-router'
+  import { onMounted, provide, useTemplateRef, ref, inject } from 'vue'
+  import { useAuthStore } from '@/stores/auth'
+  import { useBoardStore } from '@/stores/board'
+  import Toaster from './components/ui/toast/Toaster.vue'
+  import { useToast } from '@/components/ui/toast/use-toast'
+  import { useErrorStore } from './stores/error'
+  import { useChatStore } from '@/stores/chat'
+  import axios from 'axios';
 
-import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
-import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
-
-
-
-const storeAuth = useAuthStore()
-const storeBoard = useBoardStore()
-const storeChat = useChatStore()
-const storeError = useErrorStore()
-const socket = inject('socket')
-const { toast } = useToast()
-
-const notifications = ref([])
-
-const alertDialog = useTemplateRef('alert-dialog')
-provide('alertDialog', alertDialog)
-const inputDialog = useTemplateRef('input-dialog')
-provide('inputDialog', inputDialog)
+  import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
+  import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
 
 
+  const { toast } = useToast()
+  const socket = inject('socket')
+  const router = useRouter()
 
-let userDestination = null
-socket.on('privateMessage', (messageObj) => {
-    userDestination = messageObj.user   
-    inputDialog.value.open(
-        handleMessageFromInputDialog,
-        'Message from ' + messageObj.user.name,
-        `This is a private message sent by ${messageObj?.user?.name}!`,
-        'Reply Message', '',
-        'Close', 'Reply',
-        messageObj.message
-    )
-})
-const handleMessageFromInputDialog = (message) => {
-    storeChat.sendPrivateMessageToUser(userDestination, message)
-}
+  const storeAuth = useAuthStore()
+  const storeBoard = useBoardStore()
+  const storeChat = useChatStore()
+  const storeError = useErrorStore()
 
-const fetchNotifications = () => {
+  const isSubMenuVisible = ref(false) // Ref to manage submenu visibility
+  const notifications = ref([])
+
+  const alertDialog = useTemplateRef('alert-dialog')
+  provide('alertDialog', alertDialog)
+  const inputDialog = useTemplateRef('input-dialog')
+  provide('inputDialog', inputDialog)
+
+  const logout = async () => {
+    await storeAuth.logout();
+    isSubMenuVisible.value = false
+  }
+
+  const toggleSubMenu = () => {
+    isSubMenuVisible.value = !isSubMenuVisible.value
+  }
+
+  const seeProfile = () => {
+    router.push({ name: 'profile' })
+    isSubMenuVisible.value = false
+  }
+
+  const editProfile = () => {
+    router.push({ name: 'profileEdit' })
+    isSubMenuVisible.value = false
+  }
+
+  const fetchNotifications = () => {
     storeError.resetMessages()
     try {
-        const response = axios.get('notifications/unread')
-        console.log(response.data)
-        notifications.value = response.data.unread_notifications
-        return true
+      const response = axios.get('notifications/unread')
+      console.log(response.data)
+      notifications.value = response.data.unread_notifications
+      return true
     }
     catch (e) {
       storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching boards!')
       return false
     }
-}
+  }
 
-
-const router = useRouter()
-
-const isSubMenuVisible = ref(false) // Ref to manage submenu visibility
-
-onMounted( async () => {
-  storeBoard.fetchBoards()
-  socket.on('notification',()=>{
+  const makeNotification = (notifications) => {
     let txtTitle;
     let txtDescription;
-    console.log("Notifications")
-    fetchNotifications()
-    console.log(notifications.value)
     notifications.value.forEach((notification)=>{
       if (notification.data === null | notification.type === null){
         return
@@ -84,13 +77,12 @@ onMounted( async () => {
         } else {
           txtTitle = 'You Beat a Global record'
         }
-
+        
         if (notification.data.score_type === "total_time"){
           txtDescription = "Top"+notification.data.position+" Time in "+notification.data.board_size+". Total Time "+notification.data.score+"s"
         } else {
           txtDescription = "Top"+notification.data.position+" Turns in "+notification.data.board_size+". Total Time "+notification.data.score+"s"
         }
-
       }
       else{
         // Transaction
@@ -98,38 +90,36 @@ onMounted( async () => {
         txtDescription = "Spent "+notification.data.euros+"€ for "+notification.data.brain_coins+" coins via "+notification.data.payment_type
       }
     })
-
     toast({
       title: txtTitle,
       description: txtDescription,
     })
+  }
+  socket.on('notification',()=>{
+    fetchNotifications()
+    makeNotification(notifications.value);
   })
-})
 
-const logout = async () => {
-  const user = await storeAuth.logout({});
-  isSubMenuVisible.value = false // Close the submenu after logging out
-  responseData.value = user.name;
 
-}
+  let userDestination = null
+  const handleMessageFromInputDialog = (message) => {
+    storeChat.sendPrivateMessageToUser(userDestination, message)
+  }
+  socket.on('privateMessage', (messageObj) => {
+    userDestination = messageObj.user   
+    inputDialog.value.open(
+      handleMessageFromInputDialog,
+      'Message from ' + messageObj.user.name,
+      `This is a private message sent by ${messageObj?.user?.name}!`,
+      'Reply Message', '',
+      'Close', 'Reply',
+      messageObj.message
+    )
+  })
 
-// Function to toggle submenu
-const toggleSubMenu = () => {
-  isSubMenuVisible.value = !isSubMenuVisible.value
-}
-
-// Function to navigate to profile
-const seeProfile = () => {
-  router.push({ name: 'profile' })
-  isSubMenuVisible.value = false // Close the submenu after logging out
-}
-
-// Function to navigate to edit profile
-const editProfile = () => {
-  router.push({ name: 'profileEdit' })
-  isSubMenuVisible.value = false // Close the submenu after logging out
-}
-
+  onMounted( async () => {
+    storeBoard.fetchBoards()
+  })
 </script>
 
 <template>
@@ -144,11 +134,6 @@ const editProfile = () => {
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Home
-          </RouterLink>
-          <RouterLink to="/testers/laravel"
-            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            active-class="text-blue-600 font-semibold">
-            Laravel Tester
           </RouterLink>
           <RouterLink to="/testers/websocket"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"

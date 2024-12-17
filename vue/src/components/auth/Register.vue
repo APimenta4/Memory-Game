@@ -45,22 +45,22 @@ const cancel = () => {
           <div class="flex flex-col space-y-1.5">
             <Label for="email">Email</Label>
             <Input id="email" type="email" placeholder="User Email" v-model="credentials.email" />
-            <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage>
+            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="name">Name</Label>
             <Input id="name" type="text" placeholder="Full Name" v-model="credentials.name" />
-            <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage>
+            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="nickname">Nickname</Label>
             <Input id="nickname" type="text" placeholder="Nickname" v-model="credentials.nickname" />
-            <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage>
+            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="password">Password</Label>
             <Input id="password" type="password" v-model="credentials.password" />
-            <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage>
+            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="photo">Avatar (optional)</Label>
