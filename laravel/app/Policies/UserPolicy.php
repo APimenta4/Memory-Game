@@ -6,8 +6,10 @@ use App\Models\User;
 
 class UserPolicy
 {
-    public function viewAny(User $user): bool
+    public function manage(User $user): bool
     {
         return $user->type == 'A';
     }
+
+
 }

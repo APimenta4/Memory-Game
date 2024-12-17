@@ -49,14 +49,63 @@ watch(username, (newVal) => {
 })
 
 function toggleBlock(user) {
-  user.blocked = !user.blocked
-  // Optionally, make an API call to persist the change
+  const url = `/users/${user.id}/${user.blocked ? 'unblock' : 'block'}`;
+  axios.patch(url)
+    .then(response => {
+      user.blocked = !user.blocked;
+    })
+    .catch(e => {
+      if (e.response.status === 400) {
+        user.blocked = !user.blocked;
+      } else if (e.response.status === 404) {
+        console.log("404");
+        allUsers.value = allUsers.value.filter(u => u.id !== user.id);
+        filteredUsers.value = filteredUsers.value.filter(u => u.id !== user.id);
+        storeError.setErrorMessages(
+          'This user has already been deleted',
+          'This user has already been deleted',
+          'This user has already been deleted',
+          `Error ${user.blocked ? 'unblocking' : 'blocking'} user!`
+        );
+      } else {
+        storeError.setErrorMessages(
+          e.response.data.message,
+          e.response.data.errors,
+          e.response.status,
+          `Error ${user.blocked ? 'unblocking' : 'blocking'} user!`
+        );
+      }
+    });
 }
 
-// Example remove user function
+
 function removeUser(user) {
-  filteredUsers.value = filteredUsers.value.filter((u) => u.id !== user.id)
-  // Optionally, make an API call to remove the user
+  const url = `/users/${user.id}`;
+  axios.delete(url)
+    .then(response => {
+      allUsers.value = allUsers.value.filter(u => u.id !== user.id);
+      filteredUsers.value = filteredUsers.value.filter(u => u.id !== user.id);
+    })
+    .catch(e => {
+      console.log(e.response.data);
+      if (e.response.status === 404) {
+        allUsers.value = allUsers.value.filter(u => u.id !== user.id);
+        filteredUsers.value = filteredUsers.value.filter(u => u.id !== user.id);
+        storeError.setErrorMessages(
+          'This user has already been deleted',
+          'This user has already been deleted',
+          'This user has already been deleted',
+          `Error ${user.blocked ? 'unblocking' : 'blocking'} user!`
+        );
+      } else {
+        storeError.setErrorMessages(
+          e.response.data.message,
+          e.response.data.errors,
+          e.response.status,
+          'Error removing user!'
+        );
+      }
+    });
 }
 </script>
 
