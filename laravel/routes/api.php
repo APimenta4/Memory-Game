@@ -29,6 +29,9 @@ Route::get('/scoreboards/global/singleplayer', [ScoreboardController::class, 'in
 
 Route::get('/test/{game}', [GameController::class, 'getTopScoresTest']);
 
+// Register new account
+Route::post('/register', [UserController::class, 'store']);
+
 //Statistics anonymous
 //Route::get('/statistics', [StatisticsController::class, 'index']);
 
