@@ -18,14 +18,19 @@ onMounted(() => {
 
 
 <template>
-  <div class="pt-4">      
-    <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+  <div class="flex flex-col items-center pt-4">
+    <h1 class="text-3xl font-bold mb-10 text-gray-900 sm:text-4xl">
       Boards
     </h1>
-      <div class="flex space-x-4 pb-4">
-        <BoardList v-show="storeBoard.totalBoards > 0"
-          :boards="storeBoard.boards"></BoardList>
-      </div>
+    <div v-show="storeBoard.totalBoards > 0" class="text-gray-500 text-center">
+      The brain coin will be used when you flip the first card
+    </div>
+    <div class="flex justify-center w-full pb-4 items-center">
+      <BoardList 
+        v-show="storeBoard.totalBoards > 0"
+        :boards="storeBoard.boards">
+      </BoardList>
+    </div>
     <div v-show="storeBoard.totalBoards === 0" class="text-gray-500 text-center">
       No boards available.
     </div>

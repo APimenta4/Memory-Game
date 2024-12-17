@@ -28,7 +28,6 @@ const storeError = useErrorStore()
 
 // Data to be fetched
 const games = ref([]);
-const totalGames = ref(0);
 const totalPages = ref(0);
 
 // Expanded game showing details
@@ -107,8 +106,7 @@ const fetchGames = async () => {
 
     const response = await axios.get(`/history`, { params });
     games.value = response.data.data;
-    totalGames.value = response.data.meta.total;
-    totalPages.value = totalGames.value ? Math.ceil(totalGames.value / perPage) : 0;  // Calculate how many pages to use locally
+    totalPages.value = response.data.meta.last_page;
     return true;
   } catch (e) {
     storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching games!')
@@ -327,8 +325,10 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                       <p><strong>Players:</strong></p>
                       <div v-for="player in game.players" :key="player.id" class="player-name">
                         <span>
-                          <span v-if="player.player_nickname === game?.winner_nickname">👑</span>
-                          {{ player.player_nickname }} - {{ player.pairs_discovered || 0 }} Pairs Discovered
+                            <span v-if="player.player_nickname === game?.winner_nickname">👑</span>
+                            <span v-else>🤡</span>
+                            {{ player.player_nickname }}
+                            <span v-if="player.player_nickname === game?.winner_nickname"> - Won in {{ game.total_turns_winner || 0 }} turns</span>
                         </span>
                       </div>
                     </div>

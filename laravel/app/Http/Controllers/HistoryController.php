@@ -9,9 +9,11 @@ use App\Http\Requests\HistoryRequest;
 
 class HistoryController extends Controller
 {
-
     public function index(HistoryRequest $request)
     {
+
+        // TODO if 'A'
+
         $validated = $request->validated();
         $user = $request->user();
         $type = $validated['type'] ?? null;
@@ -26,7 +28,7 @@ class HistoryController extends Controller
 
         if ($type === 'multiplayer') {
             $query = $user->multiplayerGames()->orderBy($sortBy, $sortOrder);
-        } elseif($type === 'singleplayer') {
+        } elseif ($type === 'singleplayer') {
             $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
         } else {
             $query = $user->allGames()->orderBy($sortBy, $sortOrder);
@@ -52,11 +54,9 @@ class HistoryController extends Controller
             $query->where('winner_user_id', $user->id);
         }
 
-        if ($perPage) {
-            $games = $query->paginate($perPage);
-        } else {
-            $games = $query->get();
-        }
+
+        $games = $query->paginate($perPage);
+
 
         return GameResource::collection($games);
     }

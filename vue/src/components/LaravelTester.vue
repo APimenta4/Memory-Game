@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth';
 import { Button } from '@/components/ui/button'
 
+const socket = inject('socket')
 const authStore = useAuthStore()
 
 const email = ref('p5@mail.pt')
@@ -16,6 +17,8 @@ const submit = async () => {
     })
     responseData.value = user.name
 
+    console.log(authStore.user.id)
+    socket.emit('new_device', authStore.user.id)
 }
 </script>
 

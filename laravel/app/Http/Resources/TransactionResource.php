@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use App\Http\Requests\TransactionRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Enums\TransactionType;
 
 class TransactionResource extends JsonResource
 {
@@ -19,8 +20,9 @@ class TransactionResource extends JsonResource
             'id' => $this->id,
             'transaction_datetime' => $this->transaction_datetime,
             'user_id' => $this->user_id,
+            'user_name' => $this->user->name,
             'game_id' => $this->game_id,
-            'type' => $this->type,
+            'type' => $this->type === TransactionType::BONUS ? 'Bonus' : ($this->type === TransactionType::PURCHASE ? 'Purchase' : 'Internal'),
             'euros' => $this->euros,
             'brain_coins' => $this->brain_coins,
             'payment_type' => $this->payment_type,

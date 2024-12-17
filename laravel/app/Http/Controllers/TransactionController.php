@@ -10,29 +10,23 @@ use App\Http\Resources\TransactionResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Notifications\TransactionNotification;
+use App\Http\Requests\TransactionHistoryRequest;
 
 
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(TransactionRequest $request)
     {   
+        // For TAES
         $newTransaction = new Transaction();
         $newTransaction->fill($request->validated());
         $newTransaction->transaction_datetime = now();
         $newTransaction->user_id = $request->user()->id;
         $newTransaction->save();
+        $request->user()->brain_coins_balance += $newTransaction->brain_coins;
+        $request->user()->save();
         return new TransactionResource($newTransaction);
     }
 
@@ -60,11 +54,11 @@ class TransactionController extends Controller
             $brainCoins = $validated['value'] * 10;
             $user = $request->user();
 
-           
+
             $user->brain_coins_balance += $brainCoins;
             $user->save();
 
-          
+
             $transaction = Transaction::create([
                 'transaction_datetime' => now(),
                 'user_id' => $user->id,
@@ -85,37 +79,48 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Transaction failed'], 500);
         }
     }
-    
 
-    public function transactionHistory(Request $request)
+
+    public function transactionHistory(TransactionHistoryRequest $request)
     {
-        $transactions = Transaction::where('user_id', $request->user()->id)
-            ->orderBy('transaction_datetime', 'desc')
-            ->get();
+        $user = $request->user();
 
-        return response()->json($transactions);
-    }
+        $validated = $request->validated();
+        $perPage = $validated['per_page'] ?? 15;
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+        $type = $validated['type'] ?? null;
+        $userNameLike = null;
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        // Check if the user is an Administrator, and if he is, show all games
+        if ($user->type === 'A') {
+            $query = Transaction::orderBy('transaction_datetime', 'desc');
+            $userNameLike = $validated['user_name_like'] ?? null;
+        } else {
+            // if they aren't, show only the user's games
+            $query = Transaction::where('user_id', $user->id)->orderBy('transaction_datetime', 'desc');
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(TransactionRequest $request, Transaction $transaction)
-    {
-    }
+        if ($startDate) {
+            $query->whereDate('transaction_datetime', '>=', $startDate);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        if ($endDate) {
+            $query->whereDate('transaction_datetime', '<=', $endDate);
+        }
+
+        if ($type) {
+            $query->where('type', $type);
+        }
+
+        if ($userNameLike) {
+            $query->whereHas('user', function ($q) use ($userNameLike) {
+                $q->where('name', 'like', '%' . $userNameLike . '%');
+            });
+        }
+
+
+        $transactions = $query->paginate($perPage);
+        return TransactionResource::collection($transactions);
     }
 }

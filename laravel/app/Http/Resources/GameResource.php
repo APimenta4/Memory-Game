@@ -25,6 +25,7 @@ class GameResource extends JsonResource
             'type' => $this->type,
             'status' => $this->status,
             'began_at' => $this->began_at,
+            'board_id' => $this->board->id,
             'board_size' => $this->board->board_cols . 'x' . $this->board->board_rows,
             'custom' => $this->custom,
         ];

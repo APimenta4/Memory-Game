@@ -10,9 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div  class="flex space-x-4 pb-4">
-      <Board v-for="board in boards":key="board.id"
-        :board="board" 
-        />
-    </div>
+  <div class="flex flex-wrap space-x-4 pb-4 justify-center items-center">
+    <Board v-for="board in boards" :key="board.id" :board="board" />
+  </div>
 </template>
