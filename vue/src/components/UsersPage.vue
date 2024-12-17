@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useErrorStore } from '@/stores/error'
+import { useAuthStore } from '@/stores/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +16,7 @@ import avatarNoneAssetURL from '@/assets/avatar-none.png'
 import axios from 'axios'
 
 const storeError = useErrorStore()
+const storeAuth = useAuthStore()
 
 const allUsers = ref([])
 const filteredUsers = ref([])
@@ -155,8 +157,10 @@ function createAdmin() {
           {{ user.name }}
         </CardTitle>
         <p class="text-xl font-bold text-muted-foreground text-center w-[80%] truncate">
-          {{ user.nickname }}
-          <span v-if="user.type === 'A'" class="text-orange-500">[Admin]</span>
+            <span :class="storeAuth.user.id === user.id ? 'text-green-500' : ''">
+            {{ user.nickname  }} 
+            </span>
+          <span v-if="user.type === 'A'" class="text-orange-500"> [Admin]</span>
         </p>
       </CardHeader>
 
