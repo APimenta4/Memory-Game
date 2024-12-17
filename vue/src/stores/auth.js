@@ -224,6 +224,43 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const register = async (userData) => {
+    storeError.resetMessages();
+    if (user.value && user.value.type !== 'A') {
+      storeError.setErrorMessages(
+        'You are already registered and logged in!',
+        [],
+        [],
+        'Registration Error!'
+      );
+      return false;
+    }
+    try {
+      const formData = new FormData();
+      for (const key in userData) {
+        formData.append(key, userData[key]);
+      }
+      console.log(userData);
+      const response = await axios.post('/register', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.data) {
+        return await login({ email: userData.email, password: userData.password });
+      }
+    } catch (e) {
+      storeError.setErrorMessages(
+        e.response?.data?.message,
+        e.response?.data?.errors || [],
+        e.response?.status,
+        'Registration Error!'
+      );
+      throw e;
+    }
+    return false;
+  };
+
 
   return {
     user,
@@ -240,6 +277,7 @@ export const useAuthStore = defineStore('auth', () => {
     restoreToken,
     fetchUser,
     updateUser,
-    updatePhoto
+    updatePhoto,
+    register,
   }
 })
