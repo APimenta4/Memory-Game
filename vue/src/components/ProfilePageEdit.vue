@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { Button } from '@/components/ui/button'
 import {
@@ -84,6 +84,10 @@ const updateProfile = async () => {
   }
 }
 
+const photo = computed(()=>{
+  return newPhotoFile.value ? URL.createObjectURL(newPhotoFile.value): storeAuth.userPhotoUrl
+})
+
 const removeAccount = async () => {
   try {
     await storeAuth.deleteAccount()
@@ -110,7 +114,7 @@ const removeAccount = async () => {
           <div class="flex justify-center mb-4">
             <img
               v-if="storeAuth.userPhotoUrl"
-              :src="storeAuth.userPhotoUrl"
+              :src="photo"
               alt="User Profile"
               class="w-32 h-32 object-cover rounded-lg border"
             />

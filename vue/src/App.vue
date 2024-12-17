@@ -196,7 +196,7 @@
             Register
           </RouterLink>
           <!-- Profile Image -->
-            <img v-if="storeAuth.user" @click="toggleSubMenu" class="w-14 h-14 rounded-full cursor-pointer"
+            <img v-if="storeAuth.user" @click="toggleSubMenu" class="w-14 h-14 min-w-14 min-h-14 object-cover rounded-full cursor-pointer"
               :src="storeAuth.userPhotoUrl" alt="Profile Picture" />
 
             <!-- Submenu (Conditional Rendering) -->
