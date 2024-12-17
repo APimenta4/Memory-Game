@@ -15,7 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
 
   const userName = computed(() => {
-    return user.value.data.name
+    return user.value.name
   })
 
   const getFirstLastName = (fullName) => {
@@ -33,23 +33,23 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const userEmail = computed(() => {
-    return user.value.data.email
+    return user.value.email
   })
 
   const userNickname = computed(() => {
-    return user.value.data.nickname
+    return user.value.nickname
   })
 
   const userType = computed(() => {
-    return user.value.data.type
+    return user.value.type
   })
 
   const userGender = computed(() => {
-    return user.value.data.gender
+    return user.value.gender
   })
 
   const userPhotoUrl = computed(() => {
-    const photoFile = user.value.data.photo_filename
+    const photoFile = user.value.photo_filename
     const basePath = "/storage/photos/"; // Base path for the images
     if (photoFile) {
       return axios.defaults.baseURL.replaceAll('/api', basePath + photoFile)
@@ -77,7 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('token', token.value)
       axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
       const responseUser = await axios.get('users/me')
-      user.value = responseUser.data
+      user.value = responseUser.data.data
       socket.emit('login', user.value)
       repeatRefreshToken()
       router.push({ name: 'singleplayer' });
@@ -157,7 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = storedToken
         axios.defaults.headers.common.Authorization = 'Bearer ' + token.value
         const responseUser = await axios.get('users/me')
-        user.value = responseUser.data
+        user.value = responseUser.data.data
         repeatRefreshToken()
         return true
       } catch {
@@ -174,7 +174,7 @@ export const useAuthStore = defineStore('auth', () => {
     storeError.resetMessages()
     try {
       const response = await axios.get('users/me') // API endpoint for fetching the authenticated user
-      user.value = response.data
+      user.value = response.data.data
       return user.value
     } catch (e) {
       storeError.setErrorMessages(
