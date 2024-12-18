@@ -89,8 +89,17 @@ import ToastAction from './components/ui/toast/ToastAction.vue'
       }
       else{
         // Transaction
-        txtTitle = 'Transaction Successful'
-        txtDescription = "Spent "+notification.data.euros+"€ for "+notification.data.brain_coins+" coins via "+notification.data.payment_type
+        if(notification.data.type === 'B'){
+          txtTitle = 'New User Bonus'
+          txtDescription = "You Won "+notification.data.brain_coins+" coins"
+        }
+        else if (notification.data.type === 'I'){
+          txtTitle = 'More Brains!'
+          txtDescription = "You Won "+notification.data.brain_coins+" coins"
+        }else{
+          txtTitle = 'Transaction Successful'
+          txtDescription = "Spent "+notification.data.euros+"€ for "+notification.data.brain_coins+" coins via "+notification.data.payment_type
+        }
       }
       console.log(txtTitle)
       console.log(txtDescription)
