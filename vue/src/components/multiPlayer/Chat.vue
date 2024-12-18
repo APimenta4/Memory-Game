@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
+import axios from 'axios'
+import avatarNoneAssetURL from '@/assets/avatar-none.png'
 
 const storeChat = useChatStore()
 const storeAuth = useAuthStore()
@@ -65,6 +67,7 @@ const handleMessageFromInputDialog = (message) => {
                 <div class="divide-y divide-solid divide-gray-200">
                     <div v-if="storeChat.totalMessages > 0">
                         <div v-for="messageObj in storeChat.messages" :key="messageObj" class="flex">
+                            <img class="w-10 h-10 rounded-lg mr-4" :src="messageObj.user?.photo_filename ? axios.defaults.baseURL.replaceAll('/api', '/storage/photos/' + messageObj.user.photo_filename) : avatarNoneAssetURL" alt="User Avatar" />
                             <div class="flex flex-col grow pb-6">
                                 <div class="text-xs text-gray-500">
                                     <span :class="{
@@ -73,7 +76,7 @@ const handleMessageFromInputDialog = (message) => {
                                     }" @click="sendPrivateMessageToUser(messageObj.user)">{{ messageObj.user?.nickname ?? 'Anonymous' }}</span>
                                 </div>
                                 <div class="mt-1 text-base grow leading-6">
-                                    {{ messageObj.message }}
+                                     {{ messageObj.message }}
                                 </div>
                             </div>
                         </div>

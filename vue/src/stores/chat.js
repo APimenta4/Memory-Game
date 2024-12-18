@@ -14,7 +14,7 @@ export const useChatStore = defineStore('chat', () => {
     const totalMessages = computed(() => messages.value.length)
 
     const addMessageToArray = (messageObj) => {
-        if (totalMessages.value >= 10) {
+        if (totalMessages.value >= 50) {
             messages.value.shift();
         }
         messages.value.push(messageObj)
@@ -22,7 +22,6 @@ export const useChatStore = defineStore('chat', () => {
     
     const sendMessageToChat = (message) => {
         storeError.resetMessages()
-        console.log(storeAuth.user)
         socket.emit('chatMessage', message)
     }
     
