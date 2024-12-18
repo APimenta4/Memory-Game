@@ -21,10 +21,18 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useErrorStore } from '@/stores/error'
+import { useRouter } from 'vue-router'
+
+import axios from 'axios'
 
 const storeAuth = useAuthStore()
 const newPhotoFile = ref(null)
-const showRemoveDialog = ref(false) // Reactive state for the dialog visibility
+const showRemoveDialog = ref(false) 
+const confirmationText = ref('')
+const storeError = useErrorStore()
+const router = useRouter()
+
 
 onMounted(async () => {
   await storeAuth.fetchUser()
@@ -90,11 +98,18 @@ const photo = computed(()=>{
 
 const removeAccount = async () => {
   try {
-    await storeAuth.deleteAccount()
-    alert('Account successfully deleted!')
-  } catch (error) {
-    console.error('Error removing account:', error)
-    alert('Failed to remove account.')
+    await axios.delete(`/users/${storeAuth.user.id}`)
+    storeAuth.clearUser()
+    router.push('/')
+    return true
+  } catch (e) {
+    storeError.setErrorMessages(
+      e.response.data.message,
+      e.response.data.errors,
+      e.response.status,
+      'Error removing account!'
+    )
+    return false
   }
 }
 </script>
@@ -183,15 +198,27 @@ const removeAccount = async () => {
           <DialogHeader>
             <DialogTitle>Confirm Account Removal</DialogTitle>
             <DialogDescription>
-              Are you sure you want to permanently remove your account? This action cannot be
-              undone.
+              Are you sure you want to permanently remove your account? This action is irreversible, and you will lose all your progress and brain coins.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter class="flex justify-end gap-2">
-            <Button variant="outline" @click="showRemoveDialog = false"> Cancel </Button>
-            <Button variant="destructive" class="bg-red-600 text-white" @click="removeAccount">
-              Confirm
-            </Button>
+          <DialogFooter class="flex flex-col gap-2">
+            <Input
+              v-model="confirmationText"
+              type="text"
+              placeholder="Type 'I UNDERSTAND' to proceed"
+              class="border p-2 font-bold"
+            />
+            <div class="flex justify-end gap-2">
+              <Button variant="outline" @click="showRemoveDialog = false"> Cancel </Button>
+              <Button
+                variant="destructive"
+                class="bg-red-600 text-white"
+                :disabled="confirmationText !== 'I UNDERSTAND'"
+                @click.prevent="removeAccount"
+              >
+                Confirm
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

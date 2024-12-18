@@ -20,8 +20,8 @@ class GameResource extends JsonResource
     {
         $response = [
             'id' => $this->id,
-            'creator_id' => $this->creator->id,
-            'creator_nickname' => $this->creator->nickname,
+            'creator_id' => $this->creator_id,
+            'creator_nickname' => $this->creator_nickname,
             'type' => $this->type,
             'status' => $this->status,
             'began_at' => $this->began_at,

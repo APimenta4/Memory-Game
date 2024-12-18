@@ -34,12 +34,12 @@ class Game extends Model
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_user_id');
+        return $this->belongsTo(User::class, 'created_user_id')->withTrashed();
     }
 
     public function winner()
     {
-        return $this->belongsTo(User::class, 'winner_user_id');
+        return $this->belongsTo(User::class, 'winner_user_id')->withTrashed();
     }
 
     public function board()
@@ -55,7 +55,7 @@ class Game extends Model
     // "players" users association through multiplayer_games_played 
     public function players()
     {
-        return $this->belongsToMany(User::class, 'multiplayer_games_played', 'game_id', 'user_id')->withPivot('player_won', 'pairs_discovered');
+        return $this->belongsToMany(User::class, 'multiplayer_games_played', 'game_id', 'user_id')->withPivot('player_won', 'pairs_discovered')->withTrashed();
     }
 
     

@@ -49,7 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const userPhotoUrl = computed(() => {
-    const photoFile = user.value.photo_filename
+    const photoFile = user.value?.photo_filename
     const basePath = "/storage/photos/"; // Base path for the images
     if (photoFile) {
       return axios.defaults.baseURL.replaceAll('/api', basePath + photoFile)
@@ -284,5 +284,6 @@ export const useAuthStore = defineStore('auth', () => {
     updateUser,
     updatePhoto,
     register,
+    clearUser,
   }
 })
