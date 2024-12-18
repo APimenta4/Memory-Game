@@ -136,11 +136,11 @@ function createAdmin() {
     <Input v-model="username" placeholder="Name..." />
   </div>
 
-  <div class="users-list grid grid-cols-1 gap-4 md:grid-cols-4 lg:grid-cols-5 mx-10">
+  <div class="users-list flex flex-row flex-wrap justify-center">
     <Card
       v-for="user in filteredUsers"
       :key="user.id"
-      class="shadow-md h-[22rem] w-[16rem] relative flex flex-col"
+      class="shadow-md h-[22rem] w-[16rem] relative flex flex-col m-2"
     >
       <CardHeader class="flex flex-col items-center justify-center flex-shrink-0 space-y-2">
         <div class="w-[7rem] h-[7rem] overflow-hidden rounded-full flex-shrink-0">

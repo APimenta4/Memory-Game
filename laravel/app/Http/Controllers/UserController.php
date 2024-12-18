@@ -46,8 +46,11 @@ class UserController extends Controller
 
     }
 
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
+        if($request->user()->type!=='A'){
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }

@@ -8,13 +8,7 @@ class UserPolicy
 {
     public function manage(User $user): bool
     {
-        return $user->type == 'A';
+        return $user->type === 'A';
     }
-
-    public function delete(User $user): bool
-    {
-        return $user->id == auth()->id() ? $user->type != 'A' : $user->type == 'A';
-    }
-
 
 }
