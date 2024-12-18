@@ -1,6 +1,6 @@
 <script setup>
   import { useRouter } from 'vue-router'
-  import { onMounted, provide, useTemplateRef, ref, inject } from 'vue'
+  import { onMounted, provide, useTemplateRef, ref, inject, h } from 'vue'
   import { useAuthStore } from '@/stores/auth'
   import { useBoardStore } from '@/stores/board'
   import Toaster from './components/ui/toast/Toaster.vue'
@@ -11,6 +11,7 @@
 
   import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
   import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
+import ToastAction from './components/ui/toast/ToastAction.vue'
 
 
   const { toast } = useToast()
@@ -23,47 +24,49 @@
   const storeError = useErrorStore()
 
   const isSubMenuVisible = ref(false) // Ref to manage submenu visibility
-  const notifications = ref([])
-
+  
   const alertDialog = useTemplateRef('alert-dialog')
   provide('alertDialog', alertDialog)
   const inputDialog = useTemplateRef('input-dialog')
   provide('inputDialog', inputDialog)
-
+  
   const logout = async () => {
     await storeAuth.logout();
     isSubMenuVisible.value = false
   }
-
+  
   const toggleSubMenu = () => {
     isSubMenuVisible.value = !isSubMenuVisible.value
   }
-
+  
   const seeProfile = () => {
     router.push({ name: 'profile' })
     isSubMenuVisible.value = false
   }
-
+  
   const editProfile = () => {
     router.push({ name: 'profileEdit' })
     isSubMenuVisible.value = false
   }
-
-  const fetchNotifications = () => {
+  
+  const notifications = ref([])
+  const fetchNotifications = async () => {
     storeError.resetMessages()
     try {
-      const response = axios.get('notifications/unread')
-      console.log(response.data)
+      const response = await axios.get('notifications/unread')
       notifications.value = response.data.unread_notifications
+      console.log(notifications.value)
+      makeNotification();
       return true
     }
     catch (e) {
-      storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching boards!')
+      console.log(e)
+      // storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching boards!')
       return false
     }
   }
 
-  const makeNotification = (notifications) => {
+  const makeNotification = () => {
     let txtTitle;
     let txtDescription;
     notifications.value.forEach((notification)=>{
@@ -89,15 +92,29 @@
         txtTitle = 'Transaction Successful'
         txtDescription = "Spent "+notification.data.euros+"€ for "+notification.data.brain_coins+" coins via "+notification.data.payment_type
       }
-    })
-    toast({
-      title: txtTitle,
-      description: txtDescription,
+      console.log(txtTitle)
+      console.log(txtDescription)
+      toast({
+        title: txtTitle,
+        description: txtDescription,
+        action: h(
+          ToastAction,
+          {
+            altText: 'Mark as Read',
+            onclick: () => {
+              axios.patch(`notifications/${notification.id}/read`)
+            }
+          },
+          {
+            default: () => 'Mark as Read'
+          }
+        )
+      })
     })
   }
   socket.on('notification',()=>{
+    console.log("notifications")
     fetchNotifications()
-    makeNotification(notifications.value);
   })
 
 

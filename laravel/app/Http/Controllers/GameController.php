@@ -226,6 +226,7 @@ class GameController extends Controller
                 $score_type,
                 $game->{$score_type}
             ));
+            return;
         }
     
         // Personal
@@ -241,6 +242,7 @@ class GameController extends Controller
                 $score_type,
                 $game->{$score_type}
             ));
+            return;
         }
     }
     
