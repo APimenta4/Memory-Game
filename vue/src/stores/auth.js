@@ -4,10 +4,13 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
+import { useToast } from '@/components/ui/toast/use-toast'
+
 
 export const useAuthStore = defineStore('auth', () => {
   const storeError = useErrorStore()
   const socket = inject('socket')
+  const { toast } = useToast()
 
   const user = ref(null)
   const token = ref('')
@@ -84,12 +87,22 @@ export const useAuthStore = defineStore('auth', () => {
       return user.value
     } catch (e) {
       clearUser()
-      storeError.setErrorMessages(
-        e.response.data.message,
-        e.response.data.errors,
-        e.response.status,
-        'Authentication Error!'
-      )
+      if(e.response.status === 401) {
+        toast({
+          title: 'Failed to log in!',
+          description:
+            "The credentials you provided don't match an account.",
+          variant: 'destructive',
+        }) 
+      }else{
+        storeError.setErrorMessages(
+          e.response.data.message,
+          e.response.data.errors,
+          e.response.status,
+          'Authentication Error!'
+        )
+      }
+
       return false
     }
   }
