@@ -28,9 +28,6 @@ const credentials = ref({
   photo: null
 })
 
-
-
-
 const cancel = () => {
   router.back()
 }
@@ -38,6 +35,23 @@ const cancel = () => {
 const title = computed(() => {
   return storeAuth.user?.type === 'A' ? 'Creating Administrator Account' : 'Register'
 })
+
+const isFormValid = computed(() => {
+  return credentials.value.email && credentials.value.name && credentials.value.nickname && credentials.value.password
+})
+
+const register = async (credentials) => {
+  console.log("credentials" + credentials.value)
+  if (!isFormValid.value) {
+    storeError.setError('Please fill all the fields.')
+    return
+  }
+  const user = await storeAuth.register(credentials)
+  if (user) {
+    router.push({ name: 'login' })
+  }
+}
+
 </script>
 
 <template>
@@ -52,22 +66,18 @@ const title = computed(() => {
           <div class="flex flex-col space-y-1.5">
             <Label for="email">Email</Label>
             <Input id="email" type="email" placeholder="User Email" v-model="credentials.email" />
-            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="name">Name</Label>
             <Input id="name" type="text" placeholder="Full Name" v-model="credentials.name" />
-            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="nickname">Nickname</Label>
             <Input id="nickname" type="text" placeholder="Nickname" v-model="credentials.nickname" />
-            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="password">Password</Label>
             <Input id="password" type="password" v-model="credentials.password" />
-            <!-- <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage> -->
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="photo">Avatar (optional)</Label>
@@ -78,7 +88,7 @@ const title = computed(() => {
     </CardContent>
     <CardFooter class="flex justify-between px-6 pb-6">
       <Button variant="outline" @click="cancel"> Cancel </Button>
-      <Button @click="storeAuth.register(credentials)"> Register </Button>
+      <Button :disabled="!isFormValid" @click="register"> Register </Button>
     </CardFooter>
   </Card>
 </template>
