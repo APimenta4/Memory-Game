@@ -59,7 +59,6 @@ class GameController extends Controller
                 $newGame->began_at = Carbon::parse($newGame->ended_at)->subSeconds($newGame->total_time);
                 // notifications
                 $checkNotification = true;
-                break;
             default:
                 throw ValidationException::withMessages([
                     "status.in" =>
@@ -226,6 +225,7 @@ class GameController extends Controller
                 $score_type,
                 $game->{$score_type}
             ));
+            return;
         }
     
         // Personal
@@ -241,6 +241,7 @@ class GameController extends Controller
                 $score_type,
                 $game->{$score_type}
             ));
+            return;
         }
     }
     

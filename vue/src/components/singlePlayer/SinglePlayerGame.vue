@@ -74,7 +74,7 @@ watch(isGameOver, async (newValue) => {
         total_time: getTotalTime(),
         total_turns_winner: totalTurns.value
       })
-      socket.emit('notification_alert')
+      socket.emit('notification_alert',storeAuth.user.id)
     }
     jsConfetti.value
     .addConfetti({

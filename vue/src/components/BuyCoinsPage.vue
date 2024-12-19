@@ -19,14 +19,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { ref } from "vue";
+import { inject, ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
 
 const paymentType = ref(""); // No .value in v-model
 const paymentReference = ref("");
 const value = ref(1);
 const successMessage = ref("");
 const errorMessage = ref("");
-
+const socket = inject('socket')
+const storeAuth = useAuthStore()
 // Function to validate payment details
 function validatePayment(paymentType: string, paymentReference: string, value: number) {
   // Check if payment type, reference, or value is missing
@@ -111,8 +113,10 @@ async function buyCoins() {
       payment_reference: paymentReference.value,
       value: value.value,
     });
+    socket.emit('notification_alert', storeAuth.user.id)
     successMessage.value = `Purchase successful! You received ${response.data.brain_coins} brain coins.`;
     errorMessage.value = "";
+    
   } catch (error) {
     successMessage.value = "";
     errorMessage.value = error.response?.data?.error || "Purchase error.";

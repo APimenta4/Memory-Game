@@ -29,7 +29,6 @@ class ScoreboardController extends Controller
         if ($scope === ScoreboardScope::PERSONAL) {
             $query = $query->where('created_user_id', $user->id);
         }
-
         return GameResource::collection($query->get());
     }
 

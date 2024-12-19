@@ -247,8 +247,10 @@ export const useAuthStore = defineStore('auth', () => {
           "Content-Type": "multipart/form-data",
         },
       });
+      console.log("EEE")
+      console.log(response)
       if (response.data && user.value?.type != 'A') {
-        // socket.emit('notification_alert', user.value)
+        socket.emit('notification_alert', response.data.data.id)
         return await login({ email: userData.email, password: userData.password });
       } else {
         router.back();

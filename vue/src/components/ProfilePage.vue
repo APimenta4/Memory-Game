@@ -10,6 +10,7 @@ import {
     CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import Label from './ui/label/Label.vue';
 
 const storeAuth = useAuthStore() 
 
