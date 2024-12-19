@@ -146,6 +146,19 @@ router.beforeEach(async (to, from, next) => {
         handlingFirstRoute = false
         await storeAuth.restoreToken()
     }
+
+    
+    switch (to.name) {
+        case 'login':
+        case 'register':
+            if (storeAuth.user) {
+                next({ name: 'home' })
+                return
+            }
+            break
+    }
+
+
     // routes that are only accessible when user is logged in
     if (((to.name == 'history') || (to.name == 'profile') || (to.name == 'profileEdit') || (to.name == 'scoreboardGlobal') || (to.name == 'scoreboardPersonal') || (to.name == 'buyCoins') || (to.name == 'transactionsHistory') ) && (!storeAuth.user)) {
         next({ name: 'login' })

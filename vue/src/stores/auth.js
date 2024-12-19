@@ -252,7 +252,9 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const formData = new FormData();
       for (const key in userData) {
-        formData.append(key, userData[key]);
+        if(userData[key] !== null){
+          formData.append(key, userData[key]);
+        }
       }
       console.log(userData);
       const response = await axios.post('/register', formData, {

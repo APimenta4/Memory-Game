@@ -40,13 +40,13 @@ const isFormValid = computed(() => {
   return credentials.value.email && credentials.value.name && credentials.value.nickname && credentials.value.password
 })
 
-const register = async (credentials) => {
+const register = async () => {
   console.log("credentials" + credentials.value)
   if (!isFormValid.value) {
     storeError.setError('Please fill all the fields.')
     return
   }
-  const user = await storeAuth.register(credentials)
+  const user = await storeAuth.register(credentials.value)
   if (user) {
     router.push({ name: 'login' })
   }
