@@ -2,17 +2,20 @@
 import { useGamesStore } from '@/stores/games'
 import MultiplayerStatusCard from '@/components/multiPlayer/MultiplayerStatusCard.vue'
 import MultiplayerStatistics from '../MultiplayerStatistics.vue'
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, inject } from 'vue'
 import MultiPlayerGame from './MultiPlayerGame.vue'
 import JSConfetti from 'js-confetti'
+import { useAuthStore } from '@/stores/auth'
 
+const socket = inject('socket')
 const jsConfetti = ref(null)
+const storeGames = useGamesStore()
+const storeAuth = useAuthStore()
 
 onMounted(() => {
   jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
 })
 
-const storeGames = useGamesStore()
 
 const flipCardWrapper = (index) => {
   storeGames.play(storeGames.currentGame, index)
@@ -36,7 +39,7 @@ watch(()=>storeGames.gameStatus, (newValue) => {
     .then(() => {
       jsConfetti.value.addConfetti()
     })
-    
+    socket.emit('notification_alert',storeAuth.user.id)
   }else if (newValue === 'You lose') {
     jsConfetti.value
     .addConfetti({
