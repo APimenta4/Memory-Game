@@ -31,7 +31,7 @@ onUnmounted(async () => {
 })
 
 watch(()=>storeGames.gameStatus, (newValue) => {
-  if (newValue === 'You win') {
+  if (newValue === 'You win' || newValue === 'Opponent quit') {
     jsConfetti.value
     .addConfetti({
       emojis: ['🏆','✅','🧠','💪','🧠']
@@ -40,7 +40,7 @@ watch(()=>storeGames.gameStatus, (newValue) => {
       jsConfetti.value.addConfetti()
     })
     socket.emit('notification_alert',storeAuth.user.id)
-  }else if (newValue === 'You lose') {
+  }else if (newValue === 'You lose' || newValue === 'You quit') {
     jsConfetti.value
     .addConfetti({
      emojis: ['😢', '💀', '🤡', '❌', '⁉️']
