@@ -152,6 +152,7 @@ router.beforeEach(async (to, from, next) => {
     case 'profileEdit':
     case 'transactionsHistory': 
     case 'scoreboardGlobal': 
+    case 'history':
       if(!storeAuth.user) {
         next({ name: 'login' })
         return
@@ -160,7 +161,6 @@ router.beforeEach(async (to, from, next) => {
 
     // Can't access if you are not logged in or you are an admin
     case 'buyCoins':
-    case 'history':
     case 'scoreboardPersonal':
     case 'multiPlayerGame':
       if(!storeAuth.user) {

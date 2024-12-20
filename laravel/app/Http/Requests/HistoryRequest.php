@@ -27,6 +27,7 @@ class HistoryRequest extends FormRequest
             'start_date' => 'sometimes|date|nullable',
             'end_date' => 'sometimes|date|nullable',
             'type' => 'sometimes|string|in:multiplayer,singleplayer|nullable',
+            'board_id' => 'sometimes|int|nullable',
         ];
     }
 
