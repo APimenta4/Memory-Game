@@ -12,6 +12,7 @@ import axios from 'axios'
 import GlobalAlertDialog from '@/components/common/GlobalAlertDialog.vue'
 import GlobalInputDialog from './components/common/GlobalInputDialog.vue'
 import ToastAction from './components/ui/toast/ToastAction.vue'
+import BuyCoins from './components/PurchaseCoins.vue'
 
 const { toast } = useToast()
 const socket = inject('socket')
@@ -280,6 +281,10 @@ onMounted(async () => {
             :src="storeAuth.userPhotoUrl"
             alt="Profile Picture"
           />
+
+          <BuyCoins>
+
+          </BuyCoins>
 
           <!-- Submenu (Conditional Rendering) -->
           <div
