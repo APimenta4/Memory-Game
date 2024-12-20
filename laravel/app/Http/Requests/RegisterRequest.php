@@ -12,7 +12,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string',
             'email' => 'required|email',
-            'password' => 'required|string',
+            'password' => 'required|string|min:3',
             'nickname' => 'required|string',
             'photo' => 'nullable|image|max:2048',
         ];

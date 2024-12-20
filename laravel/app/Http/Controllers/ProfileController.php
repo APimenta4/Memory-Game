@@ -37,7 +37,7 @@ class ProfileController extends Controller
             'email' => 'sometimes|string|max:255',
             'nickname' => 'sometimes|string|max:20',
             'photo_filename' => 'sometimes|string',
-            'password' => 'sometimes|string|max:255', 
+            'password' => 'sometimes|string|min:3|max:255', 
         ]);
 
         //dd($validatedData);
