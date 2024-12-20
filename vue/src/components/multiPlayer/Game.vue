@@ -2,10 +2,12 @@
 import { useGamesStore } from '@/stores/games'
 import MultiplayerStatusCard from '@/components/multiPlayer/MultiplayerStatusCard.vue'
 import MultiplayerStatistics from '../MultiplayerStatistics.vue'
-import { ref, onMounted, onUnmounted, watch, inject } from 'vue'
+import { ref, onMounted, onBeforeMount, onUnmounted, watch, inject } from 'vue'
 import MultiPlayerGame from './MultiPlayerGame.vue'
 import JSConfetti from 'js-confetti'
 import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
+
 
 const socket = inject('socket')
 const jsConfetti = ref(null)
@@ -27,6 +29,12 @@ onUnmounted(async () => {
   }
   if (storeGames.isClosed){
     storeGames.close(storeGames.currentGame)
+  }
+})
+
+onBeforeMount(() => {
+  if(Object.keys(storeGames.currentGame).length === 0){
+    router.push({ name: 'multiplayer' })
   }
 })
 

@@ -18,9 +18,6 @@ import JSConfetti from 'js-confetti'
 
 const jsConfetti = ref(null)
 
-
-
-
 const { toast } = useToast()
 
 const storeGame = useGameStore()
@@ -88,16 +85,12 @@ watch(isGameOver, async (newValue) => {
   }
 })
 onBeforeMount(()=>{
-  if (!storeGame.board.id) {
+  if(Object.keys(storeGame.board).length === 0) {
     router.push('/singleplayer')
     return
   }
 })
 onMounted(() => {
-  if (!storeGame.board.id) {
-    router.push('/singleplayer')
-    return
-  }
   jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
   
   if (!storeAuth.user) {
