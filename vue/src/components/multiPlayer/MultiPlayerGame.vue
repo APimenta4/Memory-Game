@@ -16,8 +16,8 @@ export default {
       :key="index"
       class="bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer shadow-lg transition-transform transform hover:scale-105"
       :class="{
-        'w-16 h-24': storeGames.board.board_cols === 6,
-        'w-20 h-28': storeGames.board.board_cols !== 6,
+        'w-16 h-24': storeGames.currentGame.cols === 6,
+        'w-20 h-28': storeGames.currentGame.cols !== 6,
         'bg-white': card.isFlipped || card.isMatched,
         'pointer-events-none': card.isMatched
       }"
