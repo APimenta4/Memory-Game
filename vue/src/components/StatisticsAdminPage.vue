@@ -1,91 +1,81 @@
 <script setup lang="ts">
-import axios from "axios";
-import { ref, onMounted, computed } from "vue";
+import axios from 'axios'
+import { ref, onMounted, computed } from 'vue'
 
-import BarChart from "@/components/ui/BarChart.vue";
-import PieChart from "@/components/ui/PieChart.vue";  
-import LineChart from "@/components/ui/LineChart.vue";  
-
+import BarChart from '@/components/ui/BarChart.vue'
+import PieChart from '@/components/ui/PieChart.vue'
+import LineChart from '@/components/ui/LineChart.vue'
 
 interface Stats {
-  percentage_games_on_board_1?: number;
-  percentage_games_on_board_2?: number;
-  percentage_games_on_board_3?: number;
-  games_completed_last_7_days?: number;
-  games_completed_last_month?: number;
-  games_completed_last_year?: number;
-  [key: string]: any;
+  percentage_games_on_board_1?: number
+  percentage_games_on_board_2?: number
+  percentage_games_on_board_3?: number
+  games_completed_last_7_days?: number
+  games_completed_last_month?: number
+  games_completed_last_year?: number
+  [key: string]: any
 }
-
-
 
 const filteredStats = computed(() => {
   const keysToShow = [
-    "All users total games completed",
-    "Total users registered",
-    "Total spent by all users (€)",
-  ];
-  return Object.fromEntries(
-    Object.entries(stats.value).filter(([key]) => keysToShow.includes(key))
-  );
-});
+    'All users total games completed',
+    'Total users registered',
+    'Total spent by all users (€)'
+  ]
+  return Object.fromEntries(Object.entries(stats.value).filter(([key]) => keysToShow.includes(key)))
+})
 
+const stats = ref<Stats>({})
+const errorMessage = ref('')
 
-
-const stats = ref<Stats>({});
-const errorMessage = ref("");
-
-const barChartLabels = ref<string[]>(["Last 7 days", "Last month", "Last year"]);
-const barChartData = ref<number[]>([]);
-const pieChartLabels = ref<string[]>([]);
-const pieChartData = ref<number[]>([]);
-const lineChartLabels = ref<string[]>([]);
-const lineChartData = ref<number[]>([]);
-const lineChartDynamicLabels = ref<string[]>([]);
-const lineChartDynamicData = ref<number[]>([]);
-
+const barChartLabels = ref<string[]>(['Last 7 days', 'Last month', 'Last year'])
+const barChartData = ref<number[]>([])
+const pieChartLabels = ref<string[]>([])
+const pieChartData = ref<number[]>([])
+const lineChartLabels = ref<string[]>([])
+const lineChartData = ref<number[]>([])
+const lineChartDynamicLabels = ref<string[]>([])
+const lineChartDynamicData = ref<number[]>([])
 
 async function fetchStatistics() {
   try {
-    const response = await axios.get("/statistics/admin");
+    const response = await axios.get('/statistics/admin')
 
-    stats.value = response.data;
+    stats.value = response.data
 
     barChartData.value = [
       stats.value.games_completed_last_7_days || 0,
       stats.value.games_completed_last_month || 0,
-      stats.value.games_completed_last_year || 0,
-    ];
+      stats.value.games_completed_last_year || 0
+    ]
 
-    pieChartLabels.value = ["Board 1", "Board 2", "Board 3"];
+    pieChartLabels.value = ['Board 1', 'Board 2', 'Board 3']
     pieChartData.value = [
       stats.value.percentage_games_on_board_1 || 0,
       stats.value.percentage_games_on_board_2 || 0,
-      stats.value.percentage_games_on_board_3 || 0,
-    ];
+      stats.value.percentage_games_on_board_3 || 0
+    ]
 
-    lineChartLabels.value = ["Last week", "Last month", "Last year"];
+    lineChartLabels.value = ['Last week', 'Last month', 'Last year']
     lineChartData.value = [
       stats.value.all_purchases_last_week || 0,
       stats.value.all_purchases_last_month || 0,
-      stats.value.all_purchases_last_year || 0,
-    ];
+      stats.value.all_purchases_last_year || 0
+    ]
 
-    lineChartDynamicLabels.value = ["Today","Last 7 days", "This month", "This year"];
+    lineChartDynamicLabels.value = ['Today', 'Last 7 days', 'This month', 'This year']
     lineChartDynamicData.value = [
       stats.value.all_purchases_today || 0,
       stats.value.all_purchases_last_7_days || 0,
       stats.value.all_purchases_this_month || 0,
-      stats.value.all_purchases_this_year || 0,
-    ];
-
-
+      stats.value.all_purchases_this_year || 0
+    ]
   } catch (error) {
-    errorMessage.value = error.response?.data?.error || "Erro ao carregar estatísticas.";
+    errorMessage.value = error.response?.data?.error || 'Erro ao carregar estatísticas.'
   }
 }
 
-onMounted(fetchStatistics);
+onMounted(fetchStatistics)
 </script>
 
 <template>
@@ -95,13 +85,14 @@ onMounted(fetchStatistics);
 
     <div v-else>
       <div class="charts-container mb-6">
-
         <div class="chart-item">
-          <h2 class="text-lg font-semibold mb-2">Percentage of games completed by all users each board</h2>
+          <h2 class="text-lg font-semibold mb-2">
+            Percentage of games completed by all users each board
+          </h2>
           <PieChart :labels="pieChartLabels" :data="pieChartData" />
         </div>
         <div class="chart-item">
-          <h2 class="text-lg font-semibold mb-2">Number of games played over time by all users </h2>
+          <h2 class="text-lg font-semibold mb-2">Number of games played over time by all users</h2>
           <BarChart :labels="barChartLabels" :data="barChartData" />
         </div>
 
@@ -116,7 +107,6 @@ onMounted(fetchStatistics);
         </div>
       </div>
 
-       
       <div class="statistics-list">
         <h2 class="text-lg font-semibold mb-2">Statistics Details</h2>
         <ul>
@@ -125,7 +115,6 @@ onMounted(fetchStatistics);
           </li>
         </ul>
       </div>
-
     </div>
   </div>
 </template>
@@ -139,16 +128,16 @@ onMounted(fetchStatistics);
 
 .charts-container {
   display: flex;
-  flex-direction: row; 
-  justify-content: center; 
-  gap: 20px; 
-  flex-wrap: wrap; 
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .chart-item {
   flex: 1;
-  min-width: 400px; 
-  max-width: 500px; 
+  min-width: 400px;
+  max-width: 500px;
   text-align: center;
 }
 
@@ -159,4 +148,3 @@ onMounted(fetchStatistics);
   margin: 0 auto;
 }
 </style>
-

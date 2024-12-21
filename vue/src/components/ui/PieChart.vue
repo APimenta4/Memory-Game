@@ -62,8 +62,6 @@ watch(
   () => props.data,
   (newData) => {
    
-    console.log('Atualizando dados do gráfico:', newData);
-
     chartData.value = {
       labels: pieChartLabels.value, 
       datasets: [

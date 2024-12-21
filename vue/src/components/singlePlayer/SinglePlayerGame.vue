@@ -63,15 +63,12 @@ let gameStarted = false
 const createGame = async () => {
   gameStarted = true
   if (storeAuth.user) {
-    console.log('createGame User')
     await storeGame.insertGame({
       type: 'S',
       status: 'PL',
       board_id: storeGame.board.id
     })
     storeAuth.updateBalance()
-  } else {
-    console.log('createGame anonym')
   }
 }
 
@@ -80,10 +77,7 @@ const restartGame = async () => {
   storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
 
   if (storeGame.game.id && !isGameOver.value && storeAuth.user) {
-    console.log('restartGame User')
     await storeGame.updateGame({ status: 'I' })
-  } else {
-    console.log('restartGame anonym')
   }
   resetGame()
   createGame()

@@ -40,9 +40,6 @@ const authStore = useAuthStore()
 const emit = defineEmits(['restart'])
 
 const restart = ()=>{
-  console.log("user")
-  console.log(authStore.user)
-  console.log("boardid"+storeGame.board.id)
   if (authStore.user && authStore.user.brain_coins_balance>0 || storeGame.board.id===1){
     emit('restart')
   }

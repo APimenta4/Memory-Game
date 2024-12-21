@@ -49,28 +49,18 @@ const makeNotification = () => {
   let txtTitle
   let txtDescription
   notifications.value.forEach((notification) => {
-    console.log("notification")
-    console.log(notification)
-    console.log("notification.value")
-    console.log(notification.value)
-    console.log("notification.data")
-    console.log(notification.data)
     if ((notification.data === null) | (notification.type === null)) {
       return
     }
     if (notification.type.includes('TopScoreNotification')) {
       // Game Record
-        console.log("record")
       if (notification.data.scope === 'personal') {
-        console.log("top personal")
         txtTitle = 'Beat your personal record'
       } else {
-        console.log("top global")
         txtTitle = 'You Beat a Global record'
       }
 
       if (notification.data.score_type === 'total_time') {
-        console.log("top time")
         txtDescription =
           'Top' +
           notification.data.position +
@@ -80,7 +70,6 @@ const makeNotification = () => {
           notification.data.score +
           's'
       } else {
-      console.log("top turns")
 
         txtDescription =
           'Top' +
@@ -92,8 +81,6 @@ const makeNotification = () => {
       }
     } else {
       // Transaction
-      console.log("transaction")
-      console.log(notification.data.type)
       if (notification.data.type === 'B') {
         txtTitle = 'New User Bonus'
         txtDescription = 'You Won ' + notification.data.brain_coins + ' coins'
@@ -109,8 +96,6 @@ const makeNotification = () => {
       }
     }
 
-    console.log(txtTitle)
-    console.log(txtDescription)
     // so they dont stack
     setTimeout(()=> axios.patch(`notifications/${notification.id}/read`), 5000)
     toast({

@@ -29,7 +29,6 @@ watch(
 
 const flipCardWrapper = (index)=>{
   if ((!(gameStore.board.board_cols===3 && gameStore.board.board_rows===4) && (!authStore.user || authStore.user.brain_coins_balance <= 0))){
-    console.log("no flip for you")
     return; 
   }
   if (!gameStarted.value){
