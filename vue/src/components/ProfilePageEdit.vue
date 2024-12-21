@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useErrorStore } from '@/stores/error'
 import { useRouter } from 'vue-router'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import axios from 'axios'
 
@@ -32,6 +33,7 @@ const showRemoveDialog = ref(false)
 const confirmationText = ref('')
 const storeError = useErrorStore()
 const router = useRouter()
+const { toast } = useToast()
 
 
 onMounted(async () => {
@@ -55,17 +57,30 @@ const handleFileChange = (event) => {
 
 const uploadPhoto = async () => {
   if (!newPhotoFile.value) {
-    alert('Please select a file to upload!')
+    toast({
+      title: 'Failed to upload photo!',
+      description:
+        "Please attach the file to upload.",
+      variant: 'destructive',
+    }) 
     return
   }
-
   try {
     const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value)
     userData.value.photo = photoFilename
-    alert('Profile photo uploaded successfully!')
+    toast({
+      title: 'Successfully uploaded photo!',
+      description:
+        "You have chosen a new profile photo. Please save your changes to apply",
+      variant: 'success',
+    }) 
   } catch (error) {
-    console.error('Error uploading photo:', error)
-    alert('Failed to upload photo.')
+    toast({
+      title: 'Failed to upload photo!',
+      description:
+        'Please try again.',
+      variant: 'destructive',
+    }) 
   }
 }
 
