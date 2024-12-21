@@ -5,6 +5,12 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/component
 import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import CardDescription from "../ui/card/CardDescription.vue";
+import { toast } from '@/components/ui/toast'
+import { h } from "vue";
+import BuyCoins from '@/components/PurchaseCoins.vue'
+import { useGameStore } from "@/stores/game";
+
+const storeGame = useGameStore()
 
 const props = defineProps({
   time: {
@@ -35,7 +41,8 @@ const emit = defineEmits(['restart'])
 const restart = ()=>{
   console.log("user")
   console.log(authStore.user)
-  if (authStore.user && authStore.user.brain_coins_balance>0){
+  console.log("boardid"+storeGame.board.id)
+  if (authStore.user && authStore.user.brain_coins_balance>0 || storeGame.board.id===1){
     emit('restart')
   }
   else{

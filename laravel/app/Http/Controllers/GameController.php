@@ -59,7 +59,7 @@ class GameController extends Controller
                 $newGame->began_at = Carbon::parse($newGame->ended_at)->subSeconds($newGame->total_time);
                 // notifications
                 $checkNotification = true;
-                break;
+                break;              
             default:
                 throw ValidationException::withMessages([
                     "status.in" =>
@@ -111,9 +111,11 @@ class GameController extends Controller
             ]);
         }
         else if ($game->status == GameStatus::PENDING){
-            $game->began_at = now();
-            $this->checkPlayerBalance($user, 5);
-            $brain_coins = -5;       
+            if ($newStatus == GameStatus::PLAYING) {
+                $game->began_at = now();
+                $this->checkPlayerBalance($user, 5);
+                $brain_coins = -5;    
+            }   
         }
         else if ($game->status == GameStatus::PLAYING) {
             if ($newStatus == GameStatus::ENDED) {
@@ -172,7 +174,7 @@ class GameController extends Controller
     public function checkPlayerBalance(User $user, int $brain_coins){
         if ($user->brain_coins_balance - $brain_coins < 0){
             throw ValidationException::withMessages([
-                "user.brain_coins_balance" => 'The User does not have enough brain coins.',
+                "user.brain_coins_balance" => 'You do not have enough brain coins.',
             ]);
         }
     }
