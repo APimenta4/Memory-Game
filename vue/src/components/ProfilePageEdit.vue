@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useErrorStore } from '@/stores/error'
 import { useRouter } from 'vue-router'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 import axios from 'axios'
 
@@ -32,6 +33,7 @@ const showRemoveDialog = ref(false)
 const confirmationText = ref('')
 const storeError = useErrorStore()
 const router = useRouter()
+const { toast } = useToast()
 
 
 onMounted(async () => {
@@ -55,17 +57,30 @@ const handleFileChange = (event) => {
 
 const uploadPhoto = async () => {
   if (!newPhotoFile.value) {
-    alert('Please select a file to upload!')
+    toast({
+      title: 'Failed to upload photo!',
+      description:
+        "Please attach the file to upload.",
+      variant: 'destructive',
+    }) 
     return
   }
-
   try {
     const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value)
     userData.value.photo = photoFilename
-    alert('Profile photo uploaded successfully!')
+    toast({
+      title: 'Successfully uploaded photo!',
+      description:
+        "You have chosen a new profile photo. Please save your changes to apply",
+      variant: 'success',
+    }) 
   } catch (error) {
-    console.error('Error uploading photo:', error)
-    alert('Failed to upload photo.')
+    toast({
+      title: 'Failed to upload photo!',
+      description:
+        'Please try again.',
+      variant: 'destructive',
+    }) 
   }
 }
 
@@ -82,13 +97,22 @@ const updateProfile = async () => {
       const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value)
       updatedData.photo_filename = photoFilename
     }
-
     await storeAuth.updateUser(updatedData)
-    alert('Profile updated successfully!')
+    toast({
+      title: 'Profile updated!',
+      description:
+        'Your profile has been successfully updated.',
+      variant: 'success',
+    })
     await storeAuth.fetchUser()
   } catch (error) {
     console.error('Error updating profile:', error)
-    alert('Failed to update profile.')
+    storeError.setErrorMessages(
+      "Failed to update profile",
+      error.response.data.errors,
+      error.response.status,
+      'Error updating profile!'
+    )
   }
 }
 
@@ -152,18 +176,21 @@ const removeAccount = async () => {
         <div class="flex flex-col space-y-1.5">
           <Label for="email">Email</Label>
           <Input id="email" type="email" placeholder="User Email" v-model="userData.email" />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage>
         </div>
 
         <!-- Nickname -->
         <div class="flex flex-col space-y-1.5">
           <Label for="nickname">Nickname</Label>
           <Input id="nickname" type="text" placeholder="Nickname" v-model="userData.nickname" />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage>
         </div>
 
         <!-- Name -->
         <div class="flex flex-col space-y-1.5">
           <Label for="name">Name</Label>
           <Input id="name" type="text" placeholder="Full Name" v-model="userData.name" />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage>
         </div>
 
         <!-- Password -->
@@ -175,6 +202,7 @@ const removeAccount = async () => {
             placeholder="New Password"
             v-model="userData.password"
           />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage>
         </div>
       </form>
     </CardContent>

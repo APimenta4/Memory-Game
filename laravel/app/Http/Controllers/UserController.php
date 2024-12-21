@@ -18,31 +18,48 @@ class UserController extends Controller
         $users = User::orderBy('type', 'asc')->get();
         return UserResource::collection($users);
     }
-
     public function store(RegisterRequest $request)
     {
         $newUserData = $request->validated();
-
-        // If a logged in admin is creating an account, he is creating an administrator account
+    
         if ($request->user('sanctum')?->type == 'A') {
             $newUserData['type'] = 'A';
         } else {
             $newUserData['type'] = 'P';
         }
-
+    
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('photos', 'public');
             $newUserData['photo_filename'] = basename($path);
         }
-
-        $user = User::create($newUserData);
-
-        if ($user->type === 'P'){
-            $this->registeredBonus($user);
+    
+        try {
+            $user = User::create($newUserData);
+    
+            if ($user->type === 'P') {
+                $this->registeredBonus($user);
+            }
+    
+            return new UserResource($user);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                $errorMessage = $e->getMessage();
+    
+                $errors = [];
+                if (str_contains($errorMessage, 'users_email_unique')) {
+                    $errors['email'] = ['The email has already been taken.'];
+                }
+                if (str_contains($errorMessage, 'users_nickname_unique')) {
+                    $errors['nickname'] = ['The nickname has already been taken.'];
+                }
+    
+                return response()->json(['errors' => $errors], 422);
+            }
+    
+            throw $e;
         }
-        
-        return new UserResource($user);
     }
+    
 
 
     public function update(Request $request, string $id)

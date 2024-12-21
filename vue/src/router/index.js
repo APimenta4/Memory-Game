@@ -9,11 +9,13 @@ import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
 import MultiPlayerGames from '@/components/multiPlayer/MultiPlayerGames.vue'
 import Game from '@/components/multiPlayer/Game.vue'
-import BuyCoinsPage from '@/components/BuyCoinsPage.vue'
-import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue'
-import StatisticsPersonalPage from '@/components/StatisticsPersonalPage.vue'
-import UsersPage from '@/components/UsersPage.vue'
-import Register from '@/components/auth/Register.vue'
+import BuyCoinsPage from '@/components/BuyCoinsPage.vue';
+import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue';
+import StatisticsPersonalPage from '@/components/StatisticsPersonalPage.vue';
+import UsersPage from '@/components/UsersPage.vue';
+import Register from '@/components/auth/Register.vue';
+import StatisticsAnonymousPage from '@/components/StatisticsAnonymousPage.vue'
+import StatisticsAdminPage from '@/components/StatisticsAdminPage.vue'
 
 import Login from '@/components/auth/Login.vue'
 
@@ -105,6 +107,16 @@ const router = createRouter({
       path: '/transactions/history',
       name: 'transactionsHistory',
       component: TransactionsHistoryPage
+    },
+    {
+      path: '/statistics/admin',
+      name: 'indexAdminStatistics',
+      component: StatisticsAdminPage
+    },
+    {
+      path: '/statistics',
+      name: 'indexGlobalStatistics',
+      component: StatisticsAnonymousPage
     },
     {
       path: '/testers',

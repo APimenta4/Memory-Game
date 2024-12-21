@@ -33,7 +33,7 @@ Route::get('/test/{game}', [GameController::class, 'getTopScoresTest']);
 
 
 //Statistics anonymous
-//Route::get('/statistics', [StatisticsController::class, 'index']);
+Route::get('/statistics', [StatisticsController::class, 'indexGlobalStatistics']);
 
 // AUTHENTICATED
 Route::middleware('auth:sanctum')->group(function () {
@@ -71,8 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //Statistics personal
     Route::get('/statistics/personal', [StatisticsController::class, 'indexPersonalStatistics']);
 
-    //Statistics Admin?
-    //Route::get('/statistics', [StatisticsController::class, 'index']);
+    //Statistics Admin
+    Route::get('/statistics/admin', [StatisticsController::class, 'indexAdminStatistics']);
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
