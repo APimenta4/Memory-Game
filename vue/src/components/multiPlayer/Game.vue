@@ -31,12 +31,15 @@ const refreshTimer = () => {
   }, 100)
 }
 
-watch(() => storeGames.currentGame.currentPlayer, (newValue) => {
-  if(newValue != 0){
-    refreshTimer()
-  }else{
+watch(() => storeGames.currentGame, (newValue) => {
+  console.log(newValue)
+if (newValue.gameStatus == 0 && newValue.currentPlayer != 0 && newValue.cards.filter(card => card.isFlipped).length % 2 === 0) {
+  refreshTimer()
+} else {
+  if(newValue.currentPlayer == 0){
     clearInterval(timerInterval)
   }
+}
 })
 
 onMounted(() => {

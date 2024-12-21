@@ -275,6 +275,11 @@ io.on("connection", (socket) => {
         const currentPlayerId = game.currentPlayer === 1 ? game.player1Id : game.player2Id;
         resetTurnTimer(roomName, currentPlayerId);
       }, 1000);
+    } else {
+      if (game.flippedCardsIndex.length % 2 === 1) {
+        const currentPlayerId = game.currentPlayer === 1 ? game.player1Id : game.player2Id;
+        resetTurnTimer(roomName, currentPlayerId);
+      }
     }
 
     // Game is over
@@ -345,7 +350,7 @@ io.on("connection", (socket) => {
     clearTurnTimer(roomName); // Clear any existing timer
     const timer = setTimeout(() => {
       handleTurnTimeout(roomName, playerId);
-    }, 21600); // 20000 milliseconds = 20 seconds
+    }, 21600); // 20000 milliseconds = 20 seconds. Adjusted for communication delay
     turnTimers.set(roomName, timer);
   }
 

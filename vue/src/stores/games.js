@@ -159,23 +159,23 @@ export const useGamesStore = defineStore('games', () => {
   })
 
   socket.on('gameQuitted', async (payload) => {
-    updateGame(payload.game)
-    if(payload.userQuitId != storeAuth.user.id) {
-      toast({
-        title: 'Game Quit',
-        description: `${payload.userQuitNickname} has quitted game #${payload.game.id}, giving you the win!`
-      })
-      endTime.value = Date.now()
-      await storeGame.updateGame({
-        status: 'E',
-        winner_user_id: storeAuth.user.id,
-        total_time: getTotalTime(),
-        total_turns_winner: payload.game[`player${playerNumberOfCurrentUser(payload.game)}Turns`]
-      })
-      gameStatus.value = 'Opponent quit'
-    }else{
-      gameStatus.value = 'You quit'
-    }
+      updateGame(payload.game)
+      if(payload.userQuitId != storeAuth.user.id) {
+        toast({
+          title: 'Game Quit',
+          description: `${payload.userQuitNickname} has quitted game #${payload.game.id}, giving you the win!`
+        })
+        endTime.value = Date.now()
+        await storeGame.updateGame({
+          status: 'E',
+          winner_user_id: storeAuth.user.id,
+          total_time: getTotalTime(),
+          total_turns_winner: payload.game[`player${playerNumberOfCurrentUser(payload.game)}Turns`]
+        })
+        gameStatus.value = 'Opponent quit'
+      }else{
+        gameStatus.value = 'You quit'
+      }
   })
 
   socket.on('gameInterrupted', async (game) => {
