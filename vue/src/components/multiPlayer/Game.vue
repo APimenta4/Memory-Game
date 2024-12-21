@@ -108,7 +108,7 @@ watch(()=>storeGames.gameStatus, (newValue) => {
             </span>
           </h1>
 
-          <MultiPlayerGame class="m-5" :storeGames="storeGames" :flipCardWrapper="flipCardWrapper" />
+          <MultiPlayerGame :storeGames="storeGames" :flipCardWrapper="flipCardWrapper" />
         </div>
     </div>
     <MultiplayerStatistics class="mt-5 mx-5"/>

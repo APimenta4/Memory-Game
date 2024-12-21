@@ -8,7 +8,7 @@ export default {
 </script>
 <template>
   <div
-    class="h-full grid gap-4 justify-center"
+    class="h-full grid gap-4"
     :style="{ gridTemplateColumns: `repeat(${storeGames.currentGame.cols}, 1fr)` }"
   >
     <div

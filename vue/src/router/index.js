@@ -42,10 +42,7 @@ const router = createRouter({
     {
       path: '/singleplayer/game',
       name: 'singlePlayerGame',
-      component: SinglePlayerGame,
-      props: (route) => ({
-        gameId: route.query.id || null
-      })
+      component: SinglePlayerGame
     },
     {
       path: '/multiplayer',
@@ -113,24 +110,15 @@ const router = createRouter({
       component: StatisticsAnonymousPage
     },
     {
-      path: '/testers',
-      children: [
-        {
-          path: 'websocket',
-          component: WebSocketTester
-        }
-      ]
+      path: '/statistics/personal',
+      name: 'indexPersonalStatistics',
+      component: StatisticsPersonalPage
     },
     {
       path: '/users',
       name: 'users',
       component: UsersPage
     },
-    {
-      path: '/statistics/personal',
-      name: 'indexPersonalStatistics',
-      component: StatisticsPersonalPage
-    }
   ]
 })
 
@@ -141,9 +129,9 @@ router.beforeEach(async (to, from, next) => {
   if (handlingFirstRoute) {
     handlingFirstRoute = false
     await storeAuth.restoreToken()
-  }
+}
 
-  switch (to.name) {
+switch (to.name) {
     // Can't access if you are logged in
     case 'login':
     case 'register':
@@ -164,7 +152,10 @@ router.beforeEach(async (to, from, next) => {
       }
       break
 
-    
+    // Can't acess if you are admin
+    case 'singleplayer':
+    case 'singlePlayerGame':
+    case 'multiplayer':
     case 'scoreboardGlobal': 
         if(storeAuth.user && storeAuth.user.type === 'A'){
             next({ name: 'home' })
@@ -174,6 +165,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Can't access if you are not logged in or you are an admin
     case 'scoreboardPersonal':
+    case 'indexPersonalStatistics':
     case 'multiPlayerGame':
       if(!storeAuth.user) {
         next({ name: 'login' })
@@ -187,6 +179,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Can't access if you are not an admin
     case 'users':
+    case 'indexAdminStatistics':
       if(storeAuth.user.type !== 'A') {
         next({ name: 'home' })
         return
@@ -194,12 +187,8 @@ router.beforeEach(async (to, from, next) => {
       break
 
     // Anyone can access
-    // case 'singleplayer':
-    // case 'singlePlayerGame':
-    // case 'multiplayer':
     // case 'home':
-    
-    // case 'statistics????' TODO
+    // case 'indexGlobalStatistics':
   }
 
 

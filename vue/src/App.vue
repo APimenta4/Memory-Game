@@ -175,7 +175,7 @@ onMounted(async () => {
             Home
           </RouterLink>
           <RouterLink
-            v-show="storeAuth.user?.type != 'A'"
+            v-if="storeAuth.user?.type !== 'A'"
             to="/singleplayer"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="bg-gray-200"
@@ -183,6 +183,7 @@ onMounted(async () => {
             Single Player
           </RouterLink>
           <RouterLink
+            v-if="storeAuth.user?.type !== 'A'"
             to="/multiplayer"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="bg-gray-200"
@@ -192,7 +193,7 @@ onMounted(async () => {
           <ScoreBoardDropdown v-if="(storeAuth.user && storeAuth.user.type != 'A') || !storeAuth.user"/>
           <HistoryDropdown v-if="storeAuth.user"/>
           <RouterLink
-            v-show="storeAuth.user?.type == 'A'"
+            v-if="storeAuth.user?.type === 'A'"
             to="/users"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="bg-gray-200"
