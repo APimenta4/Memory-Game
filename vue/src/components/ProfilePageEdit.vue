@@ -55,35 +55,6 @@ const handleFileChange = (event) => {
   }
 }
 
-const uploadPhoto = async () => {
-  if (!newPhotoFile.value) {
-    toast({
-      title: 'Failed to upload photo!',
-      description:
-        "Please attach the file to upload.",
-      variant: 'destructive',
-    }) 
-    return
-  }
-  try {
-    const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value)
-    userData.value.photo = photoFilename
-    toast({
-      title: 'Successfully uploaded photo!',
-      description:
-        "You have chosen a new profile photo. Please save your changes to apply",
-      variant: 'success',
-    }) 
-  } catch (error) {
-    toast({
-      title: 'Failed to upload photo!',
-      description:
-        'Please try again.',
-      variant: 'destructive',
-    }) 
-  }
-}
-
 const updateProfile = async () => {
   const updatedData = {}
 
@@ -166,9 +137,6 @@ const removeAccount = async () => {
               @change="handleFileChange"
               class="text-sm text-gray-500 file:mr-2 file:py-1 file:px-3 file:border file:rounded-md file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
             />
-            <Button @click.prevent="uploadPhoto" variant="outline" class="px-4">
-              Upload Photo
-            </Button>
           </div>
         </div>
 
