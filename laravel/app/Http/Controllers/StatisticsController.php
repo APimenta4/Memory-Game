@@ -115,8 +115,8 @@ class StatisticsController extends Controller
         }
 
         $stats['all_purchases_today'] = Transaction::where('type', 'P')
-        ->whereDate('transaction_datetime', '=', $this->today->toDateString())
-        ->sum('euros');
+            ->whereDate('transaction_datetime', '=', $this->today->toDateString())
+            ->sum('euros');
 
         $stats['all_purchases_last_7_days'] = Transaction::where('type', 'P')
             ->where('transaction_datetime', '>=', $this->oneWeekAgo)
