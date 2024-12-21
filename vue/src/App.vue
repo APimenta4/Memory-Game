@@ -130,6 +130,8 @@ const makeNotification = () => {
 
     console.log(txtTitle)
     console.log(txtDescription)
+    // so they dont stack
+    setTimeout(()=> axios.patch(`notifications/${notification.id}/read`), 5000)
     toast({
       title: txtTitle,
       description: txtDescription,
@@ -146,6 +148,7 @@ const makeNotification = () => {
         }
       )
     })
+
   })
 }
 socket.on('notification', () => {
