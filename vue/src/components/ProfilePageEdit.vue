@@ -97,13 +97,22 @@ const updateProfile = async () => {
       const photoFilename = await storeAuth.updatePhoto(newPhotoFile.value)
       updatedData.photo_filename = photoFilename
     }
-
     await storeAuth.updateUser(updatedData)
-    alert('Profile updated successfully!')
+    toast({
+      title: 'Profile updated!',
+      description:
+        'Your profile has been successfully updated.',
+      variant: 'success',
+    })
     await storeAuth.fetchUser()
   } catch (error) {
     console.error('Error updating profile:', error)
-    alert('Failed to update profile.')
+    storeError.setErrorMessages(
+      "Failed to update profile",
+      [],
+      [],
+      'Error updating profile!'
+    )
   }
 }
 
