@@ -115,7 +115,16 @@ class GameController extends Controller
                 $game->began_at = now();
                 $this->checkPlayerBalance($user, 5);
                 $brain_coins = -5;    
-            }   
+            } else if  ($newStatus == GameStatus::ENDED) {
+                throw ValidationException::withMessages([
+                    "status" =>
+                    "Cannot change game #" .
+                    $game->id .
+                    " status from '" .
+                    $game->status->value .
+                    "' to '$newStatus->value'!",
+                ]);
+            }  
         }
         else if ($game->status == GameStatus::PLAYING) {
             if ($newStatus == GameStatus::ENDED) {
