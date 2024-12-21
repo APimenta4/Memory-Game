@@ -24,8 +24,9 @@ export const useGameStore = defineStore('game', () => {
                     description:response.data.message,
                     variant:'destructive'
                 })
+                return false
             }
-            return true
+            return game.value
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error creating game!')
             return false
@@ -58,11 +59,12 @@ export const useGameStore = defineStore('game', () => {
             } else {
                 game.value = {}
             }
-            
-            return response.data.data
+            // here we can't return true, or we will have issues in the caller function
+            return
         } catch (e) {
-            storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating game!')
-            return false
+            // treated in the caller function
+            // storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error updating game!')
+            return e.response
         }
     }
     

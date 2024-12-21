@@ -14,7 +14,10 @@ import { useLobbyStore } from '@/stores/lobby'
 import { useAuthStore } from '@/stores/auth';
 import { useGamesStore } from '@/stores/games';
 import { useBoardStore } from '@/stores/board';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, h } from 'vue';
+import { toast } from '../ui/toast';
+import BuyCoins from '@/components/PurchaseCoins.vue'
+
 
 const storeGames = useGamesStore()
 const storeAuth = useAuthStore()
@@ -24,6 +27,16 @@ const storeBoard = useBoardStore()
 const popoverOpen = ref(false);
 
 const selectBoard = (boardId) => {
+    if(storeAuth.user.brain_coins_balance < 5){
+        toast({
+            title: 'You need 5 🧠 to create a game!',
+            description: 'Go Buy some coins.',
+            action: h(
+                BuyCoins,
+            )
+        })
+        return
+    }
     storeLobby.addGame(boardId)
     popoverOpen.value = false;
 }

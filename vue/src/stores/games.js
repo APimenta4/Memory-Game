@@ -151,6 +151,7 @@ export const useGamesStore = defineStore('games', () => {
         total_time: getTotalTime(),
         total_turns_winner: game[`player${playerNumberOfCurrentUser(game)}Turns`]
       })
+      storeAuth.updateBalance()
     }
   })
 
