@@ -274,7 +274,6 @@ onMounted(async () => {
             Register
           </RouterLink>
 
-
           <div v-if="storeAuth.user && storeAuth.user?.type!='A'" style="display: flex; align-items: center">
             <span style="font-size: 24px; margin-right: 8px">🧠</span>
             <span style="font-size: 18px">{{ storeAuth.user.brain_coins_balance }}</span>

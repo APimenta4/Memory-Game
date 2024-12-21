@@ -345,7 +345,7 @@ io.on("connection", (socket) => {
     clearTurnTimer(roomName); // Clear any existing timer
     const timer = setTimeout(() => {
       handleTurnTimeout(roomName, playerId);
-    }, 20000); // 20000 milliseconds = 20 seconds
+    }, 21600); // 20000 milliseconds = 20 seconds
     turnTimers.set(roomName, timer);
   }
 

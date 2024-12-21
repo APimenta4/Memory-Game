@@ -14,10 +14,31 @@ const jsConfetti = ref(null)
 const storeGames = useGamesStore()
 const storeAuth = useAuthStore()
 
-onMounted(() => {
-  jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
+const timer = ref(20.0)
+let startTime = null
+let timerInterval = null
+
+const refreshTimer = () => {
+  timer.value = 20.0
+  if (timerInterval) clearInterval(timerInterval)
+  startTime = performance.now()
+  timerInterval = setInterval(() => {
+    const elapsed = (performance.now() - startTime) / 1000
+    timer.value = Math.max(20.0 - elapsed, 0)
+    if (timer.value <= 0) {
+      clearInterval(timerInterval)
+    }
+  }, 100)
+}
+
+watch(() => storeGames.currentGame.currentPlayer, () => {
+  refreshTimer()
 })
 
+onMounted(() => {
+  jsConfetti.value = new JSConfetti({ canvasId: 'confetti' })
+  refreshTimer()
+})
 
 const flipCardWrapper = (index) => {
   storeGames.play(storeGames.currentGame, index)
@@ -64,20 +85,24 @@ watch(()=>storeGames.gameStatus, (newValue) => {
     </div>
 
     <div class="flex flex-col items-center w-full md:w-3/4">
-      <h1 class="text-2xl font-bold mt-6 mb-4">
-        <span
-          :class="{
-            'text-green-500': storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
-          }"
-        >
+      <div class="flex flex-col items-center">
+        <h1 class="text-2xl font-bold mt-6 mb-4 text-center">
+          <span
+        :class="{
+          'text-green-500': storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
+        }"
+          >
           {{
-            storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
-              ? 'Your turn'
-              : storeGames.currentGame['player' + storeGames.opponentPlayerNumber + 'Nickname'] +
-                "'s turn"
-          }}
-        </span>
-      </h1>
+          storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
+            ? 'Your turn'
+            : storeGames.currentGame['player' + storeGames.opponentPlayerNumber + 'Nickname'] +
+            "'s turn"
+          }} 
+          <br />
+          {{ timer.toFixed(1) }}s
+          </span>
+        </h1>
+      </div>
       <MultiPlayerGame :storeGames="storeGames" :flipCardWrapper="flipCardWrapper" />
     </div>
 
