@@ -41,7 +41,6 @@ const isFormValid = computed(() => {
 })
 
 const register = async () => {
-  console.log("credentials" + credentials.value)
   if (!isFormValid.value) {
     storeError.setError('Please fill all the fields.')
     return

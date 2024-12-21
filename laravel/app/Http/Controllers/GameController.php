@@ -32,13 +32,13 @@ class GameController extends Controller
         switch ($newGame->status) {
             case GameStatus::PENDING:
                 if($newGame->type === GameType::MULTIPLAYER){
-                    $this->checkPlayerBalance($user, -5);
+                    $this->checkPlayerBalance($user, 5);
                     $brain_coins = -5;
                 } else{
                     $this->checkPlayerBalance($user, -1);
                     if(!($newGame->board->board_cols===3 
                       && $newGame->board->board_rows===4)){
-                        $this->checkPlayerBalance($user, -1);
+                        $this->checkPlayerBalance($user, 1);
                         $brain_coins = -1;
                     }
                 }
@@ -48,7 +48,7 @@ class GameController extends Controller
                 if($newGame->type === GameType::SINGLEPLAYER){
                     if(!($newGame->board->board_cols===3 
                       && $newGame->board->board_rows===4)){
-                        $this->checkPlayerBalance($user, -1);
+                        $this->checkPlayerBalance($user, 1);
                         $brain_coins = -1;
                     }
                 }
@@ -112,7 +112,7 @@ class GameController extends Controller
         }
         else if ($game->status == GameStatus::PENDING){
             $game->began_at = now();
-            $this->checkPlayerBalance($user, -5);
+            $this->checkPlayerBalance($user, 5);
             $brain_coins = -5;       
         }
         else if ($game->status == GameStatus::PLAYING) {

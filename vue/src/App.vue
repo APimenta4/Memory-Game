@@ -55,7 +55,6 @@ const fetchNotifications = async () => {
   try {
     const response = await axios.get('notifications/unread')
     notifications.value = response.data.unread_notifications
-    console.log(notifications.value)
     makeNotification()
     return true
   } catch (e) {
@@ -95,9 +94,8 @@ const makeNotification = () => {
           notification.data.position +
           ' Turns in ' +
           notification.data.board_size +
-          '. Total Time ' +
-          notification.data.score +
-          's'
+          '. Total turns ' +
+          notification.data.score
       }
     } else {
       // Transaction
@@ -107,19 +105,8 @@ const makeNotification = () => {
       } else if (notification.data.type === 'I') {
         txtTitle = 'More Brains!'
         txtDescription = 'You Won ' + notification.data.brain_coins + ' coins'
-      } else {
-        txtTitle = 'Transaction Successful'
-        txtDescription =
-          'Spent ' +
-          notification.data.euros +
-          '€ for ' +
-          notification.data.brain_coins +
-          ' coins via ' +
-          notification.data.payment_type
       }
     }
-    console.log(txtTitle)
-    console.log(txtDescription)
     toast({
       title: txtTitle,
       description: txtDescription,
@@ -139,7 +126,6 @@ const makeNotification = () => {
   })
 }
 socket.on('notification', () => {
-  console.log('notifications')
   fetchNotifications()
 })
 
@@ -235,14 +221,6 @@ onMounted(async () => {
             Global Scoreboard
           </RouterLink>
           <RouterLink
-            v-show="storeAuth.user && storeAuth.user.type != 'A'"
-            to="/transactions/buy-coins"
-            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            active-class="text-blue-600 font-semibold"
-          >
-            Buy coins
-          </RouterLink>
-          <RouterLink
             v-show="storeAuth.user"
             to="/transactions/history"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -258,7 +236,7 @@ onMounted(async () => {
             Statistics
           </RouterLink>
           <RouterLink
-            v-show="!storeAuth.user"
+            v-if="!storeAuth.user"
             to="/login"
             class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="bg-blue-700"
@@ -266,7 +244,7 @@ onMounted(async () => {
             Login
           </RouterLink>
           <RouterLink
-            v-show="!storeAuth.user"
+            v-if="!storeAuth.user"
             to="/register"
             class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="bg-blue-700"

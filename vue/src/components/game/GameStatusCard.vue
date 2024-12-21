@@ -28,14 +28,30 @@ const props = defineProps({
     required: true,
   },
 })
+
+const authStore = useAuthStore()
 const emit = defineEmits(['restart'])
 
 const restart = ()=>{
-  emit('restart')
+  console.log("user")
+  console.log(authStore.user)
+  if (authStore.user && authStore.user.brain_coins_balance>0){
+    emit('restart')
+  }
+  else{
+    toast({
+      title: 'You need Coins to play this boards!',
+      description:
+        "Go Buy some coins.",
+      action: h(
+        BuyCoins,
+      )
+    })
+  }
 }
 
-const goBoardSelection = ()=>{
-  
+const showToast = ()=>{
+
 }
 </script>
 
@@ -78,7 +94,8 @@ const goBoardSelection = ()=>{
       <CardDescription class="pt-4" v-if="totalPairs!=6">
         The brain coin will be used when you flip the first card
       </CardDescription>
-      <button @click="restart"
+      <button 
+        @click="restart"
         :class="{
           'bg-gray-500': isGameOver,
           'bg-gray-400': !isGameOver
@@ -87,7 +104,8 @@ const goBoardSelection = ()=>{
       >
       Restart Game <span v-if="(isGameOver || time!=='0.0' && time && !isGameOver) && totalPairs!=6"> 1🧠</span> 
       </button>
-      <button @click="router.back"
+      <button 
+        @click="router.back"
         :class="{
           'bg-gray-500': isGameOver,
           'bg-gray-400': !isGameOver

@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
+import { toast } from '@/components/ui/toast'
 
 export const useGameStore = defineStore('game', () => {
     const storeError = useErrorStore()
@@ -17,7 +18,14 @@ export const useGameStore = defineStore('game', () => {
         try {        
             const response = await axios.post('games', newGame)
             game.value = response.data.data
-            return response.data.data
+            if (response.status == 422){
+                toast({
+                    title: 'Could not create a new Game!',
+                    description:response.data.message,
+                    variant:'destructive'
+                })
+            }
+            return true
         } catch (e) {
             storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error creating game!')
             return false

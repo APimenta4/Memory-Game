@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h, inject, onBeforeMount } from 'vue'
+import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h, inject, onBeforeMount, computed } from 'vue'
 import { useMemoryGame } from '@/components/game/memoryGame'
 import { useGameStore } from '@/stores/game'
 import { useAuthStore } from '@/stores/auth'
@@ -40,27 +40,34 @@ const updateCurrentTime = () => {
 const updateTimeInterval = setInterval(updateCurrentTime, 100)
 let gameStarted = false
 
+
 const createGame = async () => {
   gameStarted = true
-  console.log('Current board:', storeGame.board.id)
-  console.log('storeAuth.user = ' + storeAuth.user)
-
   if (storeAuth.user) {
-    console.log('insert game')
+    console.log('createGame User')
     await storeGame.insertGame({
       type: 'S',
       status: 'PL',
       board_id: storeGame.board.id
     })
+  }else {
+    console.log('createGame anonym')
   }
 }
 
 const restartGame = async () => {
   gameStarted = false
+  storeGame.reloadRequestMemoryGame = !storeGame.reloadRequestMemoryGame
+  
   if (storeGame.game.id && !isGameOver.value && storeAuth.user) {
+    console.log('restartGame User')
     await storeGame.updateGame({ status: 'I' })
+  }else{
+    console.log('restartGame anonym')
+
   }
   resetGame()
+  createGame()
 }
 
 watch(isGameOver, async (newValue) => {
@@ -112,6 +119,7 @@ onMounted(() => {
       )
     })
   }
+  createGame()
 })
 
 onBeforeUnmount(() => clearInterval(updateTimeInterval))
@@ -135,7 +143,10 @@ onUnmounted(async () => {
       />
       <div class="flex flex-col items-center w-full md:w-3/4">
         <h1 class="text-2xl font-bold mt-6 mb-4">Memory Game</h1>
-        <MemoryGame :cards="cards" :flipCard="flipCard" @gameStarted="createGame" />
+        <MemoryGame 
+          :cards="cards" 
+          :flipCard="flipCard"
+          />
       </div>
     </div>
     <Top5Card class="mt-5 mx-5" :board="storeGame.board" />

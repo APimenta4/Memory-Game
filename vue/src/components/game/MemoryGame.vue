@@ -1,5 +1,6 @@
 <script setup>
 
+import { useAuthStore } from "@/stores/auth";
 import { useGameStore } from "@/stores/game";
 import { ref, watch } from "vue";
 
@@ -11,26 +12,30 @@ const props = defineProps({
   flipCard: {
     type: Function,
     required: true,
-  }
+  },
 })
 
 const emit = defineEmits(['gameStarted'])
-const storeGame = useGameStore();
+const gameStore = useGameStore();
+const authStore = useAuthStore();
 
 const gameStarted = ref(false)
 
 watch(
-  () => storeGame.reloadRequestMemoryGame,
-  ()=>gameStarted.value = false,
+  () => gameStore.reloadRequestMemoryGame,
+  () => gameStarted.value = false,
   { deep: true }
 )
 
-// testar function
 const flipCardWrapper = (index)=>{
+  if ((!(gameStore.board.board_cols===3 && gameStore.board.board_rows===4) && (!authStore.user || authStore.user.brain_coins_balance <= 0))){
+    console.log("no flip for you")
+    return; 
+  }
   if (!gameStarted.value){
+    gameStarted.value = true
     emit('gameStarted')
   }
-  gameStarted.value = true
   props.flipCard(index)
 }
 </script>
@@ -38,15 +43,15 @@ const flipCardWrapper = (index)=>{
 <template>
   <div
     class="h-full grid gap-4"
-    :style="{ gridTemplateColumns: `repeat(${storeGame.board.board_cols}, 1fr)` }"
+    :style="{ gridTemplateColumns: `repeat(${gameStore.board.board_cols}, 1fr)` }"
   >
     <div
       v-for="(card, index) in cards"
       :key="index"
       class="bg-gray-200 rounded-lg flex justify-center items-center cursor-pointer shadow-lg transition-transform transform hover:scale-105"
       :class="{
-        'w-16 h-24': storeGame.board.board_cols===6,
-        'w-20 h-28': storeGame.board.board_cols!==6,
+        'w-16 h-24': gameStore.board.board_cols===6,
+        'w-20 h-28': gameStore.board.board_cols!==6,
         'bg-white': card.isFlipped || card.isMatched,
         'pointer-events-none': card.isMatched,
       }"
