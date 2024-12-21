@@ -1,5 +1,15 @@
 <script setup>
 import { onMounted, onUnmounted, onBeforeUnmount, watch, ref, h, inject, onBeforeMount, computed } from 'vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { useMemoryGame } from '@/components/game/memoryGame'
 import { useGameStore } from '@/stores/game'
 import { useAuthStore } from '@/stores/auth'
@@ -133,15 +143,33 @@ onUnmounted(async () => {
 <template>
   <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
     <div class="flex flex-row justify-center w-full">
-      <GameStatusCard
+      <Dialog>
+        <DialogTrigger asChild>
+          <GameStatusCard
         class="mt-5 mr-5 w-1/4"
         :is-game-over="isGameOver"
         :pairs-found="pairsFound"
         :time="currentTime"
         :total-pairs="cards.length / 2"
         :turns="totalTurns"
-        @restart="restartGame"
-      />
+          />
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+        <DialogTitle>Interrupt game</DialogTitle>
+        <DialogDescription>
+          Would you like to restart the game?
+        </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+        <DialogTrigger asChild>
+          <Button @click="restartGame" variant="destructive">Restart Game</Button>
+        </DialogTrigger>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
       <div class="flex flex-col items-center w-full md:w-3/4">
         <h1 class="text-2xl font-bold mt-6 mb-4">Memory Game</h1>
         <MemoryGame 
