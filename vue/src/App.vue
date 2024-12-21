@@ -282,9 +282,12 @@ onMounted(async () => {
             alt="Profile Picture"
           />
 
-          <BuyCoins>
+          <div v-if="storeAuth.user" style="display: flex; align-items: center">
+            <span style="font-size: 24px; margin-right: 8px">🧠</span>
+            <span style="font-size: 18px">{{ storeAuth.user.brain_coins_balance }}</span>
+          </div>
 
-          </BuyCoins>
+          <BuyCoins> </BuyCoins>
 
           <!-- Submenu (Conditional Rendering) -->
           <div
