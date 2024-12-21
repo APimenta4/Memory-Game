@@ -58,32 +58,31 @@ watch(()=>storeGames.gameStatus, (newValue) => {
 </script>
 
 <template>
-  <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
-    <div class="flex flex-col justify-start items-center max-h-full mt-5">
-      <MultiplayerStatusCard />
+    <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
+      <div class="flex flex-col md:flex-row md:justify-center w-full">
+          <MultiplayerStatusCard class="md:order-1 order-2"/>
+
+        <div class="flex flex-col items-center w-full md:w-3/4 md:order-2 order-1">
+          <h1 class="text-2xl font-bold mt-6 mb-4">
+            <span
+              :class="{
+                'text-green-500': storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
+              }"
+            >
+              {{
+                storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
+                  ? 'Your turn'
+                  : storeGames.currentGame['player' + storeGames.opponentPlayerNumber + 'Nickname'] +
+                    "'s turn"
+              }}
+            </span>
+          </h1>
+
+          <MultiPlayerGame class="m-5" :storeGames="storeGames" :flipCardWrapper="flipCardWrapper" />
+        </div>
     </div>
 
-    <div class="flex flex-col items-center w-full md:w-3/4">
-      <h1 class="text-2xl font-bold mt-6 mb-4">
-        <span
-          :class="{
-            'text-green-500': storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
-          }"
-        >
-          {{
-            storeGames.myPlayerNumber === storeGames.currentGame.currentPlayer
-              ? 'Your turn'
-              : storeGames.currentGame['player' + storeGames.opponentPlayerNumber + 'Nickname'] +
-                "'s turn"
-          }}
-        </span>
-      </h1>
-      <MultiPlayerGame :storeGames="storeGames" :flipCardWrapper="flipCardWrapper" />
-    </div>
-
-    <div class="flex flex-col justify-start items-center max-h-full mt-5">
-      <MultiplayerStatistics />
-    </div>
+    <MultiplayerStatistics class="mt-5 mx-5"/>
   </div>
   <canvas id="confetti"></canvas>
 </template>

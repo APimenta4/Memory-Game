@@ -131,10 +131,10 @@ onUnmounted(async () => {
 })
 </script>
 <template>
-  <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
-    <div class="flex flex-row justify-center w-full">
+<div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
+  <div class="flex flex-col md:flex-row md:justify-center w-full">
       <GameStatusCard
-        class="mt-5 mr-5 w-1/4"
+        class="mt-5 mr-5 w-full md:w-1/4 md:order-1 order-2"
         :is-game-over="isGameOver"
         :pairs-found="pairsFound"
         :time="currentTime"
@@ -142,7 +142,7 @@ onUnmounted(async () => {
         :turns="totalTurns"
         @restart="restartGame"
       />
-      <div class="flex flex-col items-center w-full md:w-3/4">
+      <div class="flex flex-col items-center w-full md:w-3/4 md:order-2 order-1">
         <h1 class="text-2xl font-bold mt-6 mb-4">Memory Game</h1>
         <MemoryGame 
           :cards="cards" 
@@ -152,4 +152,5 @@ onUnmounted(async () => {
     </div>
     <Top5Card class="mt-5 mx-5" :board="storeGame.board" />
   </div>
+  <canvas id="confetti"></canvas>
 </template>
