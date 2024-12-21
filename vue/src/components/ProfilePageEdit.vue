@@ -216,7 +216,7 @@ const removeAccount = async () => {
         <Button variant="outline" @click="$router.back()"> Cancel </Button>
         <Button @click.prevent="updateProfile"> Save Changes </Button>
         <DialogTrigger as-child>
-          <Button variant="danger" class="bg-red-600 text-white" @click="showRemoveDialog = true">
+          <Button variant="danger" class="bg-red-600 text-white" v-if="storeAuth.user.type !=='A'" @click="showRemoveDialog = true">
             Remove Account
           </Button>
         </DialogTrigger>

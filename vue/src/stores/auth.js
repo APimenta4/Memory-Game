@@ -207,6 +207,27 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value
   }
 
+  const updateBalance = async()=>{
+        if (!user.value){
+          return;
+        }
+        storeError.resetMessages();
+        try {
+            // Send the updated profile data to the backend
+            const responseBalance = await axios.get("/users/balance")
+            user.value.brain_coins_balance = responseBalance.data.brain_coins_balance;
+            return user.value;
+        } catch (e) {
+            storeError.setErrorMessages(
+                e.response?.data?.message,
+                e.response?.data?.errors || [],
+                e.response?.status,
+                'Failed to update user data'
+            );
+            throw e;
+        }  
+}
+
   const updatePhoto = async (file) => {
     const formData = new FormData()
     formData.append('photo', file)
@@ -244,9 +265,9 @@ export const useAuthStore = defineStore('auth', () => {
       }
       const response = await axios.post('/register', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+          "Content-Type": "multipart/form-data",
+        },
+      });
       if (response.data && user.value?.type != 'A') {
         socket.emit('notification_alert', response.data.data.id)
         return await login({ email: userData.email, password: userData.password })
@@ -280,6 +301,7 @@ export const useAuthStore = defineStore('auth', () => {
     restoreToken,
     fetchUser,
     updateUser,
+    updateBalance,
     updatePhoto,
     register,
     clearUser

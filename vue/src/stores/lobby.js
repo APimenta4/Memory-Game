@@ -1,10 +1,10 @@
 import { ref, computed, inject } from 'vue'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import { useErrorStore } from '@/stores/error'
 import { useAuthStore } from '@/stores/auth'
 import { useGameStore } from '@/stores/game'
 import { useBoardStore } from '@/stores/board'
+import { toast } from '@/components/ui/toast'
 
 export const useLobbyStore = defineStore('lobby', () => {
   const storeAuth = useAuthStore()
@@ -49,7 +49,11 @@ export const useLobbyStore = defineStore('lobby', () => {
       status: 'PE',
       board_id: chosenBoardId
     })
-    const board = storeBoard.boards.find(board => board.id === chosenBoardId)
+    if(gameData == false){
+      return
+    }
+    storeAuth.updateBalance()
+    const board = storeBoard.boards.find((board) => board.id === chosenBoardId)
     const cols = board.board_cols
     const rows = board.board_rows
     socket.emit('addGame', gameData.id, cols, rows, async (response) => {
@@ -60,31 +64,63 @@ export const useLobbyStore = defineStore('lobby', () => {
   }
 
   // remove a game from the lobby
-  const removeGame = (id) => {
+  const removeGame = async (id) => {
     storeError.resetMessages()
-    socket.emit('removeGame', id, async (response) => {
-      if (webSocketServerResponseHasError(response)) {
-        return
+    try {
+      const response = await storeGame.updateGameWithId(id, { status: 'I' })
+      if(response){
+        throw response
       }
-      await storeGame.updateGameWithId(id, {status: "I"})
-    })
+      socket.emit('removeGame', id, async (response) => {
+        if (webSocketServerResponseHasError(response)) {
+          return
+        }
+      })
+    } catch (e) {
+      console.log(e)
+      storeError.setErrorMessages(
+        e.response.message,
+        e.response.errors,
+        e.response.status,
+        'Error removing game!'
+      )
+      return
+    }
   }
 
   // join a game of the lobby
-  const joinGame = (id) => {
+  const joinGame = async (id) => {
     storeError.resetMessages()
-    socket.emit('joinGame', id, async (response) => {
-      // callback executed after the join is complete
-      if (webSocketServerResponseHasError(response)) {
+    try {
+      const response = await storeGame.updateGameWithId(id, { status: 'PL' })
+      if (response?.status == 422) {
+        toast({
+          title: 'Could not join the Multiplayer Game!',
+          description: response.data.message,
+          variant: 'destructive'
+        })
         return
       }
-      // Update status and add player in pivot table
-      await storeGame.updateGameWithId(id, {status: "PL" })
-      
-      // After updating the game on the DB emit a message to the server to start the game
-      socket.emit('startGame', response, () => {
+      storeAuth.updateBalance()
+      socket.emit('joinGame', id, async (response) => {
+        // callback executed after the join is complete
+        if (webSocketServerResponseHasError(response)) {
+          return
+        }
+
+        // After updating the game on the DB emit a message to the server to start the game
+        socket.emit('startGame', response, () => {})
       })
-    })
+    } catch (e) {
+      console.log(e)
+      storeError.setErrorMessages(
+        e.response.data.message,
+        e.response.data.errors,
+        e.response.status,
+        'Error joining game!'
+      )
+      return
+    }
   }
 
   // Whether the current user can remove a specific game from the lobby

@@ -129,7 +129,9 @@ async function buyCoins() {
       payment_reference: paymentReference.value,
       value: value.value,
     });
-    storeAuth.user.brain_coins_balance += response.data.brain_coins;
+    
+    storeAuth.updateBalance()
+
     socket.emit('notification_alert', storeAuth.user.id)
     successMessage.value = `Purchase successful! You received ${response.data.brain_coins} brain coins.`;
     errorMessage.value = "";
@@ -143,8 +145,8 @@ async function buyCoins() {
 <template>
   <Dialog>
     <DialogTrigger as-child>
-      <Button style="background-color: #e84757; border: 2px solid black; text-shadow: 1px 1px 2px black;">
-        Buy More Brains
+      <Button>
+        Buy Brains
       </Button>
     </DialogTrigger>
     <DialogContent>

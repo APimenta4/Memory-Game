@@ -5,6 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter} from "@/component
 import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import CardDescription from "../ui/card/CardDescription.vue";
+import { toast } from '@/components/ui/toast'
+import { h } from "vue";
+import BuyCoins from '@/components/PurchaseCoins.vue'
+import { useGameStore } from "@/stores/game";
+import { DialogTrigger } from '@/components/ui/dialog'
+
+const storeGame = useGameStore()
 
 const props = defineProps({
   time: {
@@ -28,14 +35,31 @@ const props = defineProps({
     required: true,
   },
 })
+
+const authStore = useAuthStore()
 const emit = defineEmits(['restart'])
 
 const restart = ()=>{
-  emit('restart')
+  console.log("user")
+  console.log(authStore.user)
+  console.log("boardid"+storeGame.board.id)
+  if (authStore.user && authStore.user.brain_coins_balance>0 || storeGame.board.id===1){
+    emit('restart')
+  }
+  else{
+    toast({
+      title: 'You need Coins to play this boards!',
+      description:
+        "Go Buy some coins.",
+      action: h(
+        BuyCoins,
+      )
+    })
+  }
 }
 
-const goBoardSelection = ()=>{
-  
+const showToast = ()=>{
+
 }
 </script>
 
@@ -78,7 +102,9 @@ const goBoardSelection = ()=>{
       <CardDescription class="pt-4" v-if="totalPairs!=6">
         The brain coin will be used when you flip the first card
       </CardDescription>
-      <button @click="restart"
+      <DialogTrigger>
+        <button 
+        @click="restart"
         :class="{
           'bg-gray-500': isGameOver,
           'bg-gray-400': !isGameOver
@@ -87,7 +113,9 @@ const goBoardSelection = ()=>{
       >
       Restart Game <span v-if="(isGameOver || time!=='0.0' && time && !isGameOver) && totalPairs!=6"> 1🧠</span> 
       </button>
-      <button @click="router.back"
+      </DialogTrigger>
+        <button 
+        @click="router.back"
         :class="{
           'bg-gray-500': isGameOver,
           'bg-gray-400': !isGameOver

@@ -1,5 +1,6 @@
 <script setup>
 import router from '@/router';
+import BuyCoins from '@/components/PurchaseCoins.vue'
 import { useAuthStore } from '@/stores/auth';
 
 const authstore = useAuthStore();
@@ -30,59 +31,55 @@ const navigateTo = (route) => {
       </button>
     </div>
     <!-- Horizontal Sections for Categories, Games, and Scoreboard -->
-    <div class="max-w-2xl mx-auto px-4 space-y-8">
-      <div class="flex justify-center space-x-8">
-        <div class="max-w-2xl mx-auto px-4 space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">Games</h2>
-          <button 
-            class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-            @click="navigateTo('/singleplayer')">
-            Singleplayer
-          </button>
-          <button 
-            class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-            @click="navigateTo('multiplayer')">
-            Multiplayer
-          </button>
-        </div>
-        <div class="max-w-2xl mx-auto px-4 space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">Scoreboard</h2>
-          <button 
-            v-show="authstore.user"
-            class="w-full py-3 px-6 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
-            @click="navigateTo('/scoreboard/personal')">
-            Scoreboard Personal
-          </button>
-          <button 
-            class="w-full py-3 px-6 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
-            @click="navigateTo('/scoreboard/global')">
-            Scoreboard Global
-          </button>
-        </div>
-        <div v-show="authstore.user"
-        class="max-w-2xl mx-auto px-4 space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">History</h2>
-          <button 
-            class="w-full py-3 px-6 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 transition"
-            @click="navigateTo('/history')">
-            Games History
-          </button>
-          <button 
-            class="w-full py-3 px-6 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 transition"
-            @click="navigateTo('/transactions/history')">
-            Transactions History
-          </button>
-        </div>
-        <div v-show="authstore.user"
-        class="max-w-2xl mx-auto px-4 space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">Transactions</h2>
-          <button 
-            class="w-full py-3 px-6 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
-            @click="navigateTo('/transactions/buy-coins')">
-            Buy Coins
-          </button>
-        </div>
-      </div>
+    <div class="max-w-full lg:max-w-2xl mx-auto px-4 space-y-8">
+  <div class="flex flex-col lg:flex-row justify-center lg:space-x-8 space-y-8 lg:space-y-0">
+    <!-- Games Section -->
+    <div class="mx-auto px-4 space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800">Games</h2>
+      <button 
+        class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+        @click="navigateTo('/singleplayer')">
+        Singleplayer
+      </button>
+      <button 
+        class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+        @click="navigateTo('multiplayer')">
+        Multiplayer
+      </button>
     </div>
+    
+    <!-- Scoreboard Section -->
+    <div class="mx-auto px-4 space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800">Scoreboard</h2>
+      <button 
+        v-show="authstore.user"
+        class="w-full py-3 px-6 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
+        @click="navigateTo('/scoreboard/personal')">
+        Scoreboard Personal
+      </button>
+      <button 
+        class="w-full py-3 px-6 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
+        @click="navigateTo('/scoreboard/global')">
+        Scoreboard Global
+      </button>
+    </div>
+    
+    <!-- History Section -->
+    <div v-show="authstore.user" class="mx-auto px-4 space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800">History</h2>
+      <button 
+        class="w-full py-3 px-6 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 transition"
+        @click="navigateTo('/history')">
+        Games History
+      </button>
+      <button 
+        class="w-full py-3 px-6 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 transition"
+        @click="navigateTo('/transactions/history')">
+        Transactions History
+      </button>
+    </div>
+  </div>
+</div>
+
   </div>
 </template>

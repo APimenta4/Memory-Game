@@ -43,8 +43,6 @@ const fetchScoreboardTurns = async () => {
       },
     });
     scoreboardTurns.value = response.data.data
-    console.log('Scoreboard Turns')
-    console.log(scoreboardTurns.value)
     return true;
   } catch (e) {
     storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching games!');
@@ -62,8 +60,6 @@ const fetchScoreboardTime = async () => {
       },
     });
     scoreboardTime.value = response.data.data
-    console.log('Scoreboard Time')
-    console.log(scoreboardTime.value)
     return true;
   } catch (e) {
     storeError.setErrorMessages(e.response.data.message, e.response.data.errors, e.response.status, 'Error fetching games!');

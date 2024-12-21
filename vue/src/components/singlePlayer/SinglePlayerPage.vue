@@ -9,8 +9,6 @@ const storeBoard = useBoardStore()
 const storeError = useErrorStore()
 const storeAuth = useAuthStore()  
 
-console.log(storeAuth.user);
-
 onMounted(() => {
     storeError.resetMessages()
 })
