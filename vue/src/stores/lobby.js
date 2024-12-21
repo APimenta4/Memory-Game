@@ -93,7 +93,7 @@ export const useLobbyStore = defineStore('lobby', () => {
     storeError.resetMessages()
     try {
       const response = await storeGame.updateGameWithId(id, { status: 'PL' })
-      if (response.status == 422) {
+      if (response?.status == 422) {
         toast({
           title: 'Could not join the Multiplayer Game!',
           description: response.data.message,
@@ -112,6 +112,7 @@ export const useLobbyStore = defineStore('lobby', () => {
         socket.emit('startGame', response, () => {})
       })
     } catch (e) {
+      console.log(e)
       storeError.setErrorMessages(
         e.response.data.message,
         e.response.data.errors,
