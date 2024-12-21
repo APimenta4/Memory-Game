@@ -114,7 +114,6 @@ const showToast = ()=>{
       Restart Game <span v-if="(isGameOver || time!=='0.0' && time && !isGameOver) && totalPairs!=6"> 1🧠</span> 
       </button>
       </DialogTrigger>
-      <DialogTrigger>
         <button 
         @click="router.back"
         :class="{
@@ -125,7 +124,6 @@ const showToast = ()=>{
       >
         Return
       </button>
-      </DialogTrigger>
     </CardFooter>
   </Card>
 </template>
