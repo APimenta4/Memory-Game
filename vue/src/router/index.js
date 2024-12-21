@@ -138,8 +138,14 @@ router.beforeEach(async (to, from, next) => {
 switch (to.name) {
     // Can't access if you are logged in
     case 'login':
-    case 'register':
       if(storeAuth.user) {
+        next({ name: 'profile' })
+        return
+      }
+      break
+
+    case 'register':
+      if(storeAuth.user && storeAuth.user?.type !== 'A') {
         next({ name: 'profile' })
         return
       }
