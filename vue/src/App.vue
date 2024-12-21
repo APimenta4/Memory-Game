@@ -273,6 +273,14 @@ onMounted(async () => {
           >
             Register
           </RouterLink>
+
+          <div v-if="storeAuth.user" style="display: flex; align-items: center">
+            <span style="font-size: 24px; margin-right: 8px">🧠</span>
+            <span style="font-size: 18px">{{ storeAuth.user.brain_coins_balance }}</span>
+          </div>
+
+          <BuyCoins> </BuyCoins>
+
           <!-- Profile Image -->
           <img
             v-if="storeAuth.user"
@@ -281,13 +289,6 @@ onMounted(async () => {
             :src="storeAuth.userPhotoUrl"
             alt="Profile Picture"
           />
-
-          <div v-if="storeAuth.user" style="display: flex; align-items: center">
-            <span style="font-size: 24px; margin-right: 8px">🧠</span>
-            <span style="font-size: 18px">{{ storeAuth.user.brain_coins_balance }}</span>
-          </div>
-
-          <BuyCoins> </BuyCoins>
 
           <!-- Submenu (Conditional Rendering) -->
           <div
