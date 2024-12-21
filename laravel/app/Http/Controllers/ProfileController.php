@@ -28,33 +28,47 @@ class ProfileController extends Controller
         // Return the filename (or path) to the client
         return response()->json(['photo' => $path], 201);
     }
-
-    public function update(ProfileUpdateRequest $request)
+    public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
-        // Validate incoming data
-        $validatedData = $request->validated();
+        $validatedData = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
+            'nickname' => 'sometimes|string|max:255|unique:users,nickname,' . $user->id,
+            'password' => 'sometimes|string|min:8|confirmed',
+            'photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
-        //dd($validatedData);
-
-        // Hash the password if it's provided
         if (isset($validatedData['password']) && $validatedData['password']) {
             $validatedData['password'] = bcrypt($validatedData['password']);
         }
 
-         // Update the user profile
-         if (isset($validatedData['photo_filename'])) {
-            $user->photo_filename = $validatedData['photo_filename'];
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('photos', 'public');
+            $validatedData['photo_filename'] = basename($path);
         }
 
-        // Update user only with the provided fields (validated data)
-        $user->update($validatedData);
+        try {
+            $user->update($validatedData);
+            return new UserResource($user);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                $errorMessage = $e->getMessage();
 
-        $user->save();
+                $errors = [];
+                if (str_contains($errorMessage, 'users_email_unique')) {
+                    $errors['email'] = ['The email has already been taken.'];
+                }
+                if (str_contains($errorMessage, 'users_nickname_unique')) {
+                    $errors['nickname'] = ['The nickname has already been taken.'];
+                }
 
-        // Return updated user information as a resource
-        return new UserResource($user); // Return updated user, not the request's user
+                return response()->json(['errors' => $errors], 422);
+            }
+
+            throw $e;
+        }
     }
 
 }
