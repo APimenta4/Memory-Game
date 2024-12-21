@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = responseUser.data.data
       socket.emit('login', user.value)
       repeatRefreshToken()
-      router.push({ name: 'singleplayer' })
+      router.push({ name: 'home' })
       return user.value
     } catch (e) {
       clearUser()
