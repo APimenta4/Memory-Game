@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Transactions
     Route::post('/transactions/buy-coins', [TransactionController::class, 'buyBrainCoins'])->can('create', Transaction::class);
+    Route::post('/transactions', [TransactionController::class, 'store'])->can('create', Transaction::class);
     Route::get('/transactions/history', [TransactionController::class, 'transactionHistory']);
 
     //Statistics personal

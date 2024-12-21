@@ -2,10 +2,12 @@
 import { useGamesStore } from '@/stores/games'
 import MultiplayerStatusCard from '@/components/multiPlayer/MultiplayerStatusCard.vue'
 import MultiplayerStatistics from '../MultiplayerStatistics.vue'
-import { ref, onMounted, onUnmounted, watch, inject } from 'vue'
+import { ref, onMounted, onBeforeMount, onUnmounted, watch, inject } from 'vue'
 import MultiPlayerGame from './MultiPlayerGame.vue'
 import JSConfetti from 'js-confetti'
 import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
+
 
 const socket = inject('socket')
 const jsConfetti = ref(null)
@@ -30,8 +32,14 @@ onUnmounted(async () => {
   }
 })
 
+onBeforeMount(() => {
+  if(Object.keys(storeGames.currentGame).length === 0){
+    router.push({ name: 'multiplayer' })
+  }
+})
+
 watch(()=>storeGames.gameStatus, (newValue) => {
-  if (newValue === 'You win') {
+  if (newValue === 'You win' || newValue === 'Opponent quit') {
     jsConfetti.value
     .addConfetti({
       emojis: ['🏆','✅','🧠','💪','🧠']
@@ -40,7 +48,7 @@ watch(()=>storeGames.gameStatus, (newValue) => {
       jsConfetti.value.addConfetti()
     })
     socket.emit('notification_alert',storeAuth.user.id)
-  }else if (newValue === 'You lose') {
+  }else if (newValue === 'You lose' || newValue === 'You quit') {
     jsConfetti.value
     .addConfetti({
      emojis: ['😢', '💀', '🤡', '❌', '⁉️']

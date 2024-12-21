@@ -50,7 +50,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Game::class, 'created_user_id')->where('type', GameType::SINGLEPLAYER);
     }
-    
+
     public function multiplayerGames()
     {
         return $this->belongsToMany(Game::class, 'multiplayer_games_played', 'user_id', 'game_id')
@@ -59,11 +59,13 @@ class User extends Authenticatable
 
     public function allGames()
     {
-        return $this->hasMany(Game::class, 'created_user_id')
-            ->orWhereHas('players', function ($query) {
-            $query->where('user_id', $this->id);
-            });
+        return Game::where(function ($query) {
+            $query->where('created_user_id', $this->id)
+                ->orWhereHas('players', function ($query) {
+                    $query->where('user_id', $this->id);
+                });
+        });
     }
-    
+
 
 }

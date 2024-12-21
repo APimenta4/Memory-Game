@@ -22,11 +22,12 @@ class HistoryRequest extends FormRequest
         return [
             'per_page' => 'integer|min:1',
             'status' => 'sometimes|string|in:PE,PL,E,I|nullable',
-            'sort_by' => 'sometimes|string|in:began_at,total_time,id|nullable',
+            'sort_by' => 'sometimes|string|in:began_at,total_time,id,total_turns_winner|nullable',
             'sort_order' => 'sometimes|string|in:asc,desc|nullable',
             'start_date' => 'sometimes|date|nullable',
             'end_date' => 'sometimes|date|nullable',
             'type' => 'sometimes|string|in:multiplayer,singleplayer|nullable',
+            'board_id' => 'sometimes|int|nullable',
         ];
     }
 

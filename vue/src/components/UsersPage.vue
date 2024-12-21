@@ -157,9 +157,9 @@ function createAdmin() {
         <CardTitle class="text-base font-bold text-center w-[80%] line-clamp-2" :title="user.name">
           {{ user.name }}
         </CardTitle>
-        <p class="text-xl font-bold text-muted-foreground text-center w-[80%] truncate">
+        <p class="text-xl font-bold text-muted-foreground text-center w-[80%]">
             <span :class="storeAuth.user.id === user.id ? 'text-green-500' : ''">
-            {{ user.nickname  }} 
+            {{ user.nickname }} 
             </span>
           <span v-if="user.type === 'A'" class="text-orange-500"> [Admin]</span>
         </p>

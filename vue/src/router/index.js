@@ -16,12 +16,17 @@ import UsersPage from '@/components/UsersPage.vue';
 import Register from '@/components/auth/Register.vue';
 import StatisticsAnonymousPage from '@/components/StatisticsAnonymousPage.vue'
 import StatisticsAdminPage from '@/components/StatisticsAdminPage.vue'
+import BuyCoinsPage from '@/components/BuyCoinsPage.vue'
+import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue'
+import StatisticsPersonalPage from '@/components/StatisticsPersonalPage.vue'
+import UsersPage from '@/components/UsersPage.vue'
+import Register from '@/components/auth/Register.vue'
 
-import Login from '@/components/auth/Login.vue';
+import Login from '@/components/auth/Login.vue'
 
-import ProfilePageEdit from '@/components/ProfilePageEdit.vue';
+import ProfilePageEdit from '@/components/ProfilePageEdit.vue'
 
-import ProfilePage from '@/components/ProfilePage.vue';
+import ProfilePage from '@/components/ProfilePage.vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -36,91 +41,67 @@ const router = createRouter({
       component: HomeComponent
     },
     {
-        path: '/singleplayer',
-        name: 'singleplayer',
-        component: SinglePlayerPage,
+      path: '/singleplayer',
+      name: 'singleplayer',
+      component: SinglePlayerPage
     },
     {
-        path: '/singleplayer/game',
-        name: 'singlePlayerGame',
-        component: SinglePlayerGame,
-        props: route => ({
-            gameId: route.query.id || null,
-        }),
+      path: '/singleplayer/game',
+      name: 'singlePlayerGame',
+      component: SinglePlayerGame,
+      props: (route) => ({
+        gameId: route.query.id || null
+      })
     },
     {
       path: '/multiplayer',
       name: 'multiplayer',
-      component: MultiPlayerGames,
+      component: MultiPlayerGames
     },
     {
       path: '/multiplayer/game',
       name: 'multiPlayerGame',
-      component: Game,
+      component: Game
     },
     {
       path: '/history',
       name: 'history',
-      component: HistoryPage,
+      component: HistoryPage
     },
     {
-      path: '/login', 
+      path: '/login',
       name: 'login',
-      component: Login,
+      component: Login
     },
     {
       path: '/register',
       name: 'register',
-      component: Register,
+      component: Register
     },
     {
       path: '/profile',
       name: 'profile',
-      component: ProfilePage,
+      component: ProfilePage
     },
     {
       path: '/profile/edit',
       name: 'profileEdit',
-      component: ProfilePageEdit,
+      component: ProfilePageEdit
     },
     {
       path: '/scoreboard',
-      children:[
+      children: [
         {
           path: 'global',
           name: 'scoreboardGlobal',
-          component: GlobalScoreboard,
+          component: GlobalScoreboard
         },
         {
           path: 'personal',
           name: 'scoreboardPersonal',
-          component: PersonalScoreboard,
-        },
+          component: PersonalScoreboard
+        }
       ]
-    },
-    {
-    path: '/transactions/buy-coins',
-    name: 'buyCoins',
-    component: BuyCoinsPage
-    },
-    {
-    path: '/transactions/history',
-    name: 'transactionsHistory',
-    component: TransactionsHistoryPage
-    },
-    {
-      path: '/testers',
-      children: [
-        {
-          path: 'websocket',
-          component: WebSocketTester
-        },
-      ]
-    },
-    {
-      path: '/users',
-      name: 'users',
-      component: UsersPage,
     },
     {
       path: '/transactions/buy-coins',
@@ -143,6 +124,20 @@ const router = createRouter({
       component: StatisticsAnonymousPage
     },
     {
+      path: '/testers',
+      children: [
+        {
+          path: 'websocket',
+          component: WebSocketTester
+        }
+      ]
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: UsersPage
+    },
+    {
       path: '/statistics/personal',
       name: 'indexPersonalStatistics',
       component: StatisticsPersonalPage
@@ -153,32 +148,67 @@ const router = createRouter({
 let handlingFirstRoute = true
 
 router.beforeEach(async (to, from, next) => {
-    const storeAuth = useAuthStore()
-    if (handlingFirstRoute) {
-        handlingFirstRoute = false
-        await storeAuth.restoreToken()
-    }
+  const storeAuth = useAuthStore()
+  if (handlingFirstRoute) {
+    handlingFirstRoute = false
+    await storeAuth.restoreToken()
+  }
 
-    
-    switch (to.name) {
-        case 'login':
-        case 'register':
-            if (storeAuth.user) {
-                next({ name: 'home' })
-                return
-            }
-            break
-    }
-
-
-    // routes that are only accessible when user is logged in
-    if (((to.name == 'history') || (to.name == 'profile') || (to.name == 'profileEdit') || (to.name == 'scoreboardGlobal') || (to.name == 'scoreboardPersonal') || (to.name == 'buyCoins') || (to.name == 'transactionsHistory') ) && (!storeAuth.user)) {
+  switch (to.name) {
+    // Can't access if you are logged in
+    case 'login':
+    case 'register':
+      if(storeAuth.user) {
+        next({ name: 'profile' })
+        return
+      }
+      break
+      
+    // Can't access if you are not logged in
+    case 'profile':
+    case 'profileEdit':
+    case 'transactionsHistory': 
+    case 'scoreboardGlobal': 
+    case 'history':
+      if(!storeAuth.user) {
         next({ name: 'login' })
         return
-    }
-    // all other routes are accessible to everyone, including anonymous users
-    next()
-})
+      }
+      break
 
+    // Can't access if you are not logged in or you are an admin
+    case 'buyCoins':
+    case 'scoreboardPersonal':
+    case 'multiPlayerGame':
+      if(!storeAuth.user) {
+        next({ name: 'login' })
+        return
+      }
+      if(storeAuth.user.type == 'A'){
+        next({ name: 'home' })
+        return
+      }
+      break
+
+    // Can't access if you are not an admin
+    case 'users':
+      if(storeAuth.user.type !== 'A') {
+        next({ name: 'home' })
+        return
+      }
+      break
+
+    // Anyone can access
+    // case 'singleplayer':
+    // case 'singlePlayerGame':
+    // case 'multiplayer':
+    // case 'home':
+    
+    // case 'statistics????' TODO
+  }
+
+
+  next()
+})
 
 export default router

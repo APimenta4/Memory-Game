@@ -39,6 +39,7 @@ class HistoryController extends Controller
                 $query = $user->singleplayerGames()->orderBy($sortBy, $sortOrder);
             } else {
                 $query = $user->allGames()->orderBy($sortBy, $sortOrder);
+                
             }
         }
     
