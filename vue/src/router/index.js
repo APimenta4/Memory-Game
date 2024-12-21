@@ -119,6 +119,10 @@ const router = createRouter({
       name: 'users',
       component: UsersPage
     },
+    {
+      path: '/:catchAll(.*)',
+      redirect: '/',
+   },
   ]
 })
 

@@ -32,7 +32,6 @@ const refreshTimer = () => {
 }
 
 watch(() => storeGames.currentGame, (newValue) => {
-  console.log(newValue)
 if (newValue.gameStatus == 0 && newValue.currentPlayer != 0 && newValue.cards.filter(card => card.isFlipped).length % 2 === 0) {
   refreshTimer()
 } else {
@@ -82,13 +81,14 @@ watch(()=>storeGames.gameStatus, (newValue) => {
      emojis: ['😢', '💀', '🤡', '❌', '⁉️']
     })
   }
+  clearInterval(timerInterval)
 }, { deep: true })
 </script>
 
 <template>
     <div class="flex flex-col lg:flex-row justify-center space-x-6 md:space-x-0">
       <div class="flex flex-col md:flex-row md:justify-center w-full">
-          <MultiplayerStatusCard class="md:order-1 order-2"/>
+          <MultiplayerStatusCard class="md:order-1 order-2 mt-5"/>
 
         <div class="flex flex-col items-center w-full md:w-3/4 md:order-2 order-1">
           <h1 class="text-2xl font-bold mt-6 mb-4">
