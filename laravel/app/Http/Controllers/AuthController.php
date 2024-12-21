@@ -32,6 +32,10 @@ class AuthController extends Controller
         if (!Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
+        if($request->user()->blocked){
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $token = $request->user()->createToken('authToken', ['*'], now()->addHours(2))->plainTextToken;
         return response()->json(['token' => $token]);
     }

@@ -182,12 +182,13 @@ function createAdmin() {
         <!-- Regular buttons for other users -->
         <template v-else>
           <Button 
+            v-if="storeAuth.user.id !== user.id"
             :class="user.blocked ? 'bg-green-500' : 'bg-orange-500'" 
             @click="toggleBlock(user)"
           >
             {{ user.blocked ? 'Unblock' : 'Block' }}
           </Button>
-          <Button class="bg-red-500" @click="removeUser(user)">Remove</Button>
+          <Button class="bg-red-500" v-if="storeAuth.user.id !== user.id" @click="removeUser(user)">Remove</Button>
         </template>
       </CardFooter>
     </Card>

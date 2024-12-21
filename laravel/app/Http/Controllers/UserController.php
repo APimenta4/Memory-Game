@@ -52,18 +52,21 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user)
     {
-        if($request->user()->type!=='A'){
+        if ($request->user()->type!=='A' && $user->id !== $request->user()->id){
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+        if ($request->user()->type==='A' && $user->id === $request->user()->id){
+            return response()->json(['message' => 'Admins cannot delete them selfs'], 401);
         }
         $user->delete();
         return response()->json(null, 204);
     }
 
-    public function block(User $user)
+    public function block(Request $request, User $user)
     {
+        if ($request->user()->type==='A' && $user->id === $request->user()->id){
+            return response()->json(['message' => 'Admins cannot block them selfs'], 401);
+        }
         if ($user->blocked) {
             return response()->json(['message' => 'User is already blocked'], 400);
         }
@@ -72,8 +75,11 @@ class UserController extends Controller
         return response()->json(['message' => 'User blocked'], 200);
     }
 
-    public function unblock(User $user)
+    public function unblock(Request $request, User $user)
     {
+        if ($request->user()->type==='A' && $user->id === $request->user()->id){
+            return response()->json(['message' => 'Admins cannot unblock them selfs'], 401);
+        }
         if (!$user->blocked) {
             return response()->json(['message' => 'User is not blocked'], 400);
         }

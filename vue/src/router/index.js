@@ -9,7 +9,6 @@ import GlobalScoreboard from '@/components/GlobalScoreboard.vue'
 import PersonalScoreboard from '@/components/PersonalScoreboard.vue'
 import MultiPlayerGames from '@/components/multiPlayer/MultiPlayerGames.vue'
 import Game from '@/components/multiPlayer/Game.vue'
-import BuyCoinsPage from '@/components/BuyCoinsPage.vue'
 import TransactionsHistoryPage from '@/components/TransactionsHistoryPage.vue'
 import StatisticsPersonalPage from '@/components/StatisticsPersonalPage.vue'
 import UsersPage from '@/components/UsersPage.vue'
@@ -97,11 +96,6 @@ const router = createRouter({
       ]
     },
     {
-      path: '/transactions/buy-coins',
-      name: 'buyCoins',
-      component: BuyCoinsPage
-    },
-    {
       path: '/transactions/history',
       name: 'transactionsHistory',
       component: TransactionsHistoryPage
@@ -151,7 +145,6 @@ router.beforeEach(async (to, from, next) => {
     case 'profile':
     case 'profileEdit':
     case 'transactionsHistory': 
-    case 'scoreboardGlobal': 
     case 'history':
       if(!storeAuth.user) {
         next({ name: 'login' })
@@ -159,8 +152,15 @@ router.beforeEach(async (to, from, next) => {
       }
       break
 
+    
+    case 'scoreboardGlobal': 
+        if(storeAuth.user && storeAuth.user.type === 'A'){
+            next({ name: 'home' })
+            return
+        }
+        break
+
     // Can't access if you are not logged in or you are an admin
-    case 'buyCoins':
     case 'scoreboardPersonal':
     case 'multiPlayerGame':
       if(!storeAuth.user) {

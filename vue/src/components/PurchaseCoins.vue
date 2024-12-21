@@ -145,8 +145,8 @@ async function buyCoins() {
 <template>
   <Dialog>
     <DialogTrigger as-child>
-      <Button style="background-color: #e84757; border: 2px solid black; text-shadow: 1px 1px 2px black;">
-        Buy More Brains
+      <Button>
+        Buy Brains
       </Button>
     </DialogTrigger>
     <DialogContent>
