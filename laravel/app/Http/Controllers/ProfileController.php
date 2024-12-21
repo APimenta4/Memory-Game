@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Resources\UserResource;
+
 
 class ProfileController extends Controller
 {
@@ -27,18 +29,12 @@ class ProfileController extends Controller
         return response()->json(['photo' => $path], 201);
     }
 
-    public function update(Request $request)
+    public function update(ProfileUpdateRequest $request)
     {
         $user = Auth::user();
 
         // Validate incoming data
-        $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|max:255',
-            'nickname' => 'sometimes|string|max:20',
-            'photo_filename' => 'sometimes|string',
-            'password' => 'sometimes|string|min:3|max:255', 
-        ]);
+        $validatedData = $request->validated();
 
         //dd($validatedData);
 

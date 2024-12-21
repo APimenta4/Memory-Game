@@ -6,7 +6,6 @@ import { useErrorStore } from '@/stores/error'
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
 import { useToast } from '@/components/ui/toast/use-toast'
 
-
 export const useAuthStore = defineStore('auth', () => {
   const storeError = useErrorStore()
   const socket = inject('socket')
@@ -24,7 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
   const getFirstLastName = (fullName) => {
     const names = fullName.trim().split(' ')
     const firstName = names[0] ?? ''
-    const lastName = names.length > 1 ? names[names.length -1 ] : ''
+    const lastName = names.length > 1 ? names[names.length - 1] : ''
     return (firstName + ' ' + lastName).trim()
   }
 
@@ -53,7 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const userPhotoUrl = computed(() => {
     const photoFile = user.value?.photo_filename
-    const basePath = "/storage/photos/"; // Base path for the images
+    const basePath = '/storage/photos/' // Base path for the images
     if (photoFile) {
       return axios.defaults.baseURL.replaceAll('/api', basePath + photoFile)
     }
@@ -83,18 +82,17 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = responseUser.data.data
       socket.emit('login', user.value)
       repeatRefreshToken()
-      router.push({ name: 'singleplayer' });
+      router.push({ name: 'singleplayer' })
       return user.value
     } catch (e) {
       clearUser()
-      if(e.response.status === 401) {
+      if (e.response.status === 401) {
         toast({
           title: 'Failed to log in!',
-          description:
-            "The credentials you provided don't match an account.",
-          variant: 'destructive',
-        }) 
-      }else{
+          description: "The credentials you provided don't match an account.",
+          variant: 'destructive'
+        })
+      } else {
         storeError.setErrorMessages(
           e.response.data.message,
           e.response.data.errors,
@@ -112,7 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await axios.post('auth/logout')
       clearUser()
-      router.push({ name: 'home' });
+      router.push({ name: 'home' })
       return true
     } catch (e) {
       clearUser()
@@ -182,7 +180,6 @@ export const useAuthStore = defineStore('auth', () => {
     return false
   }
 
-
   // Fetch user data
   const fetchUser = async () => {
     storeError.resetMessages()
@@ -203,86 +200,70 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Update user data
   const updateUser = async (updatedData) => {
-    storeError.resetMessages();
-    try {
-      // Send the updated profile data to the backend
-      const response = await axios.put("/profile", updatedData);
-      user.value = response.data; // Update the store with the new user data
-      return user.value;
-
-    } catch (e) {
-      storeError.setErrorMessages(
-        e.response?.data?.message,
-        e.response?.data?.errors || [],
-        e.response?.status,
-        'Failed to update user data'
-      );
-      throw e;
-    }
-  };
+    storeError.resetMessages()
+    // Send the updated profile data to the backend
+    const response = await axios.put('/profile', updatedData)
+    user.value = response.data // Update the store with the new user data
+    return user.value
+  }
 
   const updatePhoto = async (file) => {
-    const formData = new FormData();
-    formData.append("photo", file);
+    const formData = new FormData()
+    formData.append('photo', file)
 
     try {
-      const response = await axios.post("/profile", formData, {
+      const response = await axios.post('/profile', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      return response.data.photo.replace("photos/", ""); // Returns the filename
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      return response.data.photo.replace('photos/', '') // Returns the filename
     } catch (error) {
-      console.error("Error uploading photo:", error);
-      throw error;
+      console.error('Error uploading photo:', error)
+      throw error
     }
-  };
+  }
 
   const register = async (userData) => {
-    storeError.resetMessages();
+    storeError.resetMessages()
     if (user.value && user.value.type !== 'A') {
       storeError.setErrorMessages(
         'You are already registered and logged in!',
         [],
         [],
         'Registration Error!'
-      );
-      return false;
+      )
+      return false
     }
     try {
-      const formData = new FormData();
+      const formData = new FormData()
       for (const key in userData) {
-        if(userData[key] !== null){
-          formData.append(key, userData[key]);
+        if (userData[key] !== null) {
+          formData.append(key, userData[key])
         }
       }
-      console.log(userData);
       const response = await axios.post('/register', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("EEE")
-      console.log(response)
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       if (response.data && user.value?.type != 'A') {
         socket.emit('notification_alert', response.data.data.id)
-        return await login({ email: userData.email, password: userData.password });
+        return await login({ email: userData.email, password: userData.password })
       } else {
-        router.back();
+        router.back()
       }
     } catch (e) {
-      console.log(e);
       storeError.setErrorMessages(
-        e.response?.data?.message,
-        e.response?.data?.errors || [],
-        e.response?.status,
+        e.response.data.message,
+        e.response.data.errors,
+        e.response.status,
         'Registration Error!'
-      );
-      throw e;
+      )
+      return false
     }
-    return false;
-  };
-
+    return false
+  }
 
   return {
     user,
@@ -301,6 +282,6 @@ export const useAuthStore = defineStore('auth', () => {
     updateUser,
     updatePhoto,
     register,
-    clearUser,
+    clearUser
   }
 })

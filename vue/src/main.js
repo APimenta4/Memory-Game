@@ -5,6 +5,8 @@ import { io } from 'socket.io-client'
 
 import '@/assets/base.css'
 
+import ErrorMessage from './components/common/ErrorMessage.vue'
+
 import App from './App.vue'
 import router from './router'
 
@@ -20,6 +22,9 @@ console.log('api domain', apiDomain)
 console.log('ws connection', wsConnection)
 
 axios.defaults.baseURL = `http://${apiDomain}/api`
+
+app.component('ErrorMessage', ErrorMessage)
+
 
 app.provide('socket', io(wsConnection))
 

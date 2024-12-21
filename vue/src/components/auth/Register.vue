@@ -41,15 +41,11 @@ const isFormValid = computed(() => {
 })
 
 const register = async () => {
-  console.log("credentials" + credentials.value)
   if (!isFormValid.value) {
     storeError.setError('Please fill all the fields.')
     return
   }
-  const user = await storeAuth.register(credentials.value)
-  if (user) {
-    router.push({ name: 'login' })
-  }
+  await storeAuth.register(credentials.value)
 }
 
 </script>
@@ -66,22 +62,27 @@ const register = async () => {
           <div class="flex flex-col space-y-1.5">
             <Label for="email">Email</Label>
             <Input id="email" type="email" placeholder="User Email" v-model="credentials.email" />
+            <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage>
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="name">Name</Label>
             <Input id="name" type="text" placeholder="Full Name" v-model="credentials.name" />
+            <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage>
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="nickname">Nickname</Label>
             <Input id="nickname" type="text" placeholder="Nickname" v-model="credentials.nickname" />
+            <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage>
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="password">Password</Label>
             <Input id="password" type="password" v-model="credentials.password" />
+            <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage>
           </div>
           <div class="flex flex-col space-y-1.5">
             <Label for="photo">Avatar (optional)</Label>
             <Input id="photo" type="file" @change="e => credentials.photo = e.target.files[0]" />
+            <ErrorMessage :errorMessage="storeError.fieldMessage('photo')"></ErrorMessage>
           </div>
         </div>
       </form>

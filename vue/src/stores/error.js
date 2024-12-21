@@ -40,6 +40,8 @@ export const useErrorStore = defineStore('error', () => {
     _statusCode.value = status
     _title.value = titleMessage
 
+    console.log("_fieldErrorMessages.value", _fieldErrorMessages.value)
+
     let toastMessage = mainMessage
     switch (status) {
       case 401:

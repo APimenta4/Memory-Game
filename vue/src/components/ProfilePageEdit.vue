@@ -109,8 +109,8 @@ const updateProfile = async () => {
     console.error('Error updating profile:', error)
     storeError.setErrorMessages(
       "Failed to update profile",
-      [],
-      [],
+      error.response.data.errors,
+      error.response.status,
       'Error updating profile!'
     )
   }
@@ -176,18 +176,21 @@ const removeAccount = async () => {
         <div class="flex flex-col space-y-1.5">
           <Label for="email">Email</Label>
           <Input id="email" type="email" placeholder="User Email" v-model="userData.email" />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('email')"></ErrorMessage>
         </div>
 
         <!-- Nickname -->
         <div class="flex flex-col space-y-1.5">
           <Label for="nickname">Nickname</Label>
           <Input id="nickname" type="text" placeholder="Nickname" v-model="userData.nickname" />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('nickname')"></ErrorMessage>
         </div>
 
         <!-- Name -->
         <div class="flex flex-col space-y-1.5">
           <Label for="name">Name</Label>
           <Input id="name" type="text" placeholder="Full Name" v-model="userData.name" />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('name')"></ErrorMessage>
         </div>
 
         <!-- Password -->
@@ -199,6 +202,7 @@ const removeAccount = async () => {
             placeholder="New Password"
             v-model="userData.password"
           />
+          <ErrorMessage :errorMessage="storeError.fieldMessage('password')"></ErrorMessage>
         </div>
       </form>
     </CardContent>
