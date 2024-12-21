@@ -159,7 +159,6 @@ switch (to.name) {
     // Can't acess if you are admin
     case 'singleplayer':
     case 'singlePlayerGame':
-    case 'multiplayer':
         if(storeAuth.user && storeAuth.user.type === 'A'){
             next({ name: 'home' })
             return
@@ -190,7 +189,7 @@ switch (to.name) {
       break
 
     // Anyone can access
-    
+    // case 'multiplayer':
     // case 'scoreboardGlobal': 
     // case 'home':
     // case 'indexGlobalStatistics':
