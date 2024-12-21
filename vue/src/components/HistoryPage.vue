@@ -287,6 +287,13 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                     <span v-else>▼</span>
                   </span>
                 </TableHead>
+                <TableHead class="cursor-pointer" @click="handleSort('total_turns_winner')">
+                  Winner Turns
+                  <span v-if="sortBy === 'total_turns_winner'">
+                    <span v-if="sortOrder === 'asc'">▲</span>
+                    <span v-else>▼</span>
+                  </span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -320,6 +327,7 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                   <TableCell>{{ transformGameStatus(game.status) }}</TableCell>
                   <TableCell>{{ formatDate(game.began_at) }}</TableCell>
                   <TableCell>{{ game.total_time ? game.total_time + 's' : '' }}</TableCell>
+                  <TableCell>{{ game.total_turns_winner ? game.total_turns_winner : '0' }}</TableCell>
                 </TableRow>
                 <TableRow v-if="expandedGameId === game.id">
                   <TableCell colspan="9" class="bg-gray-50">
@@ -330,7 +338,7 @@ watch([gameType, status, startDate, endDate, boardId, won], () => {
                             <span v-if="player.player_nickname === game?.winner_nickname">👑</span>
                             <span v-else>🤡</span>
                             {{ player.player_nickname }}
-                            <span v-if="player.player_nickname === game?.winner_nickname"> - Won in {{ game.total_turns_winner || 0 }} turns</span>
+                            <span v-if="player.player_nickname === game?.winner_nickname"></span>
                         </span>
                       </div>
                     </div>
