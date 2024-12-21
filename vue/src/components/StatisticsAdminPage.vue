@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import axios from "axios";
 import { ref, onMounted, computed } from "vue";
-import PieChart from "@/components/ui/PieChart.vue";
-import BarChart from "@/components/ui/BarChart.vue";  
+
+import BarChart from "@/components/ui/BarChart.vue";
+import PieChart from "@/components/ui/PieChart.vue";  
+import LineChart from "@/components/ui/LineChart.vue";  
 
 
 interface Stats {
@@ -16,18 +18,12 @@ interface Stats {
 }
 
 
-const username = computed(() => {
-  const userStatKey = Object.keys(stats.value).find((key) =>
-    key.startsWith("Total games played by")
-  );
-  return userStatKey ? userStatKey.replace("Total games played by ", "") : "unknown";
-});
 
 const filteredStats = computed(() => {
   const keysToShow = [
-    `Total games played by ${username.value}`,
     "All users total games completed",
     "Total users registered",
+    "Total spent by all users (€)",
   ];
   return Object.fromEntries(
     Object.entries(stats.value).filter(([key]) => keysToShow.includes(key))
@@ -38,16 +34,28 @@ const filteredStats = computed(() => {
 
 const stats = ref<Stats>({});
 const errorMessage = ref("");
-const pieChartLabels = ref<string[]>([]);
-const pieChartData = ref<number[]>([]);
+
 const barChartLabels = ref<string[]>(["Last 7 days", "Last month", "Last year"]);
 const barChartData = ref<number[]>([]);
+const pieChartLabels = ref<string[]>([]);
+const pieChartData = ref<number[]>([]);
+const lineChartLabels = ref<string[]>([]);
+const lineChartData = ref<number[]>([]);
+const lineChartDynamicLabels = ref<string[]>([]);
+const lineChartDynamicData = ref<number[]>([]);
+
 
 async function fetchStatistics() {
   try {
-    const response = await axios.get("/statistics/personal");
+    const response = await axios.get("/statistics/admin");
 
     stats.value = response.data;
+
+    barChartData.value = [
+      stats.value.games_completed_last_7_days || 0,
+      stats.value.games_completed_last_month || 0,
+      stats.value.games_completed_last_year || 0,
+    ];
 
     pieChartLabels.value = ["Board 1", "Board 2", "Board 3"];
     pieChartData.value = [
@@ -56,13 +64,20 @@ async function fetchStatistics() {
       stats.value.percentage_games_on_board_3 || 0,
     ];
 
-  
-    barChartData.value = [
-      stats.value.games_completed_last_7_days || 0,
-      stats.value.games_completed_last_month || 0,
-      stats.value.games_completed_last_year || 0,
+    lineChartLabels.value = ["Last week", "Last month", "Last year"];
+    lineChartData.value = [
+      stats.value.all_purchases_last_week || 0,
+      stats.value.all_purchases_last_month || 0,
+      stats.value.all_purchases_last_year || 0,
     ];
 
+    lineChartDynamicLabels.value = ["Today","Last 7 days", "This month", "This year"];
+    lineChartDynamicData.value = [
+      stats.value.all_purchases_today || 0,
+      stats.value.all_purchases_last_7_days || 0,
+      stats.value.all_purchases_this_month || 0,
+      stats.value.all_purchases_this_year || 0,
+    ];
 
 
   } catch (error) {
@@ -80,13 +95,24 @@ onMounted(fetchStatistics);
 
     <div v-else>
       <div class="charts-container mb-6">
+
         <div class="chart-item">
-          <h2 class="text-lg font-semibold mb-2">Percentage of games you completed on each board</h2>
+          <h2 class="text-lg font-semibold mb-2">Percentage of games completed by all users each board</h2>
           <PieChart :labels="pieChartLabels" :data="pieChartData" />
         </div>
         <div class="chart-item">
           <h2 class="text-lg font-semibold mb-2">Number of games played over time by all users </h2>
           <BarChart :labels="barChartLabels" :data="barChartData" />
+        </div>
+
+        <div class="chart-item">
+          <h2 class="text-lg font-semibold mb-2">Purchases by all users - Past Statistics</h2>
+          <LineChart :labels="lineChartLabels" :data="lineChartData" />
+        </div>
+
+        <div class="chart-item">
+          <h2 class="text-lg font-semibold mb-2">Purchases by all users - Dynamic Statistics</h2>
+          <LineChart :labels="lineChartDynamicLabels" :data="lineChartDynamicData" />
         </div>
       </div>
 
@@ -113,12 +139,17 @@ onMounted(fetchStatistics);
 
 .charts-container {
   display: flex;
-  gap: 20px;
-  justify-content: space-between;
+  flex-direction: row; 
+  justify-content: center; 
+  gap: 20px; 
+  flex-wrap: wrap; 
 }
 
 .chart-item {
   flex: 1;
+  min-width: 400px; 
+  max-width: 500px; 
+  text-align: center;
 }
 
 .statistics-list {
@@ -128,3 +159,4 @@ onMounted(fetchStatistics);
   margin: 0 auto;
 }
 </style>
+

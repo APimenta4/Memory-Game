@@ -205,12 +205,31 @@ import ToastAction from './components/ui/toast/ToastAction.vue'
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             <span v-if="storeAuth.user?.type != 'A'">My </span>Transaction History
-          </RouterLink>        
-          <RouterLink to="/statistics/personal"
+          </RouterLink>
+                  
+          <RouterLink 
+            v-if="storeAuth.user?.type === 'A'" 
+            to="/statistics/admin"
             class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="text-blue-600 font-semibold">
             Statistics
           </RouterLink>
+          <RouterLink 
+            v-else-if="storeAuth.user" 
+            to="/statistics/personal"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Statistics
+          </RouterLink>
+          <RouterLink 
+            v-else 
+            to="/statistics"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="text-blue-600 font-semibold">
+            Statistics
+          </RouterLink>
+
+
           <RouterLink v-show="!storeAuth.user" to="/login"
             class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             active-class="bg-blue-700">
