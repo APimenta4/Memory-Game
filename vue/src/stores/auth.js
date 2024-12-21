@@ -6,7 +6,10 @@ import { useErrorStore } from '@/stores/error'
 import avatarNoneAssetURL from '@/assets/avatar-none.png'
 import { useToast } from '@/components/ui/toast/use-toast'
 
+
 export const useAuthStore = defineStore('auth', () => {
+  const apiDomain = import.meta.env.VITE_API_DOMAIN
+
   const storeError = useErrorStore()
   const socket = inject('socket')
   const { toast } = useToast()
@@ -52,9 +55,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   const userPhotoUrl = computed(() => {
     const photoFile = user.value?.photo_filename
-    const basePath = '/storage/photos/' // Base path for the images
     if (photoFile) {
-      return axios.defaults.baseURL.replaceAll('/api', basePath + photoFile)
+      return `http://${apiDomain}/storage/photos/${photoFile}`
     }
     return avatarNoneAssetURL
   })
