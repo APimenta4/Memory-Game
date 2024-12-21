@@ -125,6 +125,15 @@ function removeUser(user) {
     });
 }
 
+const apiDomain = import.meta.env.VITE_API_DOMAIN
+const userPhotoUrl = (user) => {
+  const photoFile = user.photo_filename
+  if (photoFile) {
+    return `http://${apiDomain}/storage/photos/${photoFile}`
+  }
+  return avatarNoneAssetURL
+}
+
 function createAdmin() {
   router.push('/register')
 }
@@ -145,11 +154,7 @@ function createAdmin() {
       <CardHeader class="flex flex-col items-center justify-center flex-shrink-0 space-y-2">
         <div class="w-[7rem] h-[7rem] overflow-hidden rounded-full flex-shrink-0">
           <img
-            :src="
-              user.photo_filename
-                ? axios.defaults.baseURL.replace('/api', `/storage/photos/${user.photo_filename}`)
-                : avatarNoneAssetURL
-            "
+            :src="userPhotoUrl(user)"
             alt="User Photo"
             class="object-cover w-full h-full"
           />

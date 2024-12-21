@@ -48,6 +48,16 @@ const sendPrivateMessageToUser = (user) => {
     }
 }
 
+const apiDomain = import.meta.env.VITE_API_DOMAIN
+const userPhotoUrl = (user) => {
+  const photoFile = user?.photo_filename
+  if (photoFile) {
+    return `http://${apiDomain}/storage/photos/${photoFile}`
+  }
+  return avatarNoneAssetURL
+}
+
+
 const handleMessageFromInputDialog = (message) => {
     storeChat.sendPrivateMessageToUser(userDestination, message)
 }
@@ -67,7 +77,7 @@ const handleMessageFromInputDialog = (message) => {
                 <div class="divide-y divide-solid divide-gray-200">
                     <div v-if="storeChat.totalMessages > 0">
                         <div v-for="messageObj in storeChat.messages" :key="messageObj" class="flex">
-                            <img class="w-10 h-10 rounded-lg mr-4" :src="messageObj.user?.photo_filename ? axios.defaults.baseURL.replaceAll('/api', '/storage/photos/' + messageObj.user.photo_filename) : avatarNoneAssetURL" alt="User Avatar" />
+                            <img class="w-10 h-10 rounded-lg mr-4" :src="userPhotoUrl(messageObj.user)" alt="User Avatar" />
                             <div class="flex flex-col grow pb-6">
                                 <div class="text-xs text-gray-500">
                                     <span :class="{
