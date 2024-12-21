@@ -31,8 +31,12 @@ const refreshTimer = () => {
   }, 100)
 }
 
-watch(() => storeGames.currentGame.currentPlayer, () => {
-  refreshTimer()
+watch(() => storeGames.currentGame.currentPlayer, (newValue) => {
+  if(newValue != 0){
+    refreshTimer()
+  }else{
+    clearInterval(timerInterval)
+  }
 })
 
 onMounted(() => {
