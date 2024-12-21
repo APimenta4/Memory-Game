@@ -108,4 +108,10 @@ class UserController extends Controller
         $user->save();
         $user->notify(new TransactionNotification($transaction));
     }
+
+    public function showBalance(Request $request)
+    {
+        return response()->json(['brain_coins_balance' => $request->user()->brain_coins_balance], 200);
+    }
+
 }

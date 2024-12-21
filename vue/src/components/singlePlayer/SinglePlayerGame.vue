@@ -50,6 +50,7 @@ const createGame = async () => {
       status: 'PL',
       board_id: storeGame.board.id
     })
+    storeAuth.updateBalance()
   }else {
     console.log('createGame anonym')
   }

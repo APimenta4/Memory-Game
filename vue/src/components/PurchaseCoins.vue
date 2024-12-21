@@ -129,7 +129,9 @@ async function buyCoins() {
       payment_reference: paymentReference.value,
       value: value.value,
     });
-    storeAuth.user.brain_coins_balance += response.data.brain_coins;
+    
+    storeAuth.updateBalance()
+
     socket.emit('notification_alert', storeAuth.user.id)
     successMessage.value = `Purchase successful! You received ${response.data.brain_coins} brain coins.`;
     errorMessage.value = "";

@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/refreshtoken', [AuthController::class, 'refreshToken']); 
     
     Route::get('/users/me', [UserController::class, 'me']);
+    Route::get('/users/balance', [UserController::class, 'showBalance']); // Fetch user profile
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'show']); // Fetch user profile
