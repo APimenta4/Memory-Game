@@ -9,6 +9,7 @@ import { toast } from '@/components/ui/toast'
 import { h } from "vue";
 import BuyCoins from '@/components/PurchaseCoins.vue'
 import { useGameStore } from "@/stores/game";
+import { DialogTrigger } from '@/components/ui/dialog'
 
 const storeGame = useGameStore()
 
@@ -101,7 +102,8 @@ const showToast = ()=>{
       <CardDescription class="pt-4" v-if="totalPairs!=6">
         The brain coin will be used when you flip the first card
       </CardDescription>
-      <button 
+      <DialogTrigger>
+        <button 
         @click="restart"
         :class="{
           'bg-gray-500': isGameOver,
@@ -111,7 +113,9 @@ const showToast = ()=>{
       >
       Restart Game <span v-if="(isGameOver || time!=='0.0' && time && !isGameOver) && totalPairs!=6"> 1🧠</span> 
       </button>
-      <button 
+      </DialogTrigger>
+      <DialogTrigger>
+        <button 
         @click="router.back"
         :class="{
           'bg-gray-500': isGameOver,
@@ -121,6 +125,7 @@ const showToast = ()=>{
       >
         Return
       </button>
+      </DialogTrigger>
     </CardFooter>
   </Card>
 </template>
