@@ -23,7 +23,7 @@ export default {
       }"
       @click="flipCardWrapper(index)"
     >
-      <span v-if="card.isFlipped || card.isMatched" class="text-xl font-semibold text-gray-900">
+      <span v-if="card.isFlipped || card.isMatched" class="text-4xl font-semibold text-gray-900  select-none">
         {{ card.value }}
       </span>
     </div>
