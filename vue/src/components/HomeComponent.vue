@@ -52,7 +52,7 @@ const navigateTo = (route) => {
     <div class="mx-auto px-4 space-y-4">
       <h2 class="text-xl font-semibold text-gray-800">Scoreboard</h2>
       <button 
-        v-show="authstore.user"
+        v-if="(authstore.user && authstore.user.type != 'A')"
         class="w-full py-3 px-6 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition"
         @click="navigateTo('/scoreboard/personal')">
         Scoreboard Personal

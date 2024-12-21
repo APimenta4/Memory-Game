@@ -190,7 +190,15 @@ onMounted(async () => {
             >
             MultiPlayer
           </RouterLink>
-          <ScoreBoardDropdown v-if="(storeAuth.user && storeAuth.user.type != 'A') || !storeAuth.user"/>
+          <ScoreBoardDropdown v-if="(storeAuth.user && storeAuth.user.type != 'A')"/>
+          <RouterLink
+            v-else
+            to="/scoreboard/global"
+            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            active-class="bg-gray-200"
+          >
+            ScoreBoard Global
+          </RouterLink>
           <HistoryDropdown v-if="storeAuth.user"/>
           <RouterLink
             v-if="storeAuth.user?.type === 'A'"

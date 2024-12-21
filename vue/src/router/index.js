@@ -160,7 +160,6 @@ switch (to.name) {
     case 'singleplayer':
     case 'singlePlayerGame':
     case 'multiplayer':
-    case 'scoreboardGlobal': 
         if(storeAuth.user && storeAuth.user.type === 'A'){
             next({ name: 'home' })
             return
@@ -191,6 +190,8 @@ switch (to.name) {
       break
 
     // Anyone can access
+    
+    // case 'scoreboardGlobal': 
     // case 'home':
     // case 'indexGlobalStatistics':
   }
